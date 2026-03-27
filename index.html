@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roll Groove Training Record</title>
+<link rel="icon" type="image/jpeg" href="rg2300.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
+<style>
+:root {
+  --vic-orange: #E8560A;
+  --vic-dark:   #1a1a2e;
+  --text:       #1a1a2e;
+  --muted:      #6b7280;
+  --border:     #e2e4ea;
+  --card-bg:    #ffffff;
+  --shadow:     0 1px 4px rgba(0,0,0,0.08);
+  --radius:     12px;
+  --pass-bg:    #e8f5ee;
+  --pass-color: #2d7d46;
+  --fail-bg:    #fdecea;
+  --fail-color: #c0392b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #f0f2f7;
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* HEADER */
+header {
+  background: var(--vic-dark);
+  color: #fff;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  border-bottom: 3px solid var(--vic-orange);
+}
+.header-text h1 { font-size: 1.15rem; font-weight: 700; letter-spacing: 0.01em; }
+.header-text p  { font-size: 0.76rem; opacity: 0.65; margin-top: 2px; }
+@media (max-width: 480px) {
+  .header-text h1 { font-size: 0.98rem; }
+  header { gap: 10px; padding: 12px 14px; }
+}
+
+/* HAMBURGER */
+.hamburger-btn {
+  background: none; border: none; cursor: pointer;
+  display: flex; flex-direction: column; gap: 5px;
+  padding: 6px; border-radius: 6px; flex-shrink: 0;
+}
+.hamburger-btn span {
+  display: block; width: 22px; height: 2px;
+  background: #fff; border-radius: 2px;
+}
+.hamburger-btn:hover { background: rgba(255,255,255,0.1); }
+.hamburger-wrap { position: relative; }
+.hamburger-menu {
+  display: none; position: absolute;
+  top: 100%; right: 0;
+  background: #fff; border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+  min-width: 240px; z-index: 100; overflow: hidden;
+}
+.hamburger-menu.open { display: block; }
+.hamburger-menu a {
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 16px; color: var(--text);
+  text-decoration: none; font-size: 0.88rem;
+  font-weight: 600; border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+}
+.hamburger-menu a:last-child { border-bottom: none; }
+.hamburger-menu a:hover { background: #f7f8fb; }
+
+/* LAYOUT */
+.container { max-width: 820px; margin: 0 auto; padding: 20px 16px 48px; }
+
+/* CARDS */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+}
+.card-title {
+  font-size: 0.72rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--vic-orange); margin-bottom: 14px;
+  padding-bottom: 8px; border-bottom: 2px solid var(--vic-orange);
+  display: flex; align-items: center; gap: 6px;
+}
+.step-badge {
+  background: var(--vic-orange); color: #fff;
+  border-radius: 50%; width: 20px; height: 20px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 800; flex-shrink: 0;
+}
+
+/* FORM GRID */
+.form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.form-full { grid-column: 1 / -1; }
+.form-group { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.form-group label { font-size: 0.75rem; font-weight: 600; color: var(--vic-orange); text-transform: uppercase; letter-spacing: 0.05em; }
+.form-group input,
+.form-group select,
+.form-group textarea {
+  border: 1.5px solid var(--border); border-radius: 7px;
+  padding: 10px 12px; font-size: 0.92rem;
+  color: var(--text); background: #fff;
+  transition: border-color 0.15s; min-height: 44px;
+  font-family: inherit;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none; border-color: var(--vic-orange);
+}
+@media (max-width: 520px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .form-group input, .form-group select { font-size: 16px; }
+}
+
+/* ATTENDEES */
+.attendee-add-row {
+  display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px;
+  align-items: end; margin-bottom: 16px;
+}
+@media (max-width: 520px) {
+  .attendee-add-row { grid-template-columns: 1fr; }
+}
+.attendee-table-wrap { overflow-x: auto; }
+.attendee-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 0.88rem;
+}
+.attendee-table th {
+  background: var(--vic-dark); color: #fff;
+  padding: 8px 12px; text-align: left;
+  font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em;
+}
+.attendee-table th:first-child { border-radius: 6px 0 0 0; width: 40px; }
+.attendee-table th:last-child { border-radius: 0 6px 0 0; width: 46px; text-align: center; }
+.attendee-table td {
+  padding: 9px 12px; border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.attendee-table tr:last-child td { border-bottom: none; }
+.attendee-table tr:nth-child(even) td { background: #f9fafb; }
+.attendee-table .num { color: var(--muted); font-size: 0.8rem; }
+.attendee-table .actions { text-align: center; }
+.attendee-empty {
+  padding: 28px; text-align: center;
+  color: var(--muted); font-style: italic; font-size: 0.88rem;
+  background: #fafbfc; border-radius: 8px;
+  border: 1.5px dashed var(--border);
+}
+.attendee-count {
+  font-size: 0.82rem; color: var(--muted);
+  margin-top: 10px; text-align: right;
+}
+.attendee-count strong { color: var(--vic-orange); }
+
+/* PASS / FAIL BUTTONS */
+.pf-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.pf-label { font-size: 0.75rem; font-weight: 600; color: var(--vic-orange); text-transform: uppercase; letter-spacing: 0.05em; }
+.pf-btns { display: flex; gap: 10px; }
+.pf-btn {
+  flex: 1; padding: 14px 8px; border-radius: 8px;
+  border: 2px solid var(--border); background: #f7f8fb;
+  font-size: 1rem; font-weight: 700; cursor: pointer;
+  transition: all 0.12s; min-height: 52px; letter-spacing: 0.03em;
+}
+.pf-btn:hover { border-color: #aab; background: #f0f1f5; }
+.pf-btn.active-pass { background: var(--pass-bg); border-color: var(--pass-color); color: var(--pass-color); }
+.pf-btn.active-fail { background: var(--fail-bg); border-color: var(--fail-color); color: var(--fail-color); }
+.pf-btn-sm { font-size: 0.7rem; padding: 4px 7px; min-height: 28px; }
+
+/* BADGES */
+.badge { display: inline-block; padding: 3px 9px; border-radius: 5px; font-size: 0.72rem; font-weight: 700; }
+.badge-pass { background: var(--pass-bg); color: var(--pass-color); }
+.badge-fail { background: var(--fail-bg); color: var(--fail-color); }
+.badge-na   { background: #f0f0f0; color: #888; }
+
+/* ADD FORM */
+.add-form {
+  background: #f9fafc; border-radius: 10px;
+  border: 1.5px solid var(--border); padding: 18px; margin-bottom: 16px;
+}
+.add-form-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;
+}
+@media (max-width: 520px) { .add-form-grid { grid-template-columns: 1fr; } }
+.add-form-bottom { display: flex; flex-direction: column; gap: 0; margin-bottom: 14px; }
+.pending-photos-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.pending-photos-wrap { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 4px; }
+
+/* PHOTOS */
+.photo-thumbs { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+.photo-thumb-wrap { position: relative; display: inline-block; }
+.photo-thumb {
+  width: 54px; height: 54px; object-fit: cover;
+  border-radius: 6px; border: 1.5px solid var(--border);
+  cursor: zoom-in; display: block;
+}
+.photo-thumb-del {
+  position: absolute; top: -5px; right: -5px;
+  background: var(--fail-color); color: #fff;
+  border: none; border-radius: 50%;
+  width: 18px; height: 18px; font-size: 0.58rem; font-weight: 700;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.photo-add-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 16px; border-radius: 7px;
+  border: 1.5px solid var(--border); background: #fff;
+  color: #444; font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; transition: background 0.12s, border-color 0.12s;
+  flex-shrink: 0; white-space: nowrap;
+}
+.photo-add-btn:hover { background: #f0f1f5; border-color: #aab; }
+.photo-add-btn .cam-icon { font-size: 1.1rem; line-height: 1; }
+.photo-add-btn.large { padding: 9px 16px; font-size: 0.85rem; width: auto; height: auto; }
+.photo-cell { min-width: 160px; vertical-align: middle !important; }
+
+/* PHOTO MODAL */
+#photoModal {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.88); z-index: 1000;
+  align-items: center; justify-content: center; cursor: pointer;
+}
+#photoModal.open { display: flex; }
+#photoModal img { max-width: 90vw; max-height: 88vh; border-radius: 8px; cursor: default; }
+#photoModal .modal-close {
+  position: absolute; top: 16px; right: 20px;
+  background: #fff; border: none; border-radius: 50%;
+  width: 40px; height: 40px; font-size: 1.4rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #1a1a2e; font-weight: bold; box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+/* BUTTONS */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 18px; border-radius: 8px; border: none;
+  font-size: 0.88rem; font-weight: 600; cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  text-decoration: none; white-space: nowrap;
+  min-height: 44px;
+}
+.btn:active { transform: scale(0.97); }
+.btn:hover { opacity: 0.88; }
+.btn-primary  { background: var(--vic-orange); color: #fff; }
+.btn-secondary{ background: var(--vic-dark); color: #fff; }
+.btn-outline  { background: #fff; color: var(--vic-dark); border: 2px solid var(--border); }
+.btn-outline:hover { border-color: var(--vic-dark); }
+.btn-sm {
+  padding: 6px 12px; font-size: 0.8rem; min-height: 34px;
+  border-radius: 6px;
+}
+.del-btn {
+  background: var(--fail-bg); color: var(--fail-color);
+  border: 1.5px solid #f5c6c2; border-radius: 6px;
+  cursor: pointer; font-size: 0.85rem; font-weight: 700;
+  padding: 4px 8px; min-height: 32px; min-width: 32px;
+  transition: background 0.12s;
+}
+.del-btn:hover { background: #fad2ce; }
+.edit-btn {
+  background: #eef3ff; color: #3b5bdb;
+  border: 1.5px solid #c5d0f5; border-radius: 6px;
+  cursor: pointer; font-size: 0.85rem; font-weight: 700;
+  padding: 4px 8px; min-height: 32px; min-width: 32px;
+  transition: background 0.12s;
+}
+.edit-btn:hover { background: #dce4ff; }
+.row-actions { display: flex; gap: 5px; align-items: center; }
+
+/* ACTION ROW â 2Ã2 grid matching export layout */
+.action-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.action-row .btn { width: 100%; justify-content: flex-start; }
+.action-row .email-config-wrap { position: relative; }
+.action-row .email-config-wrap .btn { width: 100%; }
+
+/* STATUS MESSAGE */
+#statusMsg {
+  display: none; padding: 10px 14px; border-radius: 8px;
+  font-size: 0.88rem; font-weight: 500; margin-top: 12px;
+}
+#statusMsg.success { background: var(--pass-bg); color: var(--pass-color); display: block; }
+#statusMsg.error   { background: var(--fail-bg); color: var(--fail-color); display: block; }
+
+/* EMAIL CONFIG */
+.email-config-wrap { position: relative; display: inline-block; }
+.email-config-panel {
+  display: none; position: absolute;
+  bottom: calc(100% + 8px); left: 0;
+  background: #fff; border: 1.5px solid var(--border);
+  border-radius: 10px; padding: 14px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.14);
+  z-index: 200; min-width: 280px;
+}
+.email-config-panel.open { display: block; }
+.email-config-panel h4 { font-size: 0.82rem; color: var(--text); margin-bottom: 10px; }
+
+/* RESET LINK */
+.reset-link {
+  font-size: 0.78rem; color: var(--muted); background: none;
+  border: none; cursor: pointer; text-decoration: underline;
+  padding: 0; margin-top: 4px;
+}
+.reset-link:hover { color: var(--fail-color); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-text">
+    <h1>Roll Groove Training Record</h1>
+    <p>Victaulic Training &amp; Attendance</p>
+  </div>
+  <div class="hamburger-wrap">
+    <button class="hamburger-btn" onclick="toggleHamburger()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="hamburger-menu" id="hamburgerMenu">
+      <a href="https://assets.victaulic.com/assets/uploads/literature/I-100.pdf" target="_blank">&#128196; Victaulic I-100 Installation Handbook</a>
+      <a href="https://assets.victaulic.com/assets/uploads/literature/I-W100.pdf" target="_blank">&#128196; Victaulic I-W100 Installation Handbook</a>
+      <a href="https://www.victaulic.com/" target="_blank">&#127760; Victaulic Website</a>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- STEP 1: SESSION INFO -->
+  <div class="card">
+    <div class="card-title"><span class="step-badge">1</span> Session Information</div>
+    <div class="form-grid">
+
+      <div class="form-group form-full">
+        <label>Date</label>
+        <input type="date" id="sessionDate" required>
+      </div>
+
+      <div class="form-group form-full">
+        <label>Instructor Company Name</label>
+        <input type="text" id="companyName" placeholder="Instructor Company Name" autocapitalize="words" oninput="toTitleCase(this)" required>
+      </div>
+
+      <div class="form-group">
+        <label>Instructor First Name</label>
+        <input type="text" id="instructorFirstName" placeholder="First Name" autocapitalize="words" oninput="toTitleCase(this)" required>
+      </div>
+      <div class="form-group">
+        <label>Instructor Last Name</label>
+        <input type="text" id="instructorLastName" placeholder="Last Name" autocapitalize="words" oninput="toTitleCase(this)" required>
+      </div>
+
+      <div class="form-group form-full">
+        <label>Customer Company Name</label>
+        <input type="text" id="customerName" placeholder="Customer Company Name" autocapitalize="words" oninput="toTitleCase(this)" required>
+      </div>
+
+      <div class="form-group">
+        <label>Training Requested By â First Name</label>
+        <input type="text" id="trainingRequestedByFirst" placeholder="First Name" autocapitalize="words" oninput="toTitleCase(this)" required>
+      </div>
+      <div class="form-group">
+        <label>Training Requested By â Last Name</label>
+        <input type="text" id="trainingRequestedByLast" placeholder="Last Name" autocapitalize="words" oninput="toTitleCase(this)" required>
+      </div>
+
+      <div class="form-group form-full">
+        <label>Training Location</label>
+        <input type="text" id="trainingLocation" placeholder="Training Location" autocapitalize="words" oninput="toTitleCase(this)" required>
+      </div>
+
+      <div class="form-group form-full">
+        <label>Training Type</label>
+        <select id="trainingTypeSelect">
+          <option value="Roll Groove Training">Roll Groove Training</option>
+          <option value="Installation Training">Installation Training</option>
+          <option value="OGS &amp; AGS">OGS &amp; AGS</option>
+          <option value="OGS (Original Groove System)">OGS</option>
+          <option value="AGS (Advanced Groove System)">AGS</option>
+        </select>
+      </div>
+
+      <div class="form-group form-full">
+        <label>Comments <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(optional)</span></label>
+        <textarea id="sessionNotes" placeholder="Any general comments for this training session..." rows="2" autocapitalize="words" oninput="toTitleCase(this)" style="resize:vertical;line-height:1.5;"></textarea>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STEP 2: ATTENDEES -->
+  <div class="card">
+    <div class="card-title"><span class="step-badge">2</span> Training Attendees</div>
+
+    <div class="add-form">
+      <div class="add-form-grid">
+        <div class="form-group" style="margin:0;">
+          <label>First Name</label>
+          <input type="text" id="addFirstName" placeholder="First Name" autocapitalize="words" oninput="toTitleCase(this)" onkeydown="onAttendeeKeydown(event)">
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label>Last Name</label>
+          <input type="text" id="addLastName" placeholder="Last Name" autocapitalize="words" oninput="toTitleCase(this)" onkeydown="onAttendeeKeydown(event)">
+        </div>
+        <div class="form-group" style="margin:0; grid-column: 1 / -1;">
+          <label>Company Name</label>
+          <input type="text" id="addCompany" placeholder="Attendee's Company" autocapitalize="words" oninput="toTitleCase(this)" onkeydown="onAttendeeKeydown(event)">
+        </div>
+      </div>
+
+      <div class="add-form-bottom">
+        <!-- Pass / Fail -->
+        <div class="pf-row">
+          <div class="pf-label">Result</div>
+          <div class="pf-btns">
+            <button class="pf-btn" id="addPassBtn" onclick="setPendingResult('pass')">&#10003; PASS</button>
+            <button class="pf-btn" id="addFailBtn" onclick="setPendingResult('fail')">&#10007; FAIL</button>
+          </div>
+          <div id="failCommentsWrap" style="display:none;margin-top:8px;">
+            <div class="pf-label" style="margin-bottom:4px;">Fail Reason <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(optional)</span></div>
+            <textarea id="addFailComments" rows="2" placeholder="Explain why the attendee failed..." style="width:100%;padding:8px 10px;border-radius:7px;border:1.5px solid var(--border);font-size:0.85rem;font-family:inherit;resize:vertical;box-sizing:border-box;"></textarea>
+          </div>
+        </div>
+
+        <!-- Groove Photos -->
+        <div class="pending-photos-row">
+          <div class="pf-label">Groove Photos <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(optional)</span></div>
+          <div class="pending-photos-wrap" id="pendingThumbs">
+            <button class="photo-add-btn large" onclick="triggerTakePhoto(-1)" title="Take a photo with your camera">
+              <span class="cam-icon">&#128247;</span>
+              <span>Take Photo</span>
+            </button>
+            <button class="photo-add-btn large" onclick="triggerAddPhoto(-1)" title="Choose from your files">
+              <span class="cam-icon">&#128444;&#xFE0F;</span>
+              <span>Choose File</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <button id="addAttendeeBtn" class="btn btn-primary" style="width:100%;padding:14px;font-size:1rem;" onclick="addAttendee()">&#43; Add Attendee</button>
+    </div>
+
+    <div id="attendeeListWrap">
+      <div class="attendee-empty">No attendees yet &mdash; add the first one above.</div>
+    </div>
+
+  </div>
+
+  <!-- STEP 3: EXPORT -->
+  <div class="card">
+    <div class="card-title"><span class="step-badge">3</span> Results</div>
+
+    <div class="action-row">
+      <button class="btn btn-outline" onclick="downloadPDF()">
+        <strong>Download PDF</strong>&nbsp; <span style="color:var(--vic-orange);font-size:0.8rem;">With Photos</span>
+      </button>
+      <button class="btn btn-outline" onclick="downloadCSV()">
+        <strong>Download CSV</strong>&nbsp; <span style="color:var(--muted);font-size:0.8rem;">Without Photos</span>
+      </button>
+      <div class="email-config-wrap">
+        <button class="btn btn-outline" onclick="toggleEmailConfig()">
+          Set Email Address
+        </button>
+        <div class="email-config-panel" id="emailConfigPanel">
+          <h4>Recipient Email Addresses</h4>
+          <div id="emailList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;"></div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-outline btn-sm" onclick="addEmailField('')" style="flex:1;">+ Add</button>
+            <button class="btn btn-primary btn-sm" onclick="saveEmailConfig()" style="flex:1;">Save</button>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-secondary" onclick="sendEmail()">
+        Send via Email
+      </button>
+    </div>
+
+    <div id="statusMsg"></div>
+
+    <div style="margin-top:14px;">
+      <button class="reset-link" onclick="resetAll()">&#8635; Reset everything</button>
+    </div>
+  </div>
+
+</div><!-- end .container -->
+
+<!-- HIDDEN PHOTO INPUTS -->
+<input type="file" id="photoCaptureInput" accept="image/*" capture="environment" style="display:none;" onchange="handlePhotoFile(this)">
+<input type="file" id="photoFileInput" accept="image/*" multiple style="display:none;" onchange="handlePhotoFile(this)">
+
+<!-- PHOTO MODAL -->
+<div id="photoModal" onclick="closePhotoModal()">
+  <button class="modal-close" onclick="closePhotoModal()" title="Close">&#10005;</button>
+  <img id="photoModalImg" src="" onclick="event.stopPropagation()">
+</div>
+
+<!-- UNDO TOAST -->
+<div id="undoToast" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#fff;padding:12px 20px;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.3);z-index:2000;align-items:center;gap:14px;font-size:0.95rem;white-space:nowrap;">
+  <span>Attendee removed</span>
+  <button onclick="undoRemove()" style="background:var(--vic-orange);color:#fff;border:none;border-radius:6px;padding:6px 14px;font-weight:700;cursor:pointer;font-size:0.9rem;">Undo</button>
+</div>
+
+<script>
+// ââ STATE ââââââââââââââââââââââââââââââââââââââââââââââââ
+var attendees = [];
+var lastRemoved = null;
+var undoTimer  = null;
+var MAX_PHOTOS = 4;
+var currentPhotoIdx = -1;
+var pendingPhotos = [];
+var pendingResult = null;
+var logoDataUrl   = null;
+var logoAspect    = 4.5; // fallback width/height ratio if unknown
+var editingIndex  = -1;  // -1 = adding new, â¥0 = editing existing
+
+// ââ INIT âââââââââââââââââââââââââââââââââââââââââââââââââ
+(function() {
+  var d = new Date();
+  var today = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  var dateEl = document.getElementById('sessionDate');
+  dateEl.value = today;
+  dateEl.max = today;
+
+  // Try to load a Victaulic logo from common filenames in the same folder
+  var names = ['victaulic_logo.png','victaulic_logo.jpg','logo.png','logo.jpg','victaulic.png','victaulic.jpg'];
+  function tryLogo(i) {
+    if (i >= names.length) return;
+    var img = new Image();
+    img.onload = function() {
+      logoAspect = img.naturalWidth / img.naturalHeight;
+      var cv = document.createElement('canvas');
+      cv.width = img.naturalWidth; cv.height = img.naturalHeight;
+      cv.getContext('2d').drawImage(img, 0, 0);
+      logoDataUrl = cv.toDataURL('image/png');
+    };
+    img.onerror = function() { tryLogo(i + 1); };
+    img.src = names[i] + '?_=' + Date.now(); // cache-bust
+  }
+  tryLogo(0);
+})();
+
+// ââ UTILITIES ââââââââââââââââââââââââââââââââââââââââââââ
+function toTitleCase(el) {
+  var v = el.value;
+  var pos = el.selectionStart;
+  el.value = v.replace(/\b\w/g, function(c){ return c.toUpperCase(); }).replace(/\B\w/g, function(c){ return c.toLowerCase(); });
+  try { el.setSelectionRange(pos, pos); } catch(e) {}
+}
+
+function toggleHamburger() {
+  document.getElementById('hamburgerMenu').classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+  var menu = document.getElementById('hamburgerMenu');
+  if (menu && menu.classList.contains('open') && !e.target.closest('.hamburger-wrap')) {
+    menu.classList.remove('open');
+  }
+  var panel = document.getElementById('emailConfigPanel');
+  if (panel && panel.classList.contains('open') && !e.target.closest('.email-config-wrap')) {
+    panel.classList.remove('open');
+  }
+});
+
+// ââ FORM âââââââââââââââââââââââââââââââââââââââââââââââââ
+function onTrainingTypeChange() {
+  var sel = document.getElementById('trainingTypeSelect').value;
+  var other = document.getElementById('trainingTypeOther');
+  other.style.display = sel === 'Other' ? 'block' : 'none';
+  if (sel !== 'Other') other.value = '';
+}
+
+function validateSession() {
+  var fields = [
+    ['sessionDate',        'Date'],
+    ['companyName',         'Instructor Company Name'],
+    ['instructorFirstName', 'Instructor First Name'],
+    ['instructorLastName',  'Instructor Last Name'],
+    ['customerName',             'Customer Company Name'],
+    ['trainingRequestedByFirst', 'Training Requested By â First Name'],
+    ['trainingRequestedByLast',  'Training Requested By â Last Name'],
+    ['trainingLocation',         'Training Location']
+  ];
+  for (var i = 0; i < fields.length; i++) {
+    if (!document.getElementById(fields[i][0]).value.trim()) {
+      alert(fields[i][1] + ' is required.');
+      document.getElementById(fields[i][0]).focus();
+      return false;
+    }
+  }
+  return true;
+}
+
+function getSessionInfo() {
+  return {
+    date:                document.getElementById('sessionDate').value || '',
+    company:             document.getElementById('companyName').value.trim() || '(not set)',
+    instructor:          (document.getElementById('instructorFirstName').value.trim() + ' ' + document.getElementById('instructorLastName').value.trim()).trim() || '(not set)',
+    customerName:        document.getElementById('customerName').value.trim() || '(not set)',
+    trainingRequestedBy: (document.getElementById('trainingRequestedByFirst').value.trim() + ' ' + document.getElementById('trainingRequestedByLast').value.trim()).trim() || '(not set)',
+    trainingLocation:    document.getElementById('trainingLocation').value.trim() || '(not set)',
+    trainingType:        document.getElementById('trainingTypeSelect').value,
+    sessionNotes:        document.getElementById('sessionNotes').value.trim() || ''
+  };
+}
+
+// ââ ATTENDEES ââââââââââââââââââââââââââââââââââââââââââââ
+function onAttendeeKeydown(e) {
+  if (e.key === 'Enter') { e.preventDefault(); addAttendee(); }
+}
+
+function addAttendee() {
+  var fn = document.getElementById('addFirstName').value.trim();
+  var ln = document.getElementById('addLastName').value.trim();
+  var co = document.getElementById('addCompany').value.trim();
+  var fc = (pendingResult === 'fail') ? document.getElementById('addFailComments').value.trim() : '';
+  if (!fn && !ln) {
+    alert('Please enter at least a first or last name.');
+    document.getElementById('addFirstName').focus();
+    return;
+  }
+  if (editingIndex >= 0) {
+    var existing = attendees[editingIndex];
+    attendees[editingIndex] = {
+      firstName: fn, lastName: ln, company: co,
+      photos: pendingPhotos.length > 0 ? pendingPhotos.slice() : existing.photos,
+      result: pendingResult !== null ? pendingResult : existing.result,
+      failComments: fc
+    };
+  } else {
+    attendees.push({ firstName: fn, lastName: ln, company: co, photos: pendingPhotos.slice(), result: pendingResult, failComments: fc });
+  }
+  clearAddForm();
+  renderAttendees();
+}
+
+function startEditAttendee(i) {
+  var a = attendees[i];
+  editingIndex = i;
+  document.getElementById('addFirstName').value = a.firstName || '';
+  document.getElementById('addLastName').value  = a.lastName  || '';
+  document.getElementById('addCompany').value   = a.company   || '';
+  pendingPhotos = (a.photos || []).slice();
+  pendingResult = a.result || null;
+  renderPendingThumbs();
+  document.getElementById('addPassBtn').className = 'pf-btn' + (pendingResult === 'pass' ? ' active-pass' : '');
+  document.getElementById('addFailBtn').className = 'pf-btn' + (pendingResult === 'fail' ? ' active-fail' : '');
+  if (pendingResult === 'fail') {
+    document.getElementById('failCommentsWrap').style.display = 'block';
+    document.getElementById('addFailComments').value = a.failComments || '';
+  } else {
+    document.getElementById('failCommentsWrap').style.display = 'none';
+    document.getElementById('addFailComments').value = '';
+  }
+  // Update button label
+  document.getElementById('addAttendeeBtn').textContent = 'â Save Changes';
+  document.getElementById('addAttendeeBtn').style.background = '#3b5bdb';
+  document.getElementById('addFirstName').focus();
+  document.getElementById('addFirstName').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function clearAddForm() {
+  editingIndex = -1;
+  document.getElementById('addFirstName').value = '';
+  document.getElementById('addLastName').value  = '';
+  document.getElementById('addCompany').value   = '';
+  document.getElementById('addFailComments').value = '';
+  document.getElementById('failCommentsWrap').style.display = 'none';
+  document.getElementById('addPassBtn').className = 'pf-btn';
+  document.getElementById('addFailBtn').className = 'pf-btn';
+  pendingPhotos = [];
+  pendingResult = null;
+  renderPendingThumbs();
+  var btn = document.getElementById('addAttendeeBtn');
+  btn.textContent = '+ Add Attendee';
+  btn.style.background = '';
+  document.getElementById('addFirstName').focus();
+}
+
+function setPendingResult(val) {
+  pendingResult = (pendingResult === val) ? null : val;
+  document.getElementById('addPassBtn').className = 'pf-btn' + (pendingResult === 'pass' ? ' active-pass' : '');
+  document.getElementById('addFailBtn').className = 'pf-btn' + (pendingResult === 'fail' ? ' active-fail' : '');
+  document.getElementById('failCommentsWrap').style.display = (pendingResult === 'fail') ? 'block' : 'none';
+  if (pendingResult !== 'fail') document.getElementById('addFailComments').value = '';
+}
+
+function setAttendeeResult(i, val) {
+  attendees[i].result = (attendees[i].result === val) ? null : val;
+  renderAttendees();
+}
+
+function badge(v) {
+  if (!v) return '<span class="badge badge-na">â</span>';
+  if (v === 'pass') return '<span class="badge badge-pass">PASS</span>';
+  return '<span class="badge badge-fail">FAIL</span>';
+}
+
+function removeAttendee(i) {
+  lastRemoved = { attendee: attendees[i], index: i };
+  attendees.splice(i, 1);
+  renderAttendees();
+  showUndoToast();
+}
+
+function showUndoToast() {
+  if (undoTimer) clearTimeout(undoTimer);
+  var toast = document.getElementById('undoToast');
+  toast.style.display = 'flex';
+  undoTimer = setTimeout(function() {
+    toast.style.display = 'none';
+    lastRemoved = null;
+  }, 6000);
+}
+
+function undoRemove() {
+  if (!lastRemoved) return;
+  attendees.splice(lastRemoved.index, 0, lastRemoved.attendee);
+  lastRemoved = null;
+  if (undoTimer) clearTimeout(undoTimer);
+  document.getElementById('undoToast').style.display = 'none';
+  renderAttendees();
+}
+
+function renderAttendees() {
+  var wrap = document.getElementById('attendeeListWrap');
+  if (attendees.length === 0) {
+    wrap.innerHTML = '<div class="attendee-empty">No attendees yet &mdash; add the first one above.</div>';
+    return;
+  }
+  var rows = attendees.map(function(a, i) {
+    var full = (a.firstName + ' ' + a.lastName).trim();
+    var photos = a.photos || [];
+    var thumbs = photos.map(function(src, j) {
+      return '<div class="photo-thumb-wrap">' +
+        '<img class="photo-thumb" src="' + src + '" onclick="viewPhoto(' + i + ',' + j + ')" title="View photo">' +
+        '<button class="photo-thumb-del" onclick="removePhoto(' + i + ',' + j + ')" title="Remove photo">&#10005;</button>' +
+      '</div>';
+    }).join('');
+    var canAdd = photos.length < MAX_PHOTOS;
+    var takeBtn = canAdd ? '<button class="photo-add-btn" onclick="triggerTakePhoto(' + i + ')" title="Take photo"><span class="cam-icon">&#128247;</span><span>TAKE</span></button>' : '';
+    var addBtn  = canAdd ? '<button class="photo-add-btn" onclick="triggerAddPhoto(' + i + ')"  title="Add from files"><span class="cam-icon">&#128444;</span><span>ADD</span></button>' : '';
+    var passClass = 'pf-btn pf-btn-sm' + (a.result === 'pass' ? ' active-pass' : '');
+    var failClass = 'pf-btn pf-btn-sm' + (a.result === 'fail' ? ' active-fail' : '');
+    return '<tr>' +
+      '<td class="actions">' +
+        '<div class="row-actions">' +
+          '<button class="edit-btn" onclick="startEditAttendee(' + i + ')" title="Edit attendee">&#9998;</button>' +
+          '<button class="del-btn"  onclick="removeAttendee(' + i + ')"       title="Remove attendee">&#10005;</button>' +
+        '</div>' +
+      '</td>' +
+      '<td class="num">' + (i+1) + '</td>' +
+      '<td>' + escHtml(a.firstName) + '</td>' +
+      '<td>' + escHtml(a.lastName)  + '</td>' +
+      '<td>' + escHtml(a.company || '') + '</td>' +
+      '<td style="min-width:120px;">' +
+        '<div style="display:flex;flex-direction:column;gap:5px;">' +
+          badge(a.result) +
+          (a.result === 'fail' && a.failComments ? '<div style="font-size:0.72rem;color:#c0392b;font-style:italic;max-width:160px;">' + escHtml(a.failComments) + '</div>' : '') +
+          '<div style="display:flex;gap:4px;">' +
+            '<button class="' + passClass + '" onclick="setAttendeeResult(' + i + ',\'pass\')">&#10003; Pass</button>' +
+            '<button class="' + failClass + '" onclick="setAttendeeResult(' + i + ',\'fail\')">&#10007; Fail</button>' +
+          '</div>' +
+        '</div>' +
+      '</td>' +
+      '<td class="photo-cell"><div class="photo-thumbs">' + thumbs + takeBtn + addBtn + '</div></td>' +
+    '</tr>';
+  }).join('');
+  var passed = attendees.filter(function(a){ return a.result === 'pass'; }).length;
+  var failed = attendees.filter(function(a){ return a.result === 'fail'; }).length;
+  wrap.innerHTML =
+    '<div class="attendee-table-wrap">' +
+    '<table class="attendee-table">' +
+    '<thead><tr><th style="width:56px;"></th><th>#</th><th>First Name</th><th>Last Name</th><th>Company</th><th>Result</th><th>Photos</th></tr></thead>' +
+    '<tbody>' + rows + '</tbody>' +
+    '</table></div>' +
+    '<div class="attendee-count">' +
+      '<strong>' + attendees.length + '</strong> attendee' + (attendees.length !== 1 ? 's' : '') +
+      (passed ? ' &nbsp;Â·&nbsp; <span style="color:var(--pass-color);font-weight:700;">' + passed + ' passed</span>' : '') +
+      (failed ? ' &nbsp;Â·&nbsp; <span style="color:var(--fail-color);font-weight:700;">' + failed + ' failed</span>' : '') +
+    '</div>';
+}
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ââ PHOTOS âââââââââââââââââââââââââââââââââââââââââââââââ
+function triggerTakePhoto(i) {
+  currentPhotoIdx = (i === undefined) ? -1 : i;
+  var input = document.getElementById('photoCaptureInput');
+  input.value = '';
+  input.click();
+}
+
+function triggerAddPhoto(i) {
+  currentPhotoIdx = (i === undefined) ? -1 : i;
+  var input = document.getElementById('photoFileInput');
+  input.value = '';
+  input.click();
+}
+
+function handlePhotoFile(input) {
+  var files = input.files;
+  if (!files || !files.length) return;
+  var isPending = (currentPhotoIdx === -1);
+  var currentArr = isPending ? pendingPhotos : (attendees[currentPhotoIdx] ? attendees[currentPhotoIdx].photos : null);
+  if (!currentArr && !isPending) return;
+  var remaining = MAX_PHOTOS - currentArr.length;
+  if (remaining <= 0) { alert('Maximum ' + MAX_PHOTOS + ' groove photos per attendee.'); return; }
+  var toLoad = Math.min(files.length, remaining);
+  var loaded = 0;
+  var snapIdx = currentPhotoIdx;
+  for (var i = 0; i < toLoad; i++) {
+    (function(file) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        if (snapIdx === -1) {
+          pendingPhotos.push(e.target.result);
+        } else {
+          if (attendees[snapIdx] && attendees[snapIdx].photos) {
+            attendees[snapIdx].photos.push(e.target.result);
+          }
+        }
+        loaded++;
+        if (loaded === toLoad) {
+          if (snapIdx === -1) { renderPendingThumbs(); }
+          else { renderAttendees(); }
+        }
+      };
+      reader.readAsDataURL(file);
+    })(files[i]);
+  }
+  input.value = '';
+}
+
+function renderPendingThumbs() {
+  var wrap = document.getElementById('pendingThumbs');
+  if (!wrap) return;
+  var thumbs = pendingPhotos.map(function(src, j) {
+    return '<div class="photo-thumb-wrap">' +
+      '<img class="photo-thumb" src="' + src + '" onclick="viewPendingPhoto(' + j + ')" title="View">' +
+      '<button class="photo-thumb-del" onclick="removePendingPhoto(' + j + ')" title="Remove">&#10005;</button>' +
+    '</div>';
+  }).join('');
+  var canAdd = pendingPhotos.length < MAX_PHOTOS;
+  var takeBtn = canAdd
+    ? '<button class="photo-add-btn large" onclick="triggerTakePhoto(-1)" title="Take photo"><span class="cam-icon">&#128247;</span><span>Take Photo</span></button>'
+    : '';
+  var addBtn = canAdd
+    ? '<button class="photo-add-btn large" onclick="triggerAddPhoto(-1)" title="Choose file"><span class="cam-icon">&#128444;&#xFE0F;</span><span>Choose File</span></button>'
+    : '';
+  wrap.innerHTML = thumbs + takeBtn + addBtn;
+}
+
+function removePendingPhoto(j) {
+  pendingPhotos.splice(j, 1);
+  renderPendingThumbs();
+}
+
+function viewPendingPhoto(j) {
+  document.getElementById('photoModalImg').src = pendingPhotos[j];
+  document.getElementById('photoModal').classList.add('open');
+}
+
+function removePhoto(attendeeIdx, photoIdx) {
+  attendees[attendeeIdx].photos.splice(photoIdx, 1);
+  renderAttendees();
+}
+
+function viewPhoto(attendeeIdx, photoIdx) {
+  document.getElementById('photoModalImg').src = attendees[attendeeIdx].photos[photoIdx];
+  document.getElementById('photoModal').classList.add('open');
+}
+
+function closePhotoModal() {
+  document.getElementById('photoModal').classList.remove('open');
+  document.getElementById('photoModalImg').src = '';
+}
+
+// ââ PDF CANVAS HELPERS âââââââââââââââââââââââââââââââââââ
+function makePassBadgeImg() {
+  var s = 200;
+  var cv = document.createElement('canvas');
+  cv.width = s; cv.height = s;
+  var ctx = cv.getContext('2d');
+  ctx.clearRect(0, 0, s, s);
+  // Outer ring
+  ctx.beginPath();
+  ctx.arc(s/2, s/2, s/2 - 5, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(0,140,60,0.08)';
+  ctx.fill();
+  ctx.strokeStyle = '#008C3C';
+  ctx.lineWidth = 10;
+  ctx.stroke();
+  // Bold checkmark
+  ctx.strokeStyle = '#008C3C';
+  ctx.lineWidth = 18;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  ctx.moveTo(s * 0.22, s * 0.50);
+  ctx.lineTo(s * 0.43, s * 0.70);
+  ctx.lineTo(s * 0.78, s * 0.30);
+  ctx.stroke();
+  return cv.toDataURL('image/png');
+}
+
+function makeSignatureImg(name) {
+  var w = 600, h = 100;
+  var cv = document.createElement('canvas');
+  cv.width = w; cv.height = h;
+  var ctx = cv.getContext('2d');
+  ctx.clearRect(0, 0, w, h);
+  ctx.font = '62px "Dancing Script", "Brush Script MT", "Segoe Script", cursive';
+  ctx.fillStyle = '#1a1a2e';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(name, w/2, h/2 + 6);
+  return cv.toDataURL('image/png');
+}
+
+// ââ PDF GENERATION âââââââââââââââââââââââââââââââââââââââ
+function addFooterLogo(doc, pageW, pageH) {
+  if (logoDataUrl) {
+    var lh = 9;
+    var lw = Math.min(lh * logoAspect, 55);
+    doc.addImage(logoDataUrl, 'PNG', pageW/2 - lw/2, pageH - lh - 4, lw, lh, undefined, 'FAST');
+  }
+}
+
+function buildPDF() {
+  if (!validateSession()) return null;
+  if (attendees.length === 0) { alert('Please add at least one attendee.'); return null; }
+  if (!window.jspdf) { alert('PDF library not loaded. Please check your internet connection.'); return null; }
+
+  var s = getSessionInfo();
+  var jsPDF = window.jspdf.jsPDF;
+  var doc   = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+  var pageW    = doc.internal.pageSize.getWidth();
+  var pageH    = doc.internal.pageSize.getHeight();
+  var margin   = 16;
+  var contentW = pageW - margin * 2;
+
+  // Colour palette
+  var navy      = [26, 26, 46];
+  var orange    = [232, 86, 10];
+  var lightGrey = [245, 246, 248];
+  var midGrey   = [210, 210, 210];
+  var white     = [255, 255, 255];
+
+  // âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // PAGE 1 â COVER / SUMMARY
+  // âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+
+  // Header bar
+  doc.setFillColor.apply(doc, navy);
+  doc.rect(0, 0, pageW, 22, 'F');
+  doc.setFillColor.apply(doc, orange);
+  doc.rect(0, 22, pageW, 2.5, 'F');
+  doc.setTextColor.apply(doc, white);
+  doc.setFontSize(13); doc.setFont('helvetica', 'bold');
+  doc.text('ROLL GROOVE TRAINING RECORD', margin, 14);
+
+  var y = 30;
+
+  // Session info box
+  var boxH = 60;
+  doc.setFillColor.apply(doc, lightGrey);
+  doc.roundedRect(margin, y, contentW, boxH, 2, 2, 'F');
+  doc.setDrawColor.apply(doc, midGrey);
+  doc.roundedRect(margin, y, contentW, boxH, 2, 2, 'S');
+  doc.setDrawColor.apply(doc, midGrey);
+  doc.line(margin + contentW/2, y+3, margin + contentW/2, y+boxH-3);
+
+  function infoCell(label, value, x, cy) {
+    doc.setFontSize(6); doc.setFont('helvetica', 'bold');
+    doc.setTextColor.apply(doc, orange);
+    doc.text(label.toUpperCase(), x, cy);
+    doc.setFontSize(8.5); doc.setFont('helvetica', 'bold');
+    doc.setTextColor.apply(doc, navy);
+    var safe = String(value || 'â');
+    if (safe.length > 40) safe = safe.substring(0, 38) + 'â¦';
+    doc.text(safe, x, cy + 4.5);
+  }
+
+  var c1 = margin + 5, c2 = margin + contentW/2 + 5;
+  var r1=y+9, r2=y+22, r3=y+35, r4=y+48;
+  infoCell('Date', s.date, c1, r1);
+  infoCell('Training Type', s.trainingType, c2, r1);
+  infoCell('Instructor', s.instructor + '  Â·  ' + s.company, c1, r2);
+  infoCell('Training Location', s.trainingLocation, c2, r2);
+  infoCell('Customer', s.customerName, c1, r3);
+  infoCell('Training Requested By', s.trainingRequestedBy, c2, r3);
+  var genDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  infoCell('Generated', genDate, c1, r4);
+  infoCell('Total Attendees', String(attendees.length), c2, r4);
+
+  y += boxH + 4;
+
+  if (s.sessionNotes) {
+    doc.setFillColor(255, 253, 248);
+    doc.roundedRect(margin, y, contentW, 16, 2, 2, 'F');
+    doc.setDrawColor.apply(doc, midGrey);
+    doc.roundedRect(margin, y, contentW, 16, 2, 2, 'S');
+    infoCell('Comments', s.sessionNotes, margin+5, y+8.5);
+    y += 22;
+  }
+
+  // Attendees section title
+  y += 3;
+  doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+  doc.setTextColor.apply(doc, orange);
+  doc.text('TRAINING ATTENDEES', margin, y);
+  y += 5;
+
+  // Attendees table
+  doc.autoTable({
+    startY: y,
+    margin: { left: margin, right: margin },
+    head: [['#', 'First Name', 'Last Name', 'Company', 'Result', 'Comments']],
+    body: attendees.map(function(a, i) {
+      return [
+        String(i+1),
+        a.firstName || '',
+        a.lastName  || '',
+        a.company   || '',
+        (a.result   || 'â').toUpperCase(),
+        (a.result === 'fail' && a.failComments) ? a.failComments : ''
+      ];
+    }),
+    theme: 'grid',
+    headStyles: {
+      fillColor: navy, textColor: white,
+      fontStyle: 'bold', fontSize: 7.5,
+      cellPadding: { top: 3, bottom: 3, left: 5, right: 5 }
+    },
+    bodyStyles: {
+      fontSize: 8, textColor: navy,
+      cellPadding: { top: 3.5, bottom: 3.5, left: 5, right: 5 }
+    },
+    alternateRowStyles: { fillColor: [250, 250, 252] },
+    columnStyles: {
+      0: { cellWidth: 10, halign: 'center' },
+      1: { cellWidth: 32 },
+      2: { cellWidth: 32 },
+      3: { cellWidth: 40 },
+      4: { cellWidth: 18, halign: 'center', fontStyle: 'bold' },
+      5: { cellWidth: 'auto', fontStyle: 'italic' }
+    },
+    didParseCell: function(data) {
+      if (data.section === 'body' && data.column.index === 4) {
+        var v = data.cell.raw;
+        if (v === 'PASS') { data.cell.styles.textColor = [0, 140, 60]; }
+        else if (v === 'FAIL') { data.cell.styles.textColor = [200, 30, 30]; }
+      }
+      if (data.section === 'body' && data.column.index === 5) {
+        data.cell.styles.textColor = [180, 30, 30];
+        data.cell.styles.fontSize = 7;
+      }
+    }
+  });
+
+  // Footer p1 â logo centred at bottom
+  var passingCount = attendees.filter(function(a){ return a.result !== 'fail'; }).length;
+  var totalPages = 1 + passingCount;
+  addFooterLogo(doc, pageW, pageH);
+
+  // âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // PAGES 2+ â CERTIFICATES OF ATTENDANCE (landscape)
+  // âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  var certPageNum = 1;
+  attendees.forEach(function(attendee, idx) {
+    if (attendee.result === 'fail') return;
+    certPageNum++;
+    doc.addPage();
+
+    var fullName = (attendee.firstName + ' ' + attendee.lastName).trim();
+
+    // Header bar (22 mm â same as cover)
+    doc.setFillColor.apply(doc, navy);
+    doc.rect(0, 0, pageW, 22, 'F');
+    doc.setFillColor.apply(doc, orange);
+    doc.rect(0, 22, pageW, 2.5, 'F');
+
+    doc.setTextColor.apply(doc, white);
+    doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+    doc.setTextColor(255, 200, 160);
+    doc.text('VICTAULIC', pageW/2, 9, { align: 'center' });
+    doc.setFontSize(17); doc.setFont('helvetica', 'bold');
+    doc.setTextColor.apply(doc, white);
+    doc.text('ROLL GROOVE TRAINING', pageW/2, 19, { align: 'center' });
+
+    // Decorative border (fits within landscape height)
+    doc.setDrawColor.apply(doc, midGrey);
+    doc.setLineWidth(0.4);
+    doc.roundedRect(margin - 2, 27, contentW + 4, pageH - 27 - 16, 3, 3, 'S');
+    doc.setLineWidth(0.2);
+    doc.roundedRect(margin, 29, contentW, pageH - 29 - 19, 2, 2, 'S');
+
+    // PASS badge (canvas-rendered, top-right corner)
+    var badgeSize = 16;
+    var badgeX = pageW - margin - badgeSize - 2;
+    var badgeY = 25;
+    try { doc.addImage(makePassBadgeImg(), 'PNG', badgeX, badgeY, badgeSize, badgeSize, undefined, 'FAST'); } catch(e) {}
+
+    // ââ Content ââ
+    // "Certificate of Attendance" elegant title
+    var cy = 41;
+    doc.setFontSize(22); doc.setFont('helvetica', 'bold');
+    doc.setTextColor.apply(doc, navy);
+    doc.text('Certificate of Attendance', pageW/2, cy, { align: 'center' });
+
+    // Decorative lines either side of title
+    var titleW = doc.getTextWidth('Certificate of Attendance');
+    var lineY = cy - 2;
+    doc.setDrawColor.apply(doc, orange);
+    doc.setLineWidth(0.6);
+    doc.line(margin + 10, lineY, pageW/2 - titleW/2 - 4, lineY);
+    doc.line(pageW/2 + titleW/2 + 4, lineY, pageW - margin - 10, lineY);
+
+    cy += 11;
+    doc.setFontSize(10); doc.setFont('helvetica', 'italic');
+    doc.setTextColor(110, 110, 120);
+    doc.text('This is to certify that', pageW/2, cy, { align: 'center' });
+
+    cy += 13;
+
+    // Attendee name (large)
+    doc.setFontSize(26); doc.setFont('helvetica', 'bold');
+    doc.setTextColor.apply(doc, navy);
+    doc.text(fullName, pageW/2, cy, { align: 'center' });
+
+    // Orange underline
+    var nw = doc.getTextWidth(fullName);
+    var underX = pageW/2 - nw/2;
+    cy += 3;
+    doc.setDrawColor.apply(doc, orange);
+    doc.setLineWidth(1.5);
+    doc.line(underX, cy, underX + nw, cy);
+
+    cy += 11;
+    doc.setFontSize(10); doc.setFont('helvetica', 'italic');
+    doc.setTextColor(110, 110, 120);
+    doc.text('has successfully attended the', pageW/2, cy, { align: 'center' });
+
+    cy += 9;
+    doc.setFontSize(14); doc.setFont('helvetica', 'bold');
+    doc.setTextColor.apply(doc, orange);
+    doc.text(s.trainingType, pageW/2, cy, { align: 'center' });
+
+    cy += 7;
+    doc.setFontSize(8.5); doc.setFont('helvetica', 'normal');
+    doc.setTextColor(130, 130, 130);
+    doc.text('training session conducted by ' + s.company, pageW/2, cy, { align: 'center' });
+
+    // Divider
+    cy += 12;
+    doc.setDrawColor.apply(doc, midGrey);
+    doc.setLineWidth(0.4);
+    doc.line(margin + 18, cy, pageW - margin - 18, cy);
+
+    cy += 9;
+
+    // Session details (2-column grid)
+    var col1xHX\Ú[
+ÈÂ\ÛÛHYÙUËÌ
+ÈLÂ[Ý[ÛÙ\]Z[
+X[[YK^JHÂØËÙ]ÛÚ^J
+JNÈØËÙ]Û
+	Ú[]XØIË	ØÛ	ÊNÂØËÙ]^ÛÛÜ\JØËÜ[ÙJNÂØË^
+X[Õ\\Ø\ÙJ
+K^JNÂØËÙ]ÛÚ^JJNÈØËÙ]Û
+	Ú[]XØIË	ØÛ	ÊNÂØËÙ]^ÛÛÜ\JØË]JNÂ\HÝ[Ê[YH	ø %	ÊNÂY
+[ÝÎ
+HHÝXÝ[ÊÍH
+È	ø )ÎÂØË^
+^H
+È
+JNÂBÙ\]Z[
+	Ñ]IËË]KÛÛ^ÞJNÂÙ\]Z[
+	ÕZ[[ÈØØ][ÛËËZ[[ÓØØ][ÛÛÛÞJNÂÞH
+ÏHMÂÙ\]Z[
+	Ò[ÝXÝÜËË[ÝXÝÜÛÛ^ÞJNÂÙ\]Z[
+	ÕZ[[È\]Y\ÝYIËËZ[[Ô\]Y\ÝYKÛÛÞJNÂÞH
+ÏHMÂÙ\]Z[
+	Ò[ÝXÝÜÛÛ\[IËËÛÛ\[KÛÛ^ÞJNÂÙ\]Z[
+	ÐÝ\ÝÛY\ÛÛ\[IËËÝ\ÝÛY\[YKÛÛÞJNÂËÈÚ[ÛHÙ[Y[ÝXÝÜÚYÛ]\H
+ØÜ\\Ý[H]]ËY[Y
+BÞH
+ÏHÂ\ÚYÕÈHLÂ\ÚYÐÞHYÙUÈÈÂ\ÚYÖHÚYÐÞHÚYÕÈÈÂËÈØÜ\\Ý[H[YH[XYÙHXÝHH[B\ÚYÒ[YÕÈH
+ÌÈ\ÚYÒ[YÒHMÂHÂØËY[XYÙJXZÙTÚYÛ]\R[YÊË[ÝXÝÜK	ÔÉËÚYÐÞHÚYÒ[YÕËÌÞHHÚYÒ[YÒHKÚYÒ[YÕËÚYÒ[YÒ[Y[Y	ÑTÕ	ÊNÂHØ]Ú
+JHÂØËÙ]ÛÚ^JLJNÈØËÙ]Û
+	Ú[]XØIË	ØÛ][XÉÊNÂØËÙ]^ÛÛÜ\JØË]JNÂØË^
+Ë[ÝXÝÜÚYÐÞÞHHËÈ[YÛ	ØÙ[\ÈJNÂBËÈÚYÛ]\H[BØËÙ]]ÐÛÛÜMÌMÌMÌ
+NÂØËÙ][UÚY
+JNÂØË[JÚYÖÞKÚYÖ
+ÈÚYÕËÞJNÂÞH
+ÏH
+ÂØËÙ]ÛÚ^J
+ÊNÈØËÙ]Û
+	Ú[]XØIË	ÛÜX[	ÊNÂØËÙ]^ÛÛÜMLMLML
+NÂØË^
+	Ò[ÝXÝÜÚYÛ]\IËÚYÐÞÞKÈ[YÛ	ØÙ[\ÈJNÂÞH
+ÏH
+ÂØËÙ]ÛÚ^J
+JNÈØËÙ]Û
+	Ú[]XØIË	ØÛ	ÊNÂØËÙ]^ÛÛÜ\JØË]JNÂØË^
+Ë[ÝXÝÜÚYÐÞÞKÈ[YÛ	ØÙ[\ÈJNÂËÈÝÜÈ
+Y[JB\ÝÜÈH][YKÝÜÈ×NÂY
+ÝÜË[Ý
+HÂÞH
+ÏHLÂØËÙ]ÛÚ^J
+ÊNÈØËÙ]Û
+	Ú[]XØIË	ØÛ	ÊNÂØËÙ]^ÛÛÜ\JØË]JNÂØË^
+	ÑÔÓÕHÕÔÉËX\Ú[ÞJNÂÞH
+ÏH
+NÂ\ÝÐÛÛÈHÝÜË[ÝÂ\Ø\H
+Â\ÝÕÈH
+ÛÛ[ÈH
+ÝÐÛÛÈHJH
+Ø\
+HÈÝÐÛÛÎÂ\ÝÒHÝÕÈ
+ÌÂÝÜËÜXXÚ
+[Ý[ÛÜËJHÂ\HX\Ú[
+ÈH
+
+ÝÕÈ
+ÈØ\
+NÂHÂ\]HÜË[^Ù	Ù]N[XYÙKÜÉÊHOOHÈ	ÔÉÈ	ÒQÉÎÂØËY[XYÙJÜË]ÞKÝÕËÝÒ[Y[Y	ÓQQUSIÊNÂHØ]Ú
+\HÂØËÙ][ÛÛÜ
+NÂØËXÝ
+ÞKÝÕËÝÒ	ÑÊNÂØËÙ]ÛÚ^J
+NÈØËÙ]^ÛÛÜMLMLML
+NÂØË^
+	Ò[XYÙH\ÜË
+ÈÝÕÈÈÞH
+ÈÝÒÈÈ[YÛ	ØÙ[\ÈJNÂBØËÙ]ÛÚ^J
+KJNÈØËÙ]Û
+	Ú[]XØIË	ÛÜX[	ÊNÂØËÙ]^ÛÛÜLÌLÌLÌ
+NÂØË^
+	ÔÝÈ	È
+È
+H
+ÈJK
+ÈÝÕÈÈÞH
+ÈÝÒ
+ÈËKÈ[YÛ	ØÙ[\ÈJNÂJNÂBËÈÛÝ\8 %ÙÛÈÙ[Y]ÝÛBYÛÝ\ÙÛÊØËYÙUËYÙR
+NÂJNÂ\[[[YHH	ÔÛÑÜÛÝWÕZ[[×ÉÈ
+ÈË]H
+È	×ÉÈ
+È
+ËÝ\ÝÛY\[YH	ÔXÛÜ	ÊK\XÙJÖ×K^NWKÙÚK	×ÉÊH
+È	ËÎÂ]\ÈØÎØË[[[YN[[[YHNÂB[Ý[ÛÝÛØY
+HÂY
+][Y]TÙ\ÜÚ[Û
+JH]\ÂY
+][Y\Ë[ÝOOH
+HÈ[\
+	ÔX\ÙHY]X\ÝÛH][YHYÜH^Ü[ËÊNÈ]\ÈBY
+]Ú[ÝËÜHÈ[\
+	ÔX\HÝØYYX\ÙHÚXÚÈ[Ý\[\]ÛÛXÝ[ÛÊNÈ]\ÈBHÂ\HZ[
+NÂY
+\H]\ÂØËØ]J[[[YJNÂ\\ÙÈHØÝ[Y[Ù][[Y[RY
+	ÜÝ]\Ó\ÙÉÊNÂ\ÙË[\SH	ÉÎ
+NÈÝÛÏÈ
+È[[[YH
+È	ÏÜÝÛÏÝÛØYYÎÂ\ÙËÛ\ÜÓ[YHH	ÜÝXØÙ\ÜÉÎÂ\ÙËÝ[K\Ü^HH	ØØÚÉÎÂÙ][Y[Ý]
+[Ý[Û
+^È\ÙËÝ[K\Ü^HH	ÛÛIÎÈK
+
+NÂHØ]Ú
+^
+HÈ[\
+	ÐÛÝ[ÝÙ[\]H	È
+È^Y\ÜØYÙJNÈBBËÈ8¥ 8¥ ÔÕVÔ8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ [Ý[ÛÜÝ\ØØ\JHÂY
+OOH[OOH[Y[Y
+H]\	ÉÎÂ\ÈHÝ[ÊNÂY
+Ë[^Ù	Ë	ÊHOOHLHË[^Ù	ÈÊHOOHLHË[^Ù	×ÊHOOHLJHÂ]\	ÈÈ
+ÈË\XÙJÈÙË	ÈÊH
+È	ÈÎÂB]\ÎÂB[Ý[ÛÝÛØYÔÕ
+HÂY
+][Y]TÙ\ÜÚ[Û
+JH]\ÂY
+][Y\Ë[ÝOOH
+HÈ[\
+	ÔX\ÙHY]X\ÝÛH][YHYÜH^Ü[ËÊNÈ]\ÈB\ÈHÙ]Ù\ÜÚ[Û[Ê
+NÂ\XY\ÈHÉÈÉË	Ñ\Ý[YIË	Ó\Ý[YIË	ÐÛÛ\[IË	Ô\Ý[	Ë	Ñ]IË	ÕZ[[È\IË	Ò[ÝXÝÜË	Ò[ÝXÝÜÛÛ\[IË	ÐÝ\ÝÛY\ÛÛ\[IË	ÕZ[[È\]Y\ÝYIË	ÕZ[[ÈØØ][Û×NÂ\ÝÜÈH][Y\ËX\
+[Ý[ÛKJHÂ]\ÂJÌKK\Ý[Y_	ÉËK\Ý[Y_	ÉËKÛÛ\[_	ÉË
+K\Ý[	ÉÊKÕ\\Ø\ÙJ
+KË]KËZ[[Õ\KË[ÝXÝÜËÛÛ\[KËÝ\ÝÛY\[YKËZ[[Ô\]Y\ÝYKËZ[[ÓØØ][ÛKX\
+ÜÝ\ØØ\JKÚ[	Ë	ÊNÂJNÂ\ÜÝHÚXY\ËX\
+[Ý[Û
+^È]\	ÈÊÚ
+ÉÈÎÈJKÚ[	Ë	ÊWKÛÛØ]
+ÝÜÊKÚ[	×ÊNÂ\ØH]ÈØØÜÝKÈ\N	Ý^ØÜÝÈJNÂ\\HTÜX]SØXÝT
+ØNÂ\HHØÝ[Y[ÜX]Q[[Y[
+	ØIÊNÂ\H	ÔÛÑÜÛÝWÕZ[[×ÉÈ
+ÈË]H
+È	×ÉÈ
+È
+ËÝ\ÝÛY\[Y_	ÔXÛÜ	ÊK\XÙJÖ×K^NWKÙÚK	×ÉÊH
+È	ËÜÝÎÂKYH\ÈKÝÛØYHÂØÝ[Y[ÙK\[Ú[
+JNÈKÛXÚÊ
+NÂØÝ[Y[ÙK[[ÝPÚ[
+JNÂÙ][Y[Ý]
+[Ý[Û
+^ÈT]ÚÙSØXÝT
+\
+NÈKL
+NÂ\\ÙÈHØÝ[Y[Ù][[Y[RY
+	ÜÝ]\Ó\ÙÉÊNÂ\ÙË[\SH	ÉÎ
+NÈÝÛÏÈ
+È
+È	ÏÜÝÛÏÝÛØYYÎÂ\ÙËÛ\ÜÓ[YHH	ÜÝXØÙ\ÜÉÎÂ\ÙËÝ[K\Ü^HH	ØØÚÉÎÂÙ][Y[Ý]
+[Ý[Û
+^È\ÙËÝ[K\Ü^OIÛÛIÎÈK
+
+NÂBËÈ8¥ 8¥ SPRS8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ [Ý[ÛZ[[XZ[ÙJÊHÂ\]HH	ÏOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOIÎÂ\[\ÈHÂ	ÔÓÔÓÕHRSSÈPÓÔ	Ë]K	Ñ]N	È
+ÈË]K	ÕZ[[È\N	È
+ÈËZ[[Õ\K	Ò[ÝXÝÜ	È
+ÈË[ÝXÝÜ	Ò[ÝXÝÜÛÛ\[N	È
+ÈËÛÛ\[K	ÐÝ\ÝÛY\ÛÛ\[N	È
+ÈËÝ\ÝÛY\[YK	Ô\]Y\ÝYN	È
+ÈËZ[[Ô\]Y\ÝYK	ÕZ[[ÈØØ][Û	È
+ÈËZ[[ÓØØ][ÛËÙ\ÜÚ[ÛÝ\ÈÈ	ÐÛÛ[Y[Î	È
+ÈËÙ\ÜÚ[ÛÝ\È	ÉË	ÉË	ÕÝ[][Y\Î	È
+È][Y\Ë[Ý	ÉË	ÐUSQTÉË]BNÂ][Y\ËÜXXÚ
+[Ý[ÛKJHÂ[\Ë\Ú
+
+JÌJH
+È	Ë	È
+È
+K\Ý[YJÉÈ	ÊØK\Ý[YJK[J
+JNÂJNÂ[\Ë\Ú
+]JNÂ[\Ë\Ú
+	ÔÙ[XHÛÜÛÝHZ[[ÈXÛÜ	ÊNÂ]\[\Ë[\[Ý[Û
+^È]\OOH[ÈJKÚ[	×ÊNÂB[Ý[ÛÙ[[XZ[
+
+HÂY
+][Y]TÙ\ÜÚ[Û
+JH]\ÂY
+][Y\Ë[ÝOOH
+HÈ[\
+	ÔX\ÙHY]X\ÝÛH][YKÊNÈ]\ÈB\ÈHÙ]Ù\ÜÚ[Û[Ê
+NÂ\ÝXH	ÔÛÜÛÝHZ[[ÈXÛÜH	È
+ÈË]H
+È	ÈH	È
+ÈËÚXÝ[YNÂ\ÙHHZ[[XZ[ÙJÊNÂ\[HH	ÉÎÂHÈ\ÝHØØ[ÝÜYÙKÙ]][J	ÜÝÙ[XZ[ÉÊNÈ[HHÝÈÓÓ\ÙJÝKÚ[	Ë	ÊH	ÉÎÈHØ]Ú
+
+HßBY
+Ú[ÝËÜHÂHÂ\HZ[
+NÂY
+HÂ\ØHØËÝ]]
+	ØØÊNÂ\[HH]È[JÜØK[[[YKÈ\N	Ø\XØ][ÛÜÈJNÂY
+]YØ]ÜÚ\H	]YØ]ÜØ[Ú\H	]YØ]ÜØ[Ú\JÈ[\ÎÜ[WHJJHÂ]YØ]ÜÚ\JÈ]NÝX^ÙK[\ÎÜ[WHJBØ]Ú
+[Ý[Û\^ÈY
+\[YHOOH	ÐXÜ\ÜÊHÈÜ[XZ[Ê[KÝXÙJNÈHJNÂ]\ÂB\\HTÜX]SØXÝT
+ØNÂ\HHØÝ[Y[ÜX]Q[[Y[
+	ØIÊNÂKYH\ÈKÝÛØYH[[[YNÂØÝ[Y[ÙK\[Ú[
+JNÈKÛXÚÊ
+NÈØÝ[Y[ÙK[[ÝPÚ[
+JNÂÙ][Y[Ý]
+[Ý[Û
+^ÈT]ÚÙSØXÝT
+\
+NÈKML
+NÂÙ][Y[Ý]
+[Ý[Û
+^ÈÜ[XZ[Ê[KÝXÙH
+È	×Ô\Ü]XÚY8 %ÙYHÝÛØYY[WIÊNÈK
+
+NÂ]\ÂBHØ]Ú
+^
+HßBBÜ[XZ[Ê[KÝXÙJNÂB[Ý[ÛÜ[XZ[Ê[KÝXÙJHÂHÂÚ[ÝËØØ][ÛYH	ÛXZ[ÎÈ
+È[ÛÙUTPÛÛ\Û[
+[JH
+Â	ÏÜÝXXÝIÈ
+È[ÛÙUTPÛÛ\Û[
+ÝXH
+Â	ÉÙOIÈ
+È[ÛÙUTPÛÛ\Û[
+ÙJNÂHØ]Ú
+JHÈ[\
+	ÐÛÝ[ÝÜ[[XZ[ÛY[ÊNÈBBËÈ8¥ 8¥ SPRSÓÓQÈ8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ [Ý[ÛÙÙÛQ[XZ[ÛÛYÊ
+HÂ\[[HØÝ[Y[Ù][[Y[RY
+	Ù[XZ[ÛÛYÔ[[	ÊNÂ\\ÓÜ[H[[Û\ÜÓ\ÝÛÛZ[Ê	ÛÜ[ÊNÂY
+Z\ÓÜ[HÂ\\ÝHØÝ[Y[Ù][[Y[RY
+	Ù[XZ[\Ý	ÊNÂ\Ý[\SH	ÉÎÂHÂ\Ø]YHØØ[ÝÜYÙKÙ]][J	ÜÝÙ[XZ[ÉÊNÂ\[XZ[ÈHØ]YÈÓÓ\ÙJØ]Y
+H×NÂ[XZ[ËÜXXÚ
+[Ý[ÛJ^ÈY[XZ[Y[
+JNÈJNÂHØ]Ú
+
+HßBY
+ØÝ[Y[Ù][[Y[RY
+	Ù[XZ[\Ý	ÊKÚ[[[ÝOOH
+HY[XZ[Y[
+	ÉÊNÂB[[Û\ÜÓ\ÝÙÙÛJ	ÛÜ[ÊNÂB[Ý[ÛY[XZ[Y[
+[
+HÂ\\ÝHØÝ[Y[Ù][[Y[RY
+	Ù[XZ[\Ý	ÊNÂ\Ü\HØÝ[Y[ÜX]Q[[Y[
+	Ù]ÊNÂÜ\Ý[KÜÜÕ^H	Ù\Ü^N^ÙØ\Ø[YÛZ][\ÎÙ[\ÉÎÂ\[]HØÝ[Y[ÜX]Q[[Y[
+	Ú[]	ÊNÂ[]\HH	Ù[XZ[	ÎÈ[]XÙZÛ\H	Ù[XZ[^[\KÛÛIÎÈ[][YHH[	ÉÎÂ[]Ý[KÜÜÕ^H	Ù^NØÜ\K\ÛÛY\KXÜ\NØÜ\\Y]\ÎÜÜY[Î\L\ÙÛ\Ú^N\[NÛZ[ZZYÚÉÎÂ\[[ÝPHØÝ[Y[ÜX]Q[[Y[
+	Ø]ÛÊNÂ[[ÝP[\SH	ÉÌL
+NÉÎÂ[[ÝP]HH	Ô[[ÝIÎÂ[[ÝPÛ\ÜÓ[YHH	Ù[XÎÂ[[ÝPÛÛXÚÈH[Ý[Û
+HÂY
+ØÝ[Y[Ù][[Y[RY
+	Ù[XZ[\Ý	ÊKÚ[[[ÝJHÜ\[[ÝJ
+NÂNÂÜ\\[Ú[
+[]
+NÂÜ\\[Ú[
+[[ÝPNÂ\Ý\[Ú[
+Ü\
+NÂB[Ý[ÛØ]Q[XZ[ÛÛYÊ
+HÂHÂ\[]ÈHØÝ[Y[Ù][[Y[RY
+	Ù[XZ[\Ý	ÊK]Y\TÙ[XÝÜ[
+	Ú[]	ÊNÂ\[XZ[ÈH\^KÛJ[]ÊKX\
+[Ý[ÛJ^È]\K[YK[J
+NÈJK[\ÛÛX[NÂY
+[XZ[Ë[Ý
+HØØ[ÝÜYÙKÙ]][J	ÜÝÙ[XZ[ÉËÓÓÝ[ÚYJ[XZ[ÊJNÂØÝ[Y[Ù][[Y[RY
+	Ù[XZ[ÛÛYÔ[[	ÊKÛ\ÜÓ\Ý[[ÝJ	ÛÜ[ÊNÂ\\ÙÈHØÝ[Y[Ù][[Y[RY
+	ÜÝ]\Ó\ÙÉÊNÂ\ÙË^ÛÛ[H[XZ[Ë[Ý
+È	È[XZ[Y\ÜÉÈ
+È
+[XZ[Ë[ÝOOHHÈ	Ù\ÉÈ	ÉÊH
+È	ÈØ]YÎÂ\ÙËÛ\ÜÓ[YHH	ÜÝXØÙ\ÜÉÎÂÙ][Y[Ý]
+[Ý[Û
+^È\ÙËÝ[K\Ü^HH	ÛÛIÎÈKL
+NÂHØ]Ú
+JHÈ[\
+	ÐÛÝ[ÝØ]HÙ][ÜËÊNÈBBËÈ8¥ 8¥ TÑU8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ [Ý[Û\Ù][
+
+HÂY
+XÛÛ\J	Ô\Ù]]\][ÏÈ\ÈÚ[ÛX\[Ù\ÜÚ[Û[ÜX][Û[H][YH\ÝÊJH]\ÂØÝ[Y[Ù][[Y[RY
+	ØÛÛ\[S[YIÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
+	Ú[ÝXÝÜ\Ý[YIÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
+	Ú[ÝXÝÜ\Ý[YIÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
+	ØÝ\ÝÛY\[YIÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
+	ÝZ[[Ô\]Y\ÝYQ\Ý	ÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
+	ÝZ[[Ô\]Y\ÝYS\Ý	ÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
+	ÝZ[[ÓØØ][ÛÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
+	ÜÙ\ÜÚ[ÛÝ\ÉÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
+	ÝZ[[Õ\TÙ[XÝ	ÊK[YHH	ÔÛÜÛÝHZ[[ÉÎÂØÝ[Y[Ù][[Y[RY
+	ØY\Ý[YIÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
+	ØY\Ý[YIÊK[YHH	ÉÎÂ\H]È]J
+NÂ\Ù^HHÙ][YX\
+JÉËIÊÔÝ[ÊÙ][Û
+
+JÌJKYÝ\
+	Ì	ÊJÉËIÊÔÝ[ÊÙ]]J
+JKYÝ\
+	Ì	ÊNÂ\]Q[HØÝ[Y[Ù][[Y[RY
+	ÜÙ\ÜÚ[Û]IÊNÂ]Q[[YHHÙ^NÂ]Q[X^HÙ^NÂ][Y\ÈH×NÂY][Ò[^HLNÂ[[ÔÝÜÈH×NÂ[[Ô\Ý[H[Â[\[[Õ[XÊ
+NÂØÝ[Y[Ù][[Y[RY
+	ØY\ÜÐÊKÛ\ÜÓ[YHH	ÜXÎÂØÝ[Y[Ù][[Y[RY
+	ØYZ[ÊKÛ\ÜÓ[YHH	ÜXÎÂ\HØÝ[Y[Ù][[Y[RY
+	ØY][YPÊNÂY
+HÈ^ÛÛ[H	ÊÈY][YIÎÈÝ[KXÚÙÜÝ[H	ÉÎÈB[\][Y\Ê
+NÂBÜØÜ\ØÙOÚ[
