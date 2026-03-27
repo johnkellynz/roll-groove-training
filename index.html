@@ -1251,7 +1251,7 @@ function buildPDF() {
     doc.line(pageW/2 + titleW/2 + 4, lineY, pageW - margin - 10, lineY);
 
     cy += 11;
-    doc.setFontSize(10); doc.setFont('helvetica', 'italic');
+    doc.setFontSize(10); doc.setFont('helvetica', 'normal');
     doc.setTextColor(110, 110, 120);
     doc.text('This is to certify that', pageW/2, cy, { align: 'center' });
 
@@ -1263,7 +1263,7 @@ function buildPDF() {
     doc.text(fullName, pageW/2, cy, { align: 'center' });
 
     cy += 14;
-    doc.setFontSize(10); doc.setFont('helvetica', 'italic');
+    doc.setFontSize(10); doc.setFont('helvetica', 'normal');
     doc.setTextColor(110, 110, 120);
     doc.text('has successfully attended the', pageW/2, cy, { align: 'center' });
 
@@ -1339,13 +1339,16 @@ function buildPDF() {
     doc.setTextColor(150, 150, 150);
     doc.text('Instructor Signature', sigCx, cy, { align: 'center' });
 
-    // Victaulic orange logo under signature
+    // Victaulic orange logo under signature — centred with equal padding top & bottom
     if (orangeLogoDataUrl) {
-      cy += 8;
-      var certLogoH = 12;
+      var certLogoH = 18;  // 50% larger than original 12
       var certLogoW = certLogoH * orangeLogoAspect;
-      doc.addImage(orangeLogoDataUrl, 'PNG', sigCx - certLogoW/2, cy, certLogoW, certLogoH, undefined, 'FAST');
-      cy += certLogoH;
+      var logoAreaTop = cy;
+      var logoAreaBottom = borderBottom;
+      var logoPad = (logoAreaBottom - logoAreaTop - certLogoH) / 2;
+      var logoY = logoAreaTop + logoPad;
+      doc.addImage(orangeLogoDataUrl, 'PNG', sigCx - certLogoW/2, logoY, certLogoW, certLogoH, undefined, 'FAST');
+      cy = logoY + certLogoH;
     }
 
     // Photos (if any)
