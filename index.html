@@ -392,7 +392,7 @@ header {
 
   <!-- STEP 2: CUSTOMER INFORMATION -->
   <div class="card">
-    <div class="card-title"><span class="step-badge">2</span> Customer Information</div>
+    <div class="card-title"><span class="step-badge">2</span> Customer Information <span style="font-weight:400;font-size:0.85rem;color:var(--muted);">(Training Requested By)</span></div>
     <div class="form-grid">
 
       <div class="form-group form-full">
@@ -423,18 +423,6 @@ header {
       </div>
 
       <div class="form-group form-full">
-        <label>Training Type</label>
-        <select id="trainingTypeSelect" onchange="onTrainingTypeChange()">
-          <option value="">— Select Option —</option>
-          <option value="OGS (Original Groove System)">OGS (Original Groove System)</option>
-          <option value="AGS (Advanced Groove System)">AGS (Advanced Groove System)</option>
-          <option value="Installation Training">Installation Training</option>
-          <option value="Other">Other...</option>
-        </select>
-        <input type="text" id="trainingTypeOther" placeholder="Enter training type" autocapitalize="words" oninput="toTitleCase(this)" style="display:none;margin-top:0.4rem;">
-      </div>
-
-      <div class="form-group form-full">
         <label>Roll Groove Tool</label>
         <select id="rollGrooveToolSelect" onchange="onRollGrooveToolChange()">
           <option value="">— Select Tool —</option>
@@ -448,6 +436,18 @@ header {
           <option value="Other">Other...</option>
         </select>
         <input type="text" id="rollGrooveToolOther" placeholder="Enter tool name" autocapitalize="characters" style="display:none;margin-top:0.4rem;">
+      </div>
+
+      <div class="form-group form-full">
+        <label>Training Type</label>
+        <select id="trainingTypeSelect" onchange="onTrainingTypeChange()">
+          <option value="">— Select Option —</option>
+          <option value="OGS (Original Groove System)">OGS (Original Groove System)</option>
+          <option value="AGS (Advanced Groove System)">AGS (Advanced Groove System)</option>
+          <option value="Installation Training">Installation Training</option>
+          <option value="Other">Other...</option>
+        </select>
+        <input type="text" id="trainingTypeOther" placeholder="Enter training type" autocapitalize="words" oninput="toTitleCase(this)" style="display:none;margin-top:0.4rem;">
       </div>
 
       <div class="form-group form-full">
@@ -749,7 +749,7 @@ function clearAddForm() {
   editingIndex = -1;
   document.getElementById('addFirstName').value = '';
   document.getElementById('addLastName').value  = '';
-  document.getElementById('addCompany').value   = '';
+  document.getElementById('addCompany').value   = document.getElementById('customerName').value.trim();
   document.getElementById('addFailComments').value = '';
   document.getElementById('failCommentsWrap').style.display = 'none';
   document.getElementById('addPassBtn').className = 'pf-btn';
