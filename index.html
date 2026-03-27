@@ -767,10 +767,31 @@ function addAttendee() {
   var ln = document.getElementById('addLastName').value.trim();
   var co = document.getElementById('addCompany').value.trim();
   var fc = '';
+  // Validate session fields first
+  var sessionMissing = [];
+  if (!document.getElementById('sessionDate').value) sessionMissing.push('Date');
+  if (!document.getElementById('companyName').value.trim()) sessionMissing.push('Instructor Company');
+  if (!document.getElementById('instructorFirstName').value.trim()) sessionMissing.push('Instructor First Name');
+  if (!document.getElementById('instructorLastName').value.trim()) sessionMissing.push('Instructor Last Name');
+  if (!document.getElementById('customerName').value.trim()) sessionMissing.push('Customer Company');
+  if (!document.getElementById('trainingRequestedByFirst').value.trim()) sessionMissing.push('Customer First Name');
+  if (!document.getElementById('trainingRequestedByLast').value.trim()) sessionMissing.push('Customer Last Name');
+  if (!document.getElementById('trainingLocation').value.trim()) sessionMissing.push('Training Location');
+  var toolVal = document.getElementById('rollGrooveToolSelect').value;
+  if (!toolVal) sessionMissing.push('Roll Groove Tool');
+  else if (toolVal === 'Other' && !document.getElementById('rollGrooveToolOther').value.trim()) sessionMissing.push('Roll Groove Tool (Other)');
+  var typeVal = document.getElementById('trainingTypeSelect').value;
+  if (!typeVal) sessionMissing.push('Training Type');
+  else if (typeVal === 'Other' && !document.getElementById('trainingTypeOther').value.trim()) sessionMissing.push('Training Type (Other)');
+  if (sessionMissing.length > 0) {
+    alert('Please complete the following session fields before logging an attendee:\n• ' + sessionMissing.join('\n• '));
+    return;
+  }
+  // Validate attendee fields
   var missing = [];
-  if (!fn) missing.push('First Name');
-  if (!ln) missing.push('Last Name');
-  if (!co) missing.push('Company Name');
+  if (!fn) missing.push('Attendee First Name');
+  if (!ln) missing.push('Attendee Last Name');
+  if (!co) missing.push('Attendee Company');
   if (pendingResult === null && editingIndex < 0) missing.push('Result (Pass/Fail)');
   if (missing.length > 0) {
     alert('Please fill in the following fields:\n• ' + missing.join('\n• '));
@@ -1199,7 +1220,7 @@ function buildPDF() {
     bodyStyles: {
       fontSize: 10, textColor: navy,
       cellPadding: { top: 5, bottom: 5, left: 5, right: 5 },
-      valign: 'middle', minCellHeight: 45
+      valign: 'middle', minCellHeight: 35
     },
     alternateRowStyles: { fillColor: [250, 250, 252] },
     columnStyles: {
@@ -1225,7 +1246,7 @@ function buildPDF() {
         var cellY = data.cell.y;
         var cellW = data.cell.width;
         var cellH = data.cell.height;
-        var boxSize = cellH * 0.9;
+        var boxSize = Math.min(cellH - 6, cellW - 6);
         var bx = cellX + (cellW - boxSize) / 2;
         var by = cellY + (cellH - boxSize) / 2;
         if (photos[0]) {
@@ -1377,60 +1398,8 @@ function buildPDF() {
     var certLogoH = 18;
     var certLogoW = orangeLogoDataUrl ? certLogoH * orangeLogoAspect : 0;
 
-    if (photos.length > 0) {
-      // Layout: logo (with small gap) then photos — all inside border
-      var photoCols = photos.length;
-      var pGap = 4;
-      var photoW = ((contentW - (photoCols - 1) * pGap) / photoCols) * 0.75;
-      var photoH = photoW * 0.72;
-      var photoBlockH = 7 + photoH + 5;  // label + image + caption
-
-      // Total needed: logo + gap + photo block
-      var totalNeeded = certLogoH + 6 + photoBlockH;
-      var availableH = innerBottom - cy;
-
-      // If photos would overflow, shrink them to fit
-      if (totalNeeded > availableH - 4) {
-        var maxPhotoBlockH = availableH - 4 - certLogoH - 6;
-        photoH = maxPhotoBlockH - 7 - 5;
-        if (photoH < 10) photoH = 10;
-        photoW = photoH / 0.72;
-        photoBlockH = 7 + photoH + 5;
-        totalNeeded = certLogoH + 6 + photoBlockH;
-      }
-
-      var topPad = (availableH - totalNeeded) / 2;
-      if (topPad < 2) topPad = 2;
-
-      // Draw logo
-      if (orangeLogoDataUrl) {
-        var logoY = cy + topPad;
-        doc.addImage(orangeLogoDataUrl, 'PNG', sigCx - certLogoW/2, logoY, certLogoW, certLogoH, undefined, 'FAST');
-        cy = logoY + certLogoH + 6;
-      }
-
-      // Draw photos
-      doc.setFontSize(7); doc.setFont('helvetica', 'bold');
-      doc.setTextColor.apply(doc, navy);
-      doc.text('GROOVE PHOTOS', margin, cy);
-      cy += 5;
-      photos.forEach(function(src, pi) {
-        var px = margin + pi * (photoW + pGap);
-        try {
-          var fmt = src.indexOf('data:image/png') === 0 ? 'PNG' : 'JPEG';
-          doc.addImage(src, fmt, px, cy, photoW, photoH, undefined, 'MEDIUM');
-        } catch(err) {
-          doc.setFillColor(220, 220, 220);
-          doc.rect(px, cy, photoW, photoH, 'F');
-          doc.setFontSize(6); doc.setTextColor(150, 150, 150);
-          doc.text('Image error', px + photoW / 2, cy + photoH / 2, { align: 'center' });
-        }
-        doc.setFontSize(5.5); doc.setFont('helvetica', 'normal');
-        doc.setTextColor(130, 130, 130);
-        doc.text('Photo ' + (pi + 1), px + photoW / 2, cy + photoH + 3.5, { align: 'center' });
-      });
-    } else {
-      // No photos — centre logo with equal padding top & bottom
+    {
+      // Centre logo with equal padding top & bottom
       if (orangeLogoDataUrl) {
         var logoAreaTop = cy;
         var logoPad = (innerBottom - logoAreaTop - certLogoH) / 2;
