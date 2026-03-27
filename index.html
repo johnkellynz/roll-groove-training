@@ -397,7 +397,7 @@ header {
 
       <div class="form-group form-full">
         <label>Company Name</label>
-        <input type="text" id="customerName" placeholder="Company Name" autocapitalize="words" oninput="toTitleCase(this)" required>
+        <input type="text" id="customerName" placeholder="Company Name" autocapitalize="words" oninput="toTitleCase(this);var ac=document.getElementById('addCompany');if(!ac._edited)ac.value=this.value.trim();" required>
       </div>
 
       <div class="form-group">
@@ -474,7 +474,7 @@ header {
         </div>
         <div class="form-group" style="margin:0; grid-column: 1 / -1;">
           <label>Company Name</label>
-          <input type="text" id="addCompany" placeholder="Attendee's Company" autocapitalize="words" oninput="toTitleCase(this)" onkeydown="onAttendeeKeydown(event)">
+          <input type="text" id="addCompany" placeholder="Attendee's Company" autocapitalize="words" oninput="toTitleCase(this);this._edited=true;" onkeydown="onAttendeeKeydown(event)" onfocus="if(!this.value){this.value=document.getElementById('customerName').value.trim();this._edited=false;}">
         </div>
       </div>
 
@@ -749,7 +749,9 @@ function clearAddForm() {
   editingIndex = -1;
   document.getElementById('addFirstName').value = '';
   document.getElementById('addLastName').value  = '';
-  document.getElementById('addCompany').value   = document.getElementById('customerName').value.trim();
+  var acField = document.getElementById('addCompany');
+  acField.value = document.getElementById('customerName').value.trim();
+  acField._edited = false;
   document.getElementById('addFailComments').value = '';
   document.getElementById('failCommentsWrap').style.display = 'none';
   document.getElementById('addPassBtn').className = 'pf-btn';
