@@ -288,7 +288,7 @@ header {
 .edit-btn:hover { background: #dce4ff; }
 .row-actions { display: flex; gap: 5px; align-items: center; }
 
-/* ACTION ROW â 2Ã2 grid matching export layout */
+/* ACTION ROW — 2×2 grid matching export layout */
 .action-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -379,11 +379,11 @@ header {
       </div>
 
       <div class="form-group">
-        <label>Training Requested By â First Name</label>
+        <label>Training Requested By — First Name</label>
         <input type="text" id="trainingRequestedByFirst" placeholder="First Name" autocapitalize="words" oninput="toTitleCase(this)" required>
       </div>
       <div class="form-group">
-        <label>Training Requested By â Last Name</label>
+        <label>Training Requested By — Last Name</label>
         <input type="text" id="trainingRequestedByLast" placeholder="Last Name" autocapitalize="words" oninput="toTitleCase(this)" required>
       </div>
 
@@ -525,7 +525,7 @@ header {
 </div>
 
 <script>
-// ââ STATE ââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── STATE ────────────────────────────────────────────────
 var attendees = [];
 var lastRemoved = null;
 var undoTimer  = null;
@@ -535,9 +535,9 @@ var pendingPhotos = [];
 var pendingResult = null;
 var logoDataUrl   = null;
 var logoAspect    = 4.5; // fallback width/height ratio if unknown
-var editingIndex  = -1;  // -1 = adding new, â¥0 = editing existing
+var editingIndex  = -1;  // -1 = adding new, ≥0 = editing existing
 
-// ââ INIT âââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── INIT ─────────────────────────────────────────────────
 (function() {
   var d = new Date();
   var today = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
@@ -563,7 +563,7 @@ var editingIndex  = -1;  // -1 = adding new, â¥0 = editing existing
   tryLogo(0);
 })();
 
-// ââ UTILITIES ââââââââââââââââââââââââââââââââââââââââââââ
+// ── UTILITIES ────────────────────────────────────────────
 function toTitleCase(el) {
   var v = el.value;
   var pos = el.selectionStart;
@@ -585,7 +585,7 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// ââ FORM âââââââââââââââââââââââââââââââââââââââââââââââââ
+// ── FORM ─────────────────────────────────────────────────
 function onTrainingTypeChange() {
   var sel = document.getElementById('trainingTypeSelect').value;
   var other = document.getElementById('trainingTypeOther');
@@ -600,8 +600,8 @@ function validateSession() {
     ['instructorFirstName', 'Instructor First Name'],
     ['instructorLastName',  'Instructor Last Name'],
     ['customerName',             'Customer Company Name'],
-    ['trainingRequestedByFirst', 'Training Requested By â First Name'],
-    ['trainingRequestedByLast',  'Training Requested By â Last Name'],
+    ['trainingRequestedByFirst', 'Training Requested By — First Name'],
+    ['trainingRequestedByLast',  'Training Requested By — Last Name'],
     ['trainingLocation',         'Training Location']
   ];
   for (var i = 0; i < fields.length; i++) {
@@ -627,7 +627,7 @@ function getSessionInfo() {
   };
 }
 
-// ââ ATTENDEES ââââââââââââââââââââââââââââââââââââââââââââ
+// ── ATTENDEES ────────────────────────────────────────────
 function onAttendeeKeydown(e) {
   if (e.key === 'Enter') { e.preventDefault(); addAttendee(); }
 }
@@ -676,7 +676,7 @@ function startEditAttendee(i) {
     document.getElementById('addFailComments').value = '';
   }
   // Update button label
-  document.getElementById('addAttendeeBtn').textContent = 'â Save Changes';
+  document.getElementById('addAttendeeBtn').textContent = '✓ Save Changes';
   document.getElementById('addAttendeeBtn').style.background = '#3b5bdb';
   document.getElementById('addFirstName').focus();
   document.getElementById('addFirstName').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -714,7 +714,7 @@ function setAttendeeResult(i, val) {
 }
 
 function badge(v) {
-  if (!v) return '<span class="badge badge-na">â</span>';
+  if (!v) return '<span class="badge badge-na">—</span>';
   if (v === 'pass') return '<span class="badge badge-pass">PASS</span>';
   return '<span class="badge badge-fail">FAIL</span>';
 }
@@ -799,8 +799,8 @@ function renderAttendees() {
     '</table></div>' +
     '<div class="attendee-count">' +
       '<strong>' + attendees.length + '</strong> attendee' + (attendees.length !== 1 ? 's' : '') +
-      (passed ? ' &nbsp;Â·&nbsp; <span style="color:var(--pass-color);font-weight:700;">' + passed + ' passed</span>' : '') +
-      (failed ? ' &nbsp;Â·&nbsp; <span style="color:var(--fail-color);font-weight:700;">' + failed + ' failed</span>' : '') +
+      (passed ? ' &nbsp;·&nbsp; <span style="color:var(--pass-color);font-weight:700;">' + passed + ' passed</span>' : '') +
+      (failed ? ' &nbsp;·&nbsp; <span style="color:var(--fail-color);font-weight:700;">' + failed + ' failed</span>' : '') +
     '</div>';
 }
 
@@ -808,7 +808,7 @@ function escHtml(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ââ PHOTOS âââââââââââââââââââââââââââââââââââââââââââââââ
+// ── PHOTOS ───────────────────────────────────────────────
 function triggerTakePhoto(i) {
   currentPhotoIdx = (i === undefined) ? -1 : i;
   var input = document.getElementById('photoCaptureInput');
@@ -901,7 +901,7 @@ function closePhotoModal() {
   document.getElementById('photoModalImg').src = '';
 }
 
-// ââ PDF CANVAS HELPERS âââââââââââââââââââââââââââââââââââ
+// ── PDF CANVAS HELPERS ───────────────────────────────────
 function makePassBadgeImg() {
   var s = 200;
   var cv = document.createElement('canvas');
@@ -943,7 +943,7 @@ function makeSignatureImg(name) {
   return cv.toDataURL('image/png');
 }
 
-// ââ PDF GENERATION âââââââââââââââââââââââââââââââââââââââ
+// ── PDF GENERATION ───────────────────────────────────────
 function addFooterLogo(doc, pageW, pageH) {
   if (logoDataUrl) {
     var lh = 9;
@@ -973,9 +973,9 @@ function buildPDF() {
   var midGrey   = [210, 210, 210];
   var white     = [255, 255, 255];
 
-  // âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-  // PAGE 1 â COVER / SUMMARY
-  // âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ═══════════════════════════════════════════════════════
+  // PAGE 1 — COVER / SUMMARY
+  // ═══════════════════════════════════════════════════════
 
   // Header bar
   doc.setFillColor.apply(doc, navy);
@@ -1003,8 +1003,8 @@ function buildPDF() {
     doc.text(label.toUpperCase(), x, cy);
     doc.setFontSize(8.5); doc.setFont('helvetica', 'bold');
     doc.setTextColor.apply(doc, navy);
-    var safe = String(value || 'â');
-    if (safe.length > 40) safe = safe.substring(0, 38) + 'â¦';
+    var safe = String(value || '—');
+    if (safe.length > 40) safe = safe.substring(0, 38) + '…';
     doc.text(safe, x, cy + 4.5);
   }
 
@@ -1012,7 +1012,7 @@ function buildPDF() {
   var r1=y+9, r2=y+22, r3=y+35, r4=y+48;
   infoCell('Date', s.date, c1, r1);
   infoCell('Training Type', s.trainingType, c2, r1);
-  infoCell('Instructor', s.instructor + '  Â·  ' + s.company, c1, r2);
+  infoCell('Instructor', s.instructor + '  ·  ' + s.company, c1, r2);
   infoCell('Training Location', s.trainingLocation, c2, r2);
   infoCell('Customer', s.customerName, c1, r3);
   infoCell('Training Requested By', s.trainingRequestedBy, c2, r3);
@@ -1049,7 +1049,7 @@ function buildPDF() {
         a.firstName || '',
         a.lastName  || '',
         a.company   || '',
-        (a.result   || 'â').toUpperCase(),
+        (a.result   || '—').toUpperCase(),
         (a.result === 'fail' && a.failComments) ? a.failComments : ''
       ];
     }),
@@ -1085,14 +1085,14 @@ function buildPDF() {
     }
   });
 
-  // Footer p1 â logo centred at bottom
+  // Footer p1 — logo centred at bottom
   var passingCount = attendees.filter(function(a){ return a.result !== 'fail'; }).length;
   var totalPages = 1 + passingCount;
   addFooterLogo(doc, pageW, pageH);
 
-  // âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-  // PAGES 2+ â CERTIFICATES OF ATTENDANCE (landscape)
-  // âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ═══════════════════════════════════════════════════════
+  // PAGES 2+ — CERTIFICATES OF ATTENDANCE (landscape)
+  // ═══════════════════════════════════════════════════════
   var certPageNum = 1;
   attendees.forEach(function(attendee, idx) {
     if (attendee.result === 'fail') return;
@@ -1101,7 +1101,7 @@ function buildPDF() {
 
     var fullName = (attendee.firstName + ' ' + attendee.lastName).trim();
 
-    // Header bar (22 mm â same as cover)
+    // Header bar (22 mm — same as cover)
     doc.setFillColor.apply(doc, navy);
     doc.rect(0, 0, pageW, 22, 'F');
     doc.setFillColor.apply(doc, orange);
@@ -1128,7 +1128,7 @@ function buildPDF() {
     var badgeY = 25;
     try { doc.addImage(makePassBadgeImg(), 'PNG', badgeX, badgeY, badgeSize, badgeSize, undefined, 'FAST'); } catch(e) {}
 
-    // ââ Content ââ
+    // ── Content ──
     // "Certificate of Attendance" elegant title
     var cy = 41;
     doc.setFontSize(22); doc.setFont('helvetica', 'bold');
@@ -1187,298 +1187,308 @@ function buildPDF() {
     cy += 9;
 
     // Session details (2-column grid)
-    var col1xHX\Ú[
-ÈÂ\ÛÛHYÙUËÌ
-ÈLÂ[Ý[ÛÙ\]Z[
-X[[YK^JHÂØËÙ]ÛÚ^J
-JNÈØËÙ]Û
-	Ú[]XØIË	ØÛ	ÊNÂØËÙ]^ÛÛÜ\JØËÜ[ÙJNÂØË^
-X[Õ\\Ø\ÙJ
-K^JNÂØËÙ]ÛÚ^JJNÈØËÙ]Û
-	Ú[]XØIË	ØÛ	ÊNÂØËÙ]^ÛÛÜ\JØË]JNÂ\HÝ[Ê[YH	ø %	ÊNÂY
-[ÝÎ
-HHÝXÝ[ÊÍH
-È	ø )ÎÂØË^
-^H
-È
-JNÂBÙ\]Z[
-	Ñ]IËË]KÛÛ^ÞJNÂÙ\]Z[
-	ÕZ[[ÈØØ][ÛËËZ[[ÓØØ][ÛÛÛÞJNÂÞH
-ÏHMÂÙ\]Z[
-	Ò[ÝXÝÜËË[ÝXÝÜÛÛ^ÞJNÂÙ\]Z[
-	ÕZ[[È\]Y\ÝYIËËZ[[Ô\]Y\ÝYKÛÛÞJNÂÞH
-ÏHMÂÙ\]Z[
-	Ò[ÝXÝÜÛÛ\[IËËÛÛ\[KÛÛ^ÞJNÂÙ\]Z[
-	ÐÝ\ÝÛY\ÛÛ\[IËËÝ\ÝÛY\[YKÛÛÞJNÂËÈÚ[ÛHÙ[Y[ÝXÝÜÚYÛ]\H
-ØÜ\\Ý[H]]ËY[Y
-BÞH
-ÏHÂ\ÚYÕÈHLÂ\ÚYÐÞHYÙUÈÈÂ\ÚYÖHÚYÐÞHÚYÕÈÈÂËÈØÜ\\Ý[H[YH[XYÙHXÝHH[B\ÚYÒ[YÕÈH
-ÌÈ\ÚYÒ[YÒHMÂHÂØËY[XYÙJXZÙTÚYÛ]\R[YÊË[ÝXÝÜK	ÔÉËÚYÐÞHÚYÒ[YÕËÌÞHHÚYÒ[YÒHKÚYÒ[YÕËÚYÒ[YÒ[Y[Y	ÑTÕ	ÊNÂHØ]Ú
-JHÂØËÙ]ÛÚ^JLJNÈØËÙ]Û
-	Ú[]XØIË	ØÛ][XÉÊNÂØËÙ]^ÛÛÜ\JØË]JNÂØË^
-Ë[ÝXÝÜÚYÐÞÞHHËÈ[YÛ	ØÙ[\ÈJNÂBËÈÚYÛ]\H[BØËÙ]]ÐÛÛÜMÌMÌMÌ
-NÂØËÙ][UÚY
-JNÂØË[JÚYÖÞKÚYÖ
-ÈÚYÕËÞJNÂÞH
-ÏH
-ÂØËÙ]ÛÚ^J
-ÊNÈØËÙ]Û
-	Ú[]XØIË	ÛÜX[	ÊNÂØËÙ]^ÛÛÜMLMLML
-NÂØË^
-	Ò[ÝXÝÜÚYÛ]\IËÚYÐÞÞKÈ[YÛ	ØÙ[\ÈJNÂÞH
-ÏH
-ÂØËÙ]ÛÚ^J
-JNÈØËÙ]Û
-	Ú[]XØIË	ØÛ	ÊNÂØËÙ]^ÛÛÜ\JØË]JNÂØË^
-Ë[ÝXÝÜÚYÐÞÞKÈ[YÛ	ØÙ[\ÈJNÂËÈÝÜÈ
-Y[JB\ÝÜÈH][YKÝÜÈ×NÂY
-ÝÜË[Ý
-HÂÞH
-ÏHLÂØËÙ]ÛÚ^J
-ÊNÈØËÙ]Û
-	Ú[]XØIË	ØÛ	ÊNÂØËÙ]^ÛÛÜ\JØË]JNÂØË^
-	ÑÔÓÕHÕÔÉËX\Ú[ÞJNÂÞH
-ÏH
-NÂ\ÝÐÛÛÈHÝÜË[ÝÂ\Ø\H
-Â\ÝÕÈH
-ÛÛ[ÈH
-ÝÐÛÛÈHJH
-Ø\
-HÈÝÐÛÛÎÂ\ÝÒHÝÕÈ
-ÌÂÝÜËÜXXÚ
-[Ý[ÛÜËJHÂ\HX\Ú[
-ÈH
-
-ÝÕÈ
-ÈØ\
-NÂHÂ\]HÜË[^Ù	Ù]N[XYÙKÜÉÊHOOHÈ	ÔÉÈ	ÒQÉÎÂØËY[XYÙJÜË]ÞKÝÕËÝÒ[Y[Y	ÓQQUSIÊNÂHØ]Ú
-\HÂØËÙ][ÛÛÜ
-NÂØËXÝ
-ÞKÝÕËÝÒ	ÑÊNÂØËÙ]ÛÚ^J
-NÈØËÙ]^ÛÛÜMLMLML
-NÂØË^
-	Ò[XYÙH\ÜË
-ÈÝÕÈÈÞH
-ÈÝÒÈÈ[YÛ	ØÙ[\ÈJNÂBØËÙ]ÛÚ^J
-KJNÈØËÙ]Û
-	Ú[]XØIË	ÛÜX[	ÊNÂØËÙ]^ÛÛÜLÌLÌLÌ
-NÂØË^
-	ÔÝÈ	È
-È
-H
-ÈJK
-ÈÝÕÈÈÞH
-ÈÝÒ
-ÈËKÈ[YÛ	ØÙ[\ÈJNÂJNÂBËÈÛÝ\8 %ÙÛÈÙ[Y]ÝÛBYÛÝ\ÙÛÊØËYÙUËYÙR
-NÂJNÂ\[[[YHH	ÔÛÑÜÛÝWÕZ[[×ÉÈ
-ÈË]H
-È	×ÉÈ
-È
-ËÝ\ÝÛY\[YH	ÔXÛÜ	ÊK\XÙJÖ×K^NWKÙÚK	×ÉÊH
-È	ËÎÂ]\ÈØÎØË[[[YN[[[YHNÂB[Ý[ÛÝÛØY
-HÂY
-][Y]TÙ\ÜÚ[Û
-JH]\ÂY
-][Y\Ë[ÝOOH
-HÈ[\
-	ÔX\ÙHY]X\ÝÛH][YHYÜH^Ü[ËÊNÈ]\ÈBY
-]Ú[ÝËÜHÈ[\
-	ÔX\HÝØYYX\ÙHÚXÚÈ[Ý\[\]ÛÛXÝ[ÛÊNÈ]\ÈBHÂ\HZ[
-NÂY
-\H]\ÂØËØ]J[[[YJNÂ\\ÙÈHØÝ[Y[Ù][[Y[RY
-	ÜÝ]\Ó\ÙÉÊNÂ\ÙË[\SH	ÉÎ
-NÈÝÛÏÈ
-È[[[YH
-È	ÏÜÝÛÏÝÛØYYÎÂ\ÙËÛ\ÜÓ[YHH	ÜÝXØÙ\ÜÉÎÂ\ÙËÝ[K\Ü^HH	ØØÚÉÎÂÙ][Y[Ý]
-[Ý[Û
-^È\ÙËÝ[K\Ü^HH	ÛÛIÎÈK
-
-NÂHØ]Ú
-^
-HÈ[\
-	ÐÛÝ[ÝÙ[\]H	È
-È^Y\ÜØYÙJNÈBBËÈ8¥ 8¥ ÔÕVÔ8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ [Ý[ÛÜÝ\ØØ\JHÂY
-OOH[OOH[Y[Y
-H]\	ÉÎÂ\ÈHÝ[ÊNÂY
-Ë[^Ù	Ë	ÊHOOHLHË[^Ù	ÈÊHOOHLHË[^Ù	×ÊHOOHLJHÂ]\	ÈÈ
-ÈË\XÙJÈÙË	ÈÊH
-È	ÈÎÂB]\ÎÂB[Ý[ÛÝÛØYÔÕ
-HÂY
-][Y]TÙ\ÜÚ[Û
-JH]\ÂY
-][Y\Ë[ÝOOH
-HÈ[\
-	ÔX\ÙHY]X\ÝÛH][YHYÜH^Ü[ËÊNÈ]\ÈB\ÈHÙ]Ù\ÜÚ[Û[Ê
-NÂ\XY\ÈHÉÈÉË	Ñ\Ý[YIË	Ó\Ý[YIË	ÐÛÛ\[IË	Ô\Ý[	Ë	Ñ]IË	ÕZ[[È\IË	Ò[ÝXÝÜË	Ò[ÝXÝÜÛÛ\[IË	ÐÝ\ÝÛY\ÛÛ\[IË	ÕZ[[È\]Y\ÝYIË	ÕZ[[ÈØØ][Û×NÂ\ÝÜÈH][Y\ËX\
-[Ý[ÛKJHÂ]\ÂJÌKK\Ý[Y_	ÉËK\Ý[Y_	ÉËKÛÛ\[_	ÉË
-K\Ý[	ÉÊKÕ\\Ø\ÙJ
-KË]KËZ[[Õ\KË[ÝXÝÜËÛÛ\[KËÝ\ÝÛY\[YKËZ[[Ô\]Y\ÝYKËZ[[ÓØØ][ÛKX\
-ÜÝ\ØØ\JKÚ[	Ë	ÊNÂJNÂ\ÜÝHÚXY\ËX\
-[Ý[Û
-^È]\	ÈÊÚ
-ÉÈÎÈJKÚ[	Ë	ÊWKÛÛØ]
-ÝÜÊKÚ[	×ÊNÂ\ØH]ÈØØÜÝKÈ\N	Ý^ØÜÝÈJNÂ\\HTÜX]SØXÝT
-ØNÂ\HHØÝ[Y[ÜX]Q[[Y[
-	ØIÊNÂ\H	ÔÛÑÜÛÝWÕZ[[×ÉÈ
-ÈË]H
-È	×ÉÈ
-È
-ËÝ\ÝÛY\[Y_	ÔXÛÜ	ÊK\XÙJÖ×K^NWKÙÚK	×ÉÊH
-È	ËÜÝÎÂKYH\ÈKÝÛØYHÂØÝ[Y[ÙK\[Ú[
-JNÈKÛXÚÊ
-NÂØÝ[Y[ÙK[[ÝPÚ[
-JNÂÙ][Y[Ý]
-[Ý[Û
-^ÈT]ÚÙSØXÝT
-\
-NÈKL
-NÂ\\ÙÈHØÝ[Y[Ù][[Y[RY
-	ÜÝ]\Ó\ÙÉÊNÂ\ÙË[\SH	ÉÎ
-NÈÝÛÏÈ
-È
-È	ÏÜÝÛÏÝÛØYYÎÂ\ÙËÛ\ÜÓ[YHH	ÜÝXØÙ\ÜÉÎÂ\ÙËÝ[K\Ü^HH	ØØÚÉÎÂÙ][Y[Ý]
-[Ý[Û
-^È\ÙËÝ[K\Ü^OIÛÛIÎÈK
-
-NÂBËÈ8¥ 8¥ SPRS8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ [Ý[ÛZ[[XZ[ÙJÊHÂ\]HH	ÏOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOIÎÂ\[\ÈHÂ	ÔÓÔÓÕHRSSÈPÓÔ	Ë]K	Ñ]N	È
-ÈË]K	ÕZ[[È\N	È
-ÈËZ[[Õ\K	Ò[ÝXÝÜ	È
-ÈË[ÝXÝÜ	Ò[ÝXÝÜÛÛ\[N	È
-ÈËÛÛ\[K	ÐÝ\ÝÛY\ÛÛ\[N	È
-ÈËÝ\ÝÛY\[YK	Ô\]Y\ÝYN	È
-ÈËZ[[Ô\]Y\ÝYK	ÕZ[[ÈØØ][Û	È
-ÈËZ[[ÓØØ][ÛËÙ\ÜÚ[ÛÝ\ÈÈ	ÐÛÛ[Y[Î	È
-ÈËÙ\ÜÚ[ÛÝ\È	ÉË	ÉË	ÕÝ[][Y\Î	È
-È][Y\Ë[Ý	ÉË	ÐUSQTÉË]BNÂ][Y\ËÜXXÚ
-[Ý[ÛKJHÂ[\Ë\Ú
+    var col1x = margin + 20;
+    var col2x = pageW/2 + 12;
 
-JÌJH
-È	Ë	È
-È
-K\Ý[YJÉÈ	ÊØK\Ý[YJK[J
-JNÂJNÂ[\Ë\Ú
-]JNÂ[\Ë\Ú
-	ÔÙ[XHÛÜÛÝHZ[[ÈXÛÜ	ÊNÂ]\[\Ë[\[Ý[Û
-^È]\OOH[ÈJKÚ[	×ÊNÂB[Ý[ÛÙ[[XZ[
+    function certDetail(label, value, x, yy) {
+      doc.setFontSize(6.5); doc.setFont('helvetica', 'bold');
+      doc.setTextColor.apply(doc, orange);
+      doc.text(label.toUpperCase(), x, yy);
+      doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+      doc.setTextColor.apply(doc, navy);
+      var v = String(value || '—');
+      if (v.length > 38) v = v.substring(0, 36) + '…';
+      doc.text(v, x, yy + 5);
+    }
 
-HÂY
-][Y]TÙ\ÜÚ[Û
-JH]\ÂY
-][Y\Ë[ÝOOH
-HÈ[\
-	ÔX\ÙHY]X\ÝÛH][YKÊNÈ]\ÈB\ÈHÙ]Ù\ÜÚ[Û[Ê
-NÂ\ÝXH	ÔÛÜÛÝHZ[[ÈXÛÜH	È
-ÈË]H
-È	ÈH	È
-ÈËÚXÝ[YNÂ\ÙHHZ[[XZ[ÙJÊNÂ\[HH	ÉÎÂHÈ\ÝHØØ[ÝÜYÙKÙ]][J	ÜÝÙ[XZ[ÉÊNÈ[HHÝÈÓÓ\ÙJÝKÚ[	Ë	ÊH	ÉÎÈHØ]Ú
-
-HßBY
-Ú[ÝËÜHÂHÂ\HZ[
-NÂY
-HÂ\ØHØËÝ]]
-	ØØÊNÂ\[HH]È[JÜØK[[[YKÈ\N	Ø\XØ][ÛÜÈJNÂY
-]YØ]ÜÚ\H	]YØ]ÜØ[Ú\H	]YØ]ÜØ[Ú\JÈ[\ÎÜ[WHJJHÂ]YØ]ÜÚ\JÈ]NÝX^ÙK[\ÎÜ[WHJBØ]Ú
-[Ý[Û\^ÈY
-\[YHOOH	ÐXÜ\ÜÊHÈÜ[XZ[Ê[KÝXÙJNÈHJNÂ]\ÂB\\HTÜX]SØXÝT
-ØNÂ\HHØÝ[Y[ÜX]Q[[Y[
-	ØIÊNÂKYH\ÈKÝÛØYH[[[YNÂØÝ[Y[ÙK\[Ú[
-JNÈKÛXÚÊ
-NÈØÝ[Y[ÙK[[ÝPÚ[
-JNÂÙ][Y[Ý]
-[Ý[Û
-^ÈT]ÚÙSØXÝT
-\
-NÈKML
-NÂÙ][Y[Ý]
-[Ý[Û
-^ÈÜ[XZ[Ê[KÝXÙH
-È	×Ô\Ü]XÚY8 %ÙYHÝÛØYY[WIÊNÈK
-
-NÂ]\ÂBHØ]Ú
-^
-HßBBÜ[XZ[Ê[KÝXÙJNÂB[Ý[ÛÜ[XZ[Ê[KÝXÙJHÂHÂÚ[ÝËØØ][ÛYH	ÛXZ[ÎÈ
-È[ÛÙUTPÛÛ\Û[
-[JH
-Â	ÏÜÝXXÝIÈ
-È[ÛÙUTPÛÛ\Û[
-ÝXH
-Â	ÉÙOIÈ
-È[ÛÙUTPÛÛ\Û[
-ÙJNÂHØ]Ú
-JHÈ[\
-	ÐÛÝ[ÝÜ[[XZ[ÛY[ÊNÈBBËÈ8¥ 8¥ SPRSÓÓQÈ8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ [Ý[ÛÙÙÛQ[XZ[ÛÛYÊ
-HÂ\[[HØÝ[Y[Ù][[Y[RY
-	Ù[XZ[ÛÛYÔ[[	ÊNÂ\\ÓÜ[H[[Û\ÜÓ\ÝÛÛZ[Ê	ÛÜ[ÊNÂY
-Z\ÓÜ[HÂ\\ÝHØÝ[Y[Ù][[Y[RY
-	Ù[XZ[\Ý	ÊNÂ\Ý[\SH	ÉÎÂHÂ\Ø]YHØØ[ÝÜYÙKÙ]][J	ÜÝÙ[XZ[ÉÊNÂ\[XZ[ÈHØ]YÈÓÓ\ÙJØ]Y
-H×NÂ[XZ[ËÜXXÚ
-[Ý[ÛJ^ÈY[XZ[Y[
-JNÈJNÂHØ]Ú
-
-HßBY
-ØÝ[Y[Ù][[Y[RY
-	Ù[XZ[\Ý	ÊKÚ[[[ÝOOH
-HY[XZ[Y[
-	ÉÊNÂB[[Û\ÜÓ\ÝÙÙÛJ	ÛÜ[ÊNÂB[Ý[ÛY[XZ[Y[
-[
-HÂ\\ÝHØÝ[Y[Ù][[Y[RY
-	Ù[XZ[\Ý	ÊNÂ\Ü\HØÝ[Y[ÜX]Q[[Y[
-	Ù]ÊNÂÜ\Ý[KÜÜÕ^H	Ù\Ü^N^ÙØ\Ø[YÛZ][\ÎÙ[\ÉÎÂ\[]HØÝ[Y[ÜX]Q[[Y[
-	Ú[]	ÊNÂ[]\HH	Ù[XZ[	ÎÈ[]XÙZÛ\H	Ù[XZ[^[\KÛÛIÎÈ[][YHH[	ÉÎÂ[]Ý[KÜÜÕ^H	Ù^NØÜ\K\ÛÛY\KXÜ\NØÜ\\Y]\ÎÜÜY[Î\L\ÙÛ\Ú^N\[NÛZ[ZZYÚÉÎÂ\[[ÝPHØÝ[Y[ÜX]Q[[Y[
-	Ø]ÛÊNÂ[[ÝP[\SH	ÉÌL
-NÉÎÂ[[ÝP]HH	Ô[[ÝIÎÂ[[ÝPÛ\ÜÓ[YHH	Ù[XÎÂ[[ÝPÛÛXÚÈH[Ý[Û
-HÂY
-ØÝ[Y[Ù][[Y[RY
-	Ù[XZ[\Ý	ÊKÚ[[[ÝJHÜ\[[ÝJ
-NÂNÂÜ\\[Ú[
-[]
-NÂÜ\\[Ú[
-[[ÝPNÂ\Ý\[Ú[
-Ü\
-NÂB[Ý[ÛØ]Q[XZ[ÛÛYÊ
-HÂHÂ\[]ÈHØÝ[Y[Ù][[Y[RY
-	Ù[XZ[\Ý	ÊK]Y\TÙ[XÝÜ[
-	Ú[]	ÊNÂ\[XZ[ÈH\^KÛJ[]ÊKX\
-[Ý[ÛJ^È]\K[YK[J
-NÈJK[\ÛÛX[NÂY
-[XZ[Ë[Ý
-HØØ[ÝÜYÙKÙ]][J	ÜÝÙ[XZ[ÉËÓÓÝ[ÚYJ[XZ[ÊJNÂØÝ[Y[Ù][[Y[RY
-	Ù[XZ[ÛÛYÔ[[	ÊKÛ\ÜÓ\Ý[[ÝJ	ÛÜ[ÊNÂ\\ÙÈHØÝ[Y[Ù][[Y[RY
-	ÜÝ]\Ó\ÙÉÊNÂ\ÙË^ÛÛ[H[XZ[Ë[Ý
-È	È[XZ[Y\ÜÉÈ
-È
-[XZ[Ë[ÝOOHHÈ	Ù\ÉÈ	ÉÊH
-È	ÈØ]YÎÂ\ÙËÛ\ÜÓ[YHH	ÜÝXØÙ\ÜÉÎÂÙ][Y[Ý]
-[Ý[Û
-^È\ÙËÝ[K\Ü^HH	ÛÛIÎÈKL
-NÂHØ]Ú
-JHÈ[\
-	ÐÛÝ[ÝØ]HÙ][ÜËÊNÈBBËÈ8¥ 8¥ TÑU8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ 8¥ [Ý[Û\Ù][
+    certDetail('Date', s.date, col1x, cy);
+    certDetail('Training Location', s.trainingLocation, col2x, cy);
+    cy += 14;
+    certDetail('Instructor', s.instructor, col1x, cy);
+    certDetail('Training Requested By', s.trainingRequestedBy, col2x, cy);
+    cy += 14;
+    certDetail('Instructor Company', s.company, col1x, cy);
+    certDetail('Customer Company', s.customerName, col2x, cy);
 
-HÂY
-XÛÛ\J	Ô\Ù]]\][ÏÈ\ÈÚ[ÛX\[Ù\ÜÚ[Û[ÜX][Û[H][YH\ÝÊJH]\ÂØÝ[Y[Ù][[Y[RY
-	ØÛÛ\[S[YIÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
-	Ú[ÝXÝÜ\Ý[YIÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
-	Ú[ÝXÝÜ\Ý[YIÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
-	ØÝ\ÝÛY\[YIÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
-	ÝZ[[Ô\]Y\ÝYQ\Ý	ÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
-	ÝZ[[Ô\]Y\ÝYS\Ý	ÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
-	ÝZ[[ÓØØ][ÛÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
-	ÜÙ\ÜÚ[ÛÝ\ÉÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
-	ÝZ[[Õ\TÙ[XÝ	ÊK[YHH	ÔÛÜÛÝHZ[[ÉÎÂØÝ[Y[Ù][[Y[RY
-	ØY\Ý[YIÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
-	ØY\Ý[YIÊK[YHH	ÉÎÂ\H]È]J
-NÂ\Ù^HHÙ][YX\
-JÉËIÊÔÝ[ÊÙ][Û
+    // Single centred instructor signature (script-style auto-filled)
+    cy += 22;
+    var sigW = 90;
+    var sigCx = pageW / 2;
+    var sigX = sigCx - sigW / 2;
 
-JÌJKYÝ\
-	Ì	ÊJÉËIÊÔÝ[ÊÙ]]J
-JKYÝ\
-	Ì	ÊNÂ\]Q[HØÝ[Y[Ù][[Y[RY
-	ÜÙ\ÜÚ[Û]IÊNÂ]Q[[YHHÙ^NÂ]Q[X^HÙ^NÂ][Y\ÈH×NÂY][Ò[^HLNÂ[[ÔÝÜÈH×NÂ[[Ô\Ý[H[Â[\[[Õ[XÊ
-NÂØÝ[Y[Ù][[Y[RY
-	ØY\ÜÐÊKÛ\ÜÓ[YHH	ÜXÎÂØÝ[Y[Ù][[Y[RY
-	ØYZ[ÊKÛ\ÜÓ[YHH	ÜXÎÂ\HØÝ[Y[Ù][[Y[RY
-	ØY][YPÊNÂY
-HÈ^ÛÛ[H	ÊÈY][YIÎÈÝ[KXÚÙÜÝ[H	ÉÎÈB[\][Y\Ê
-NÂBÜØÜ\ØÙOÚ[
+    // Script-style name image above the line
+    var sigImgW = 70; var sigImgH = 14;
+    try {
+      doc.addImage(makeSignatureImg(s.instructor), 'PNG', sigCx - sigImgW/2, cy - sigImgH - 1, sigImgW, sigImgH, undefined, 'FAST');
+    } catch(e) {
+      doc.setFontSize(11); doc.setFont('helvetica', 'bolditalic');
+      doc.setTextColor.apply(doc, navy);
+      doc.text(s.instructor, sigCx, cy - 3, { align: 'center' });
+    }
+
+    // Signature line
+    doc.setDrawColor(170, 170, 170);
+    doc.setLineWidth(0.5);
+    doc.line(sigX, cy, sigX + sigW, cy);
+
+    cy += 4;
+    doc.setFontSize(7); doc.setFont('helvetica', 'normal');
+    doc.setTextColor(150, 150, 150);
+    doc.text('Instructor Signature', sigCx, cy, { align: 'center' });
+
+    cy += 4;
+    doc.setFontSize(6.5); doc.setFont('helvetica', 'bold');
+    doc.setTextColor.apply(doc, navy);
+    doc.text(s.instructor, sigCx, cy, { align: 'center' });
+
+    // Photos (if any)
+    var photos = attendee.photos || [];
+    if (photos.length > 0) {
+      cy += 12;
+      doc.setFontSize(7); doc.setFont('helvetica', 'bold');
+      doc.setTextColor.apply(doc, navy);
+      doc.text('GROOVE PHOTOS', margin, cy);
+      cy += 5;
+      var photoCols = photos.length;
+      var pGap = 4;
+      var photoW = (contentW - (photoCols - 1) * pGap) / photoCols;
+      var photoH = photoW * 0.72;
+      photos.forEach(function(src, pi) {
+        var px = margin + pi * (photoW + pGap);
+        try {
+          var fmt = src.indexOf('data:image/png') === 0 ? 'PNG' : 'JPEG';
+          doc.addImage(src, fmt, px, cy, photoW, photoH, undefined, 'MEDIUM');
+        } catch(err) {
+          doc.setFillColor(220, 220, 220);
+          doc.rect(px, cy, photoW, photoH, 'F');
+          doc.setFontSize(6); doc.setTextColor(150, 150, 150);
+          doc.text('Image error', px + photoW / 2, cy + photoH / 2, { align: 'center' });
+        }
+        doc.setFontSize(5.5); doc.setFont('helvetica', 'normal');
+        doc.setTextColor(130, 130, 130);
+        doc.text('Photo ' + (pi + 1), px + photoW / 2, cy + photoH + 3.5, { align: 'center' });
+      });
+    }
+
+    // Footer — logo centred at bottom
+    addFooterLogo(doc, pageW, pageH);
+  });
+
+  var filename = 'Roll_Groove_Training_' + s.date + '_' + (s.customerName || 'Record').replace(/[^a-z0-9]/gi, '_') + '.pdf';
+  return { doc: doc, filename: filename };
+}
+
+function downloadPDF() {
+  if (!validateSession()) return;
+  if (attendees.length === 0) { alert('Please add at least one attendee before exporting.'); return; }
+  if (!window.jspdf) { alert('PDF library not loaded. Please check your internet connection.'); return; }
+  try {
+    var r = buildPDF();
+    if (!r) return;
+    r.doc.save(r.filename);
+    var msg = document.getElementById('statusMsg');
+    msg.innerHTML = '&#8681; <strong>' + r.filename + '</strong> downloaded.';
+    msg.className = 'success';
+    msg.style.display = 'block';
+    setTimeout(function(){ msg.style.display = 'none'; }, 4000);
+  } catch(ex) { alert('Could not generate PDF: ' + ex.message); }
+}
+
+// ── CSV EXPORT ───────────────────────────────────────────
+function csvEscape(v) {
+  if (v === null || v === undefined) return '';
+  var s = String(v);
+  if (s.indexOf(',') !== -1 || s.indexOf('"') !== -1 || s.indexOf('\n') !== -1) {
+    return '"' + s.replace(/"/g, '""') + '"';
+  }
+  return s;
+}
+
+function downloadCSV() {
+  if (!validateSession()) return;
+  if (attendees.length === 0) { alert('Please add at least one attendee before exporting.'); return; }
+  var s = getSessionInfo();
+  var headers = ['#', 'First Name', 'Last Name', 'Company', 'Result', 'Date', 'Training Type', 'Instructor', 'Instructor Company', 'Customer Company', 'Training Requested By', 'Training Location'];
+  var rows = attendees.map(function(a, i) {
+    return [
+      i+1,
+      a.firstName||'',
+      a.lastName||'',
+      a.company||'',
+      (a.result||'').toUpperCase(),
+      s.date,
+      s.trainingType,
+      s.instructor,
+      s.company,
+      s.customerName,
+      s.trainingRequestedBy,
+      s.trainingLocation
+    ].map(csvEscape).join(',');
+  });
+  var csv = [headers.map(function(h){ return '"'+h+'"'; }).join(',')].concat(rows).join('\r\n');
+  var blob = new Blob([csv], { type: 'text/csv' });
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  var fn   = 'Roll_Groove_Training_' + s.date + '_' + (s.customerName||'Record').replace(/[^a-z0-9]/gi,'_') + '.csv';
+  a.href = url; a.download = fn;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  var msg = document.getElementById('statusMsg');
+  msg.innerHTML = '&#8681; <strong>' + fn + '</strong> downloaded.';
+  msg.className = 'success';
+  msg.style.display = 'block';
+  setTimeout(function(){ msg.style.display='none'; }, 4000);
+}
+
+// ── EMAIL ────────────────────────────────────────────────
+function buildEmailBody(s) {
+  var div1 = '================================================';
+  var lines = [
+    'ROLL GROOVE TRAINING RECORD',
+    div1,
+    'Date:                 ' + s.date,
+    'Training Type:        ' + s.trainingType,
+    'Instructor:           ' + s.instructor,
+    'Instructor Company:   ' + s.company,
+    'Customer Company:     ' + s.customerName,
+    'Requested By:         ' + s.trainingRequestedBy,
+    'Training Location:    ' + s.trainingLocation,
+    s.sessionNotes ? 'Comments:             ' + s.sessionNotes : '',
+    '',
+    'Total Attendees: ' + attendees.length,
+    '',
+    'ATTENDEES',
+    div1
+  ];
+  attendees.forEach(function(a, i) {
+    lines.push((i+1) + '. ' + (a.firstName+' '+a.lastName).trim());
+  });
+  lines.push(div1);
+  lines.push('Sent via Roll Groove Training Record');
+  return lines.filter(function(l){ return l !== null; }).join('\n');
+}
+
+function sendEmail() {
+  if (!validateSession()) return;
+  if (attendees.length === 0) { alert('Please add at least one attendee.'); return; }
+  var s = getSessionInfo();
+  var subj = 'Roll Groove Training Record - ' + s.date + ' - ' + s.projectName;
+  var body = buildEmailBody(s);
+  var em = '';
+  try { var sv = localStorage.getItem('rgt_emails'); em = sv ? JSON.parse(sv).join(',') : ''; } catch(x) {}
+
+  if (window.jspdf) {
+    try {
+      var r = buildPDF();
+      if (r) {
+        var pdfBlob = r.doc.output('blob');
+        var pdfFile = new File([pdfBlob], r.filename, { type: 'application/pdf' });
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+          navigator.share({ title: subj, text: body, files: [pdfFile] })
+            .catch(function(err){ if (err.name !== 'AbortError') { openMailto(em, subj, body); } });
+          return;
+        }
+        var url = URL.createObjectURL(pdfBlob);
+        var a = document.createElement('a');
+        a.href = url; a.download = r.filename;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(function(){ URL.revokeObjectURL(url); }, 1500);
+        setTimeout(function(){ openMailto(em, subj, body + '\n\n[PDF report attached — see downloaded file]'); }, 400);
+        return;
+      }
+    } catch(ex) {}
+  }
+  openMailto(em, subj, body);
+}
+
+function openMailto(em, subj, body) {
+  try {
+    window.location.href = 'mailto:' + encodeURIComponent(em) +
+      '?subject=' + encodeURIComponent(subj) +
+      '&body='    + encodeURIComponent(body);
+  } catch(e) { alert('Could not open email client.'); }
+}
+
+// ── EMAIL CONFIG ─────────────────────────────────────────
+function toggleEmailConfig() {
+  var panel = document.getElementById('emailConfigPanel');
+  var isOpen = panel.classList.contains('open');
+  if (!isOpen) {
+    var list = document.getElementById('emailList');
+    list.innerHTML = '';
+    try {
+      var saved = localStorage.getItem('rgt_emails');
+      var emails = saved ? JSON.parse(saved) : [];
+      emails.forEach(function(e){ addEmailField(e); });
+    } catch(x) {}
+    if (document.getElementById('emailList').children.length === 0) addEmailField('');
+  }
+  panel.classList.toggle('open');
+}
+
+function addEmailField(val) {
+  var list = document.getElementById('emailList');
+  var wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;gap:6px;align-items:center;';
+  var input = document.createElement('input');
+  input.type = 'email'; input.placeholder = 'email@example.com'; input.value = val || '';
+  input.style.cssText = 'flex:1;border:1.5px solid var(--border);border-radius:7px;padding:9px 11px;font-size:0.9rem;min-height:40px;';
+  var removeBtn = document.createElement('button');
+  removeBtn.innerHTML = '&#10005;';
+  removeBtn.title = 'Remove';
+  removeBtn.className = 'del-btn';
+  removeBtn.onclick = function() {
+    if (document.getElementById('emailList').children.length > 1) wrap.remove();
+  };
+  wrap.appendChild(input);
+  wrap.appendChild(removeBtn);
+  list.appendChild(wrap);
+}
+
+function saveEmailConfig() {
+  try {
+    var inputs = document.getElementById('emailList').querySelectorAll('input');
+    var emails = Array.from(inputs).map(function(i){ return i.value.trim(); }).filter(Boolean);
+    if (emails.length) localStorage.setItem('rgt_emails', JSON.stringify(emails));
+    document.getElementById('emailConfigPanel').classList.remove('open');
+    var msg = document.getElementById('statusMsg');
+    msg.textContent = emails.length + ' email address' + (emails.length !== 1 ? 'es' : '') + ' saved.';
+    msg.className = 'success';
+    setTimeout(function(){ msg.style.display = 'none'; }, 2500);
+  } catch(e) { alert('Could not save settings.'); }
+}
+
+// ── RESET ────────────────────────────────────────────────
+function resetAll() {
+  if (!confirm('Reset everything? This will clear all session information and the attendee list.')) return;
+  document.getElementById('companyName').value = '';
+  document.getElementById('instructorFirstName').value = '';
+  document.getElementById('instructorLastName').value  = '';
+  document.getElementById('customerName').value             = '';
+  document.getElementById('trainingRequestedByFirst').value = '';
+  document.getElementById('trainingRequestedByLast').value  = '';
+  document.getElementById('trainingLocation').value         = '';
+  document.getElementById('sessionNotes').value        = '';
+  document.getElementById('trainingTypeSelect').value  = 'Roll Groove Training';
+  document.getElementById('addFirstName').value = '';
+  document.getElementById('addLastName').value  = '';
+  var d = new Date();
+  var today = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  var dateEl = document.getElementById('sessionDate');
+  dateEl.value = today;
+  dateEl.max = today;
+  attendees = [];
+  editingIndex = -1;
+  pendingPhotos = [];
+  pendingResult = null;
+  renderPendingThumbs();
+  document.getElementById('addPassBtn').className = 'pf-btn';
+  document.getElementById('addFailBtn').className = 'pf-btn';
+  var btn = document.getElementById('addAttendeeBtn');
+  if (btn) { btn.textContent = '+ Add Attendee'; btn.style.background = ''; }
+  renderAttendees();
+}
+</script>
+</body>
+</html>
