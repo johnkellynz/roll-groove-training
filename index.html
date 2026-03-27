@@ -92,6 +92,8 @@ header {
 .container { max-width: 820px; margin: 0 auto; padding: 20px 16px 48px; }
 
 /* CARDS */
+.field-locked { opacity: 0.4; pointer-events: none; }
+
 .card {
   background: var(--card-bg);
   border-radius: var(--radius);
@@ -661,6 +663,72 @@ var editingIndex  = -1;  // -1 = adding new, ≥0 = editing existing
   orangeImg.src = 'Primary Logo Victaulic Orange.png?_=' + Date.now();
 })();
 
+// ── SEQUENTIAL FIELD UNLOCK ──────────────────────────────
+var fieldSequence = [
+  { id: 'companyName',              type: 'text' },
+  { id: 'instructorFirstName',      type: 'text' },
+  { id: 'instructorLastName',       type: 'text' },
+  { id: 'customerName',             type: 'text' },
+  { id: 'trainingRequestedByFirst', type: 'text' },
+  { id: 'trainingRequestedByLast',  type: 'text' },
+  { id: 'trainingLocation',         type: 'text' },
+  { id: 'rollGrooveToolSelect',     type: 'select' },
+  { id: 'trainingTypeSelect',       type: 'select' },
+  { id: 'addCompany',               type: 'text' },
+  { id: 'addFirstName',             type: 'text' },
+  { id: 'addLastName',              type: 'text' }
+];
+
+function getFieldValue(f) {
+  var el = document.getElementById(f.id);
+  if (!el) return '';
+  if (f.type === 'select') {
+    var v = el.value;
+    if (v === 'Other') {
+      var otherId = f.id === 'rollGrooveToolSelect' ? 'rollGrooveToolOther' : 'trainingTypeOther';
+      var otherEl = document.getElementById(otherId);
+      return (otherEl && otherEl.value.trim()) ? v : '';
+    }
+    return v;
+  }
+  return el.value.trim();
+}
+
+function updateFieldLocks() {
+  var reached = true;
+  for (var i = 0; i < fieldSequence.length; i++) {
+    var f = fieldSequence[i];
+    var el = document.getElementById(f.id);
+    if (!el) continue;
+    var wrapper = el.closest('.form-group') || el.closest('.add-form-grid') || el.parentElement;
+    if (reached) {
+      wrapper.classList.remove('field-locked');
+      if (!getFieldValue(f)) reached = false;
+    } else {
+      wrapper.classList.add('field-locked');
+    }
+  }
+}
+
+// Attach listeners to all sequential fields
+fieldSequence.forEach(function(f) {
+  var el = document.getElementById(f.id);
+  if (!el) return;
+  el.addEventListener('input', updateFieldLocks);
+  el.addEventListener('change', updateFieldLocks);
+  // Also listen on "Other" text inputs for selects
+  if (f.type === 'select') {
+    var otherId = f.id === 'rollGrooveToolSelect' ? 'rollGrooveToolOther' : 'trainingTypeOther';
+    var otherEl = document.getElementById(otherId);
+    if (otherEl) {
+      otherEl.addEventListener('input', updateFieldLocks);
+    }
+  }
+});
+
+// Run on load
+updateFieldLocks();
+
 // ── UTILITIES ────────────────────────────────────────────
 function toTitleCase(el) {
   var v = el.value;
@@ -854,6 +922,7 @@ function clearAddForm(skipConfirm) {
   btn.textContent = '+ Log Attendee';
   btn.style.background = '';
   document.getElementById('addFirstName').focus();
+  updateFieldLocks();
 }
 
 function setPendingResult(val) {
