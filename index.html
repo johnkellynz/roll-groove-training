@@ -596,7 +596,7 @@ var editingIndex  = -1;  // -1 = adding new, ≥0 = editing existing
   dateEl.max = today;
 
   // Try to load a Victaulic logo from common filenames in the same folder
-  var names = ['victaulic_logo.png','victaulic_logo.jpg','logo.png','logo.jpg','victaulic.png','victaulic.jpg'];
+  var names = ['Primary Logo Victaulic Orange.png','victaulic_logo.png','victaulic_logo.jpg','logo.png','logo.jpg','victaulic.png','victaulic.jpg'];
   function tryLogo(i) {
     if (i >= names.length) return;
     var img = new Image();
@@ -1048,9 +1048,22 @@ function buildPDF() {
   doc.rect(0, 0, pageW, 22, 'F');
   doc.setFillColor.apply(doc, orange);
   doc.rect(0, 22, pageW, 2.5, 'F');
-  doc.setTextColor.apply(doc, white);
-  doc.setFontSize(13); doc.setFont('helvetica', 'bold');
-  doc.text('ROLL GROOVE TRAINING RECORD', margin, 14);
+  // Victaulic logo in white rounded button
+  if (logoDataUrl) {
+    var logoBtnH = 14;
+    var logoBtnW = logoBtnH * logoAspect + 10;
+    var logoBtnX = margin;
+    var logoBtnY = (22 - logoBtnH) / 2;
+    doc.setFillColor.apply(doc, white);
+    doc.roundedRect(logoBtnX, logoBtnY, logoBtnW, logoBtnH, 2, 2, 'F');
+    var logoImgH = logoBtnH - 4;
+    var logoImgW = logoImgH * logoAspect;
+    doc.addImage(logoDataUrl, 'PNG', logoBtnX + (logoBtnW - logoImgW)/2, logoBtnY + 2, logoImgW, logoImgH, undefined, 'FAST');
+  } else {
+    doc.setTextColor.apply(doc, white);
+    doc.setFontSize(13); doc.setFont('helvetica', 'bold');
+    doc.text('VICTAULIC', margin, 14);
+  }
 
   var y = 30;
 
@@ -1064,7 +1077,7 @@ function buildPDF() {
   doc.line(margin + contentW/2, y+3, margin + contentW/2, y+boxH-3);
 
   function infoCell(label, value, x, cy) {
-    doc.setFontSize(6); doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8); doc.setFont('helvetica', 'bold');
     doc.setTextColor.apply(doc, orange);
     doc.text(label.toUpperCase(), x, cy);
     doc.setFontSize(8.5); doc.setFont('helvetica', 'bold');
@@ -1169,36 +1182,16 @@ function buildPDF() {
 
     var fullName = (attendee.firstName + ' ' + attendee.lastName).trim();
 
-    // Header bar (22 mm — same as cover)
-    doc.setFillColor.apply(doc, navy);
-    doc.rect(0, 0, pageW, 22, 'F');
-    doc.setFillColor.apply(doc, orange);
-    doc.rect(0, 22, pageW, 2.5, 'F');
-
-    doc.setTextColor.apply(doc, white);
-    doc.setFontSize(9); doc.setFont('helvetica', 'normal');
-    doc.setTextColor(255, 200, 160);
-    doc.text('VICTAULIC', pageW/2, 9, { align: 'center' });
-    doc.setFontSize(17); doc.setFont('helvetica', 'bold');
-    doc.setTextColor.apply(doc, white);
-    doc.text('ROLL GROOVE TRAINING', pageW/2, 19, { align: 'center' });
-
     // Decorative border (fits within landscape height)
     doc.setDrawColor.apply(doc, midGrey);
     doc.setLineWidth(0.4);
-    doc.roundedRect(margin - 2, 27, contentW + 4, pageH - 27 - 16, 3, 3, 'S');
+    doc.roundedRect(margin - 2, 6, contentW + 4, pageH - 6 - 6, 3, 3, 'S');
     doc.setLineWidth(0.2);
-    doc.roundedRect(margin, 29, contentW, pageH - 29 - 19, 2, 2, 'S');
-
-    // PASS badge (canvas-rendered, top-right corner)
-    var badgeSize = 16;
-    var badgeX = pageW - margin - badgeSize - 2;
-    var badgeY = 25;
-    try { doc.addImage(makePassBadgeImg(), 'PNG', badgeX, badgeY, badgeSize, badgeSize, undefined, 'FAST'); } catch(e) {}
+    doc.roundedRect(margin, 8, contentW, pageH - 8 - 9, 2, 2, 'S');
 
     // ── Content ──
     // "Certificate of Attendance" elegant title
-    var cy = 41;
+    var cy = 25;
     doc.setFontSize(22); doc.setFont('helvetica', 'bold');
     doc.setTextColor.apply(doc, navy);
     doc.text('Certificate of Attendance', pageW/2, cy, { align: 'center' });
@@ -1223,15 +1216,7 @@ function buildPDF() {
     doc.setTextColor.apply(doc, navy);
     doc.text(fullName, pageW/2, cy, { align: 'center' });
 
-    // Orange underline
-    var nw = doc.getTextWidth(fullName);
-    var underX = pageW/2 - nw/2;
-    cy += 3;
-    doc.setDrawColor.apply(doc, orange);
-    doc.setLineWidth(1.5);
-    doc.line(underX, cy, underX + nw, cy);
-
-    cy += 11;
+    cy += 14;
     doc.setFontSize(10); doc.setFont('helvetica', 'italic');
     doc.setTextColor(110, 110, 120);
     doc.text('has successfully attended the', pageW/2, cy, { align: 'center' });
@@ -1277,6 +1262,9 @@ function buildPDF() {
     cy += 14;
     certDetail('Instructor Company', s.company, col1x, cy);
     certDetail('Customer Company', s.customerName, col2x, cy);
+    cy += 14;
+    certDetail('Roll Groove Tool', s.rollGrooveTool || '—', col1x, cy);
+    certDetail('Training Type', s.trainingType, col2x, cy);
 
     // Single centred instructor signature (script-style auto-filled)
     cy += 22;
