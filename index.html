@@ -92,8 +92,6 @@ header {
 .container { max-width: 820px; margin: 0 auto; padding: 20px 16px 48px; }
 
 /* CARDS */
-.field-locked { opacity: 0.4; pointer-events: none; }
-
 .card {
   background: var(--card-bg);
   border-radius: var(--radius);
@@ -225,7 +223,7 @@ header {
 }
 
 /* PHOTOS */
-.photo-thumbs { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+.photo-thumbs { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; justify-content: center; }
 .photo-thumb-wrap { position: relative; display: inline-block; }
 .photo-thumb {
   width: 40px; height: 40px; object-fit: cover;
@@ -250,7 +248,7 @@ header {
 .photo-add-btn:hover { background: #f0f1f5; border-color: #aab; }
 .photo-add-btn .cam-icon { font-size: 1.1rem; line-height: 1; }
 .photo-add-btn.large { padding: 14px 8px; font-size: 1rem; font-weight: 700; min-height: 52px; width: auto; height: auto; flex: 1; justify-content: center; border-width: 2px; letter-spacing: 0.03em; }
-.photo-cell { min-width: 160px; vertical-align: middle !important; }
+.photo-cell { min-width: 120px; vertical-align: middle !important; text-align: center; }
 
 /* PHOTO MODAL */
 #photoModal {
@@ -663,72 +661,6 @@ var editingIndex  = -1;  // -1 = adding new, ≥0 = editing existing
   orangeImg.src = 'Primary Logo Victaulic Orange.png?_=' + Date.now();
 })();
 
-// ── SEQUENTIAL FIELD UNLOCK ──────────────────────────────
-var fieldSequence = [
-  { id: 'companyName',              type: 'text' },
-  { id: 'instructorFirstName',      type: 'text' },
-  { id: 'instructorLastName',       type: 'text' },
-  { id: 'customerName',             type: 'text' },
-  { id: 'trainingRequestedByFirst', type: 'text' },
-  { id: 'trainingRequestedByLast',  type: 'text' },
-  { id: 'trainingLocation',         type: 'text' },
-  { id: 'rollGrooveToolSelect',     type: 'select' },
-  { id: 'trainingTypeSelect',       type: 'select' },
-  { id: 'addCompany',               type: 'text' },
-  { id: 'addFirstName',             type: 'text' },
-  { id: 'addLastName',              type: 'text' }
-];
-
-function getFieldValue(f) {
-  var el = document.getElementById(f.id);
-  if (!el) return '';
-  if (f.type === 'select') {
-    var v = el.value;
-    if (v === 'Other') {
-      var otherId = f.id === 'rollGrooveToolSelect' ? 'rollGrooveToolOther' : 'trainingTypeOther';
-      var otherEl = document.getElementById(otherId);
-      return (otherEl && otherEl.value.trim()) ? v : '';
-    }
-    return v;
-  }
-  return el.value.trim();
-}
-
-function updateFieldLocks() {
-  var reached = true;
-  for (var i = 0; i < fieldSequence.length; i++) {
-    var f = fieldSequence[i];
-    var el = document.getElementById(f.id);
-    if (!el) continue;
-    var wrapper = el.closest('.form-group') || el.closest('.add-form-grid') || el.parentElement;
-    if (reached) {
-      wrapper.classList.remove('field-locked');
-      if (!getFieldValue(f)) reached = false;
-    } else {
-      wrapper.classList.add('field-locked');
-    }
-  }
-}
-
-// Attach listeners to all sequential fields
-fieldSequence.forEach(function(f) {
-  var el = document.getElementById(f.id);
-  if (!el) return;
-  el.addEventListener('input', updateFieldLocks);
-  el.addEventListener('change', updateFieldLocks);
-  // Also listen on "Other" text inputs for selects
-  if (f.type === 'select') {
-    var otherId = f.id === 'rollGrooveToolSelect' ? 'rollGrooveToolOther' : 'trainingTypeOther';
-    var otherEl = document.getElementById(otherId);
-    if (otherEl) {
-      otherEl.addEventListener('input', updateFieldLocks);
-    }
-  }
-});
-
-// Run on load
-updateFieldLocks();
-
 // ── UTILITIES ────────────────────────────────────────────
 function toTitleCase(el) {
   var v = el.value;
@@ -789,8 +721,8 @@ function validateSession() {
     ['instructorFirstName', 'Instructor First Name'],
     ['instructorLastName',  'Instructor Last Name'],
     ['customerName',             'Customer Company Name'],
-    ['trainingRequestedByFirst', 'Training Requested By — First Name'],
-    ['trainingRequestedByLast',  'Training Requested By — Last Name'],
+    ['trainingRequestedByFirst', 'Customer First Name'],
+    ['trainingRequestedByLast',  'Customer Last Name'],
     ['trainingLocation',         'Training Location']
   ];
   for (var i = 0; i < fields.length; i++) {
@@ -800,6 +732,12 @@ function validateSession() {
       return false;
     }
   }
+  var toolVal = document.getElementById('rollGrooveToolSelect').value;
+  if (!toolVal) { alert('Roll Groove Tool is required.'); document.getElementById('rollGrooveToolSelect').focus(); return false; }
+  if (toolVal === 'Other' && !document.getElementById('rollGrooveToolOther').value.trim()) { alert('Please enter the Roll Groove Tool name.'); document.getElementById('rollGrooveToolOther').focus(); return false; }
+  var typeVal = document.getElementById('trainingTypeSelect').value;
+  if (!typeVal) { alert('Training Type is required.'); document.getElementById('trainingTypeSelect').focus(); return false; }
+  if (typeVal === 'Other' && !document.getElementById('trainingTypeOther').value.trim()) { alert('Please enter the Training Type.'); document.getElementById('trainingTypeOther').focus(); return false; }
   return true;
 }
 
@@ -922,7 +860,6 @@ function clearAddForm(skipConfirm) {
   btn.textContent = '+ Log Attendee';
   btn.style.background = '';
   document.getElementById('addFirstName').focus();
-  updateFieldLocks();
 }
 
 function setPendingResult(val) {
@@ -1462,18 +1399,16 @@ function buildPDF() {
     doc.setTextColor(150, 150, 150);
     doc.text('Instructor Signature', sigCx, cy, { align: 'center' });
 
-    // Work out what fits below: logo + optional photos must stay inside border
-    var photos = attendee.photos || [];
-    var innerBottom = pageH - 8 - 14;  // inner border bottom edge with safe margin
+    // Centre Victaulic logo in remaining white space below signature
     var certLogoH = 18;
     var certLogoW = orangeLogoDataUrl ? certLogoH * orangeLogoAspect : 0;
+    var borderBottom = pageH - 8 - 9;  // inner border bottom edge
 
     {
-      // Centre logo with equal padding top & bottom
       if (orangeLogoDataUrl) {
-        var logoAreaTop = cy;
-        var logoPad = (innerBottom - logoAreaTop - certLogoH) / 2;
-        var logoY = logoAreaTop + logoPad;
+        var logoAreaTop = cy + 4;
+        var availableSpace = borderBottom - logoAreaTop;
+        var logoY = logoAreaTop + (availableSpace - certLogoH) / 2;
         doc.addImage(orangeLogoDataUrl, 'PNG', sigCx - certLogoW/2, logoY, certLogoW, certLogoH, undefined, 'FAST');
         cy = logoY + certLogoH;
       }
