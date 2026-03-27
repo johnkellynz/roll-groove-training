@@ -1061,20 +1061,10 @@ function buildPDF() {
   doc.rect(0, 0, pageW, 22, 'F');
   doc.setFillColor.apply(doc, orange);
   doc.rect(0, 22, pageW, 2.5, 'F');
-  // Victaulic logo on header (navy-composited — no white box)
-  if (logoNavyDataUrl) {
-    var logoImgH = 14;
-    var logoImgW = logoImgH * logoAspect;
-    doc.addImage(logoNavyDataUrl, 'PNG', margin, (22 - logoImgH) / 2, logoImgW, logoImgH, undefined, 'FAST');
-    // "TRAINING RECORD" text after logo
-    doc.setTextColor.apply(doc, white);
-    doc.setFontSize(13); doc.setFont('helvetica', 'bold');
-    doc.text('TRAINING RECORD', margin + logoImgW + 6, 14);
-  } else {
-    doc.setTextColor.apply(doc, white);
-    doc.setFontSize(13); doc.setFont('helvetica', 'bold');
-    doc.text('TRAINING RECORD', margin, 14);
-  }
+  // "TRAINING RECORD" text — top right of header (no logo on summary page)
+  doc.setTextColor.apply(doc, white);
+  doc.setFontSize(13); doc.setFont('helvetica', 'bold');
+  doc.text('TRAINING RECORD', pageW - margin, 14, { align: 'right' });
 
   var y = 30;
 
@@ -1138,7 +1128,7 @@ function buildPDF() {
         a.firstName || '',
         a.lastName  || '',
         a.company   || '',
-        (a.result   || '—').toUpperCase(),
+        (a.result === 'pass' ? 'PASS' : a.result === 'fail' ? 'FAIL' : '—'),
         String(photoCount)
       ];
     }),
@@ -1147,7 +1137,7 @@ function buildPDF() {
       fillColor: navy, textColor: white,
       fontStyle: 'bold', fontSize: 7.5,
       cellPadding: { top: 3, bottom: 3, left: 5, right: 5 },
-      valign: 'middle'
+      valign: 'middle', halign: 'center'
     },
     bodyStyles: {
       fontSize: 8, textColor: navy,
@@ -1273,8 +1263,8 @@ function buildPDF() {
 
     // Single centred instructor signature — vertically centred in white space
     var detailsBottom = cy + 7;
-    var footerTop = pageH - 23.5;
-    var sigMid = detailsBottom + (footerTop - detailsBottom) / 2;
+    var borderBottom = pageH - 17;
+    var sigMid = detailsBottom + (borderBottom - detailsBottom) / 2;
     cy = sigMid - 4;
     var sigW = 90;
     var sigCx = pageW / 2;
@@ -1334,8 +1324,6 @@ function buildPDF() {
       });
     }
 
-    // Footer — logo centred at bottom
-    addFooterLogo(doc, pageW, pageH);
   });
 
   var filename = 'Roll_Groove_Training_' + s.date + '_' + (s.customerName || 'Record').replace(/[^a-z0-9]/gi, '_') + '.pdf';
