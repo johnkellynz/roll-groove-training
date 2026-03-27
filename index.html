@@ -840,10 +840,11 @@ function clearAddForm(skipConfirm) {
                   pendingPhotos.length > 0 || pendingResult !== null;
     if (hasData && !confirm('Are you sure you want to reset the form? Any unsaved data will be lost.')) return;
   }
+  var lastCompany = document.getElementById('addCompany').value.trim();
   editingIndex = -1;
   document.getElementById('addFirstName').value = '';
   document.getElementById('addLastName').value  = '';
-  document.getElementById('addCompany').value = document.getElementById('customerName').value.trim();
+  document.getElementById('addCompany').value = lastCompany || document.getElementById('customerName').value.trim();
   document.getElementById('addPassBtn').className = 'pf-btn';
   document.getElementById('addFailBtn').className = 'pf-btn';
   pendingPhotos = [];
