@@ -874,7 +874,7 @@ function clearAddForm(skipConfirm) {
   editingIndex = -1;
   document.getElementById('addFirstName').value = '';
   document.getElementById('addLastName').value  = '';
-  document.getElementById('addCompany').value = '';
+  // Keep company name — it typically repeats across attendees
   document.getElementById('addPassBtn').className = 'pf-btn';
   document.getElementById('addFailBtn').className = 'pf-btn';
   pendingPhotos = [];
@@ -1258,15 +1258,20 @@ function buildPDF() {
     tableWidth: contentW,
     columnStyles: (function() {
       var hashW = 12;
-      var colW = (contentW - hashW) / 6;
+      var photoW = 35;
+      var remaining = contentW - hashW - photoW;
+      var colW = remaining / 5;
+      var companyExtra = colW * 0.3;
+      var otherW = colW - companyExtra / 4;
+      var compW = colW + companyExtra;
       return {
         0: { cellWidth: hashW, halign: 'center', cellPadding: { top: 3, bottom: 3, left: 2, right: 2 } },
-        1: { cellWidth: colW, halign: 'center' },
-        2: { cellWidth: colW, halign: 'center' },
-        3: { cellWidth: colW, halign: 'center' },
-        4: { cellWidth: colW, halign: 'center' },
-        5: { cellWidth: colW, halign: 'center', fontStyle: 'bold' },
-        6: { cellWidth: colW, halign: 'center' }
+        1: { cellWidth: otherW, halign: 'center' },
+        2: { cellWidth: otherW, halign: 'center' },
+        3: { cellWidth: compW, halign: 'center' },
+        4: { cellWidth: otherW, halign: 'center' },
+        5: { cellWidth: otherW, halign: 'center', fontStyle: 'bold' },
+        6: { cellWidth: photoW, halign: 'center' }
       };
     })(),
     didParseCell: function(data) {
@@ -1441,7 +1446,7 @@ function buildPDF() {
     var disclaimerLines = doc.splitTextToSize(disclaimer, disclaimerW);
     var lineH = 3.5;
     var disclaimerTotalH = disclaimerLines.length * lineH;
-    var disclaimerY = borderBottom - disclaimerTotalH + 1;
+    var disclaimerY = borderBottom - disclaimerTotalH - 1;
 
     // Centre Victaulic logo between signature and disclaimer
     var logoBottom = disclaimerY - 3;
