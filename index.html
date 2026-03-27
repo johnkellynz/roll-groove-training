@@ -662,6 +662,13 @@ var editingIndex  = -1;  // -1 = adding new, ≥0 = editing existing
 })();
 
 // ── UTILITIES ────────────────────────────────────────────
+function formatDateDDMMYYYY(dateStr) {
+  if (!dateStr) return '';
+  var parts = dateStr.split('-');
+  if (parts.length !== 3) return dateStr;
+  return parts[2] + ' ' + parts[1] + ' ' + parts[0];
+}
+
 function toTitleCase(el) {
   var v = el.value;
   var pos = el.selectionStart;
@@ -1177,7 +1184,7 @@ function buildPDF() {
 
   var c1 = margin + 5, c2 = margin + contentW/2 + 5;
   var r1=y+6, r2=y+18, r3=y+30;
-  infoCell('Date', s.date, c1, r1);
+  infoCell('Date', formatDateDDMMYYYY(s.date), c1, r1);
   infoCell('Training Type', s.trainingType, c2, r1);
   infoCell('Instructor', s.instructor + '  ·  ' + s.company, c1, r2);
   infoCell('Training Location', s.trainingLocation, c2, r2);
@@ -1361,11 +1368,11 @@ function buildPDF() {
       doc.text(v, x, yy + 5);
     }
 
-    certDetail('Date', s.date, col1x, cy);
+    certDetail('Date', formatDateDDMMYYYY(s.date), col1x, cy);
     certDetail('Training Location', s.trainingLocation, col2x, cy);
     cy += 14;
     certDetail('Instructor', s.instructor, col1x, cy);
-    certDetail('Customer Company', s.customerName, col2x, cy);
+    certDetail('Company Name', s.customerName, col2x, cy);
     cy += 14;
     certDetail('Roll Groove Tool', s.rollGrooveTool || '—', col1x, cy);
     certDetail('Training Type', s.trainingType, col2x, cy);
@@ -1384,7 +1391,7 @@ function buildPDF() {
     try {
       doc.addImage(makeSignatureImg(s.instructor), 'PNG', sigCx - sigImgW/2, cy - sigImgH - 1, sigImgW, sigImgH, undefined, 'FAST');
     } catch(e) {
-      doc.setFontSize(11); doc.setFont('helvetica', 'bolditalic');
+      doc.setFontSize(12); doc.setFont('helvetica', 'bolditalic');
       doc.setTextColor.apply(doc, navy);
       doc.text(s.instructor, sigCx, cy - 3, { align: 'center' });
     }
