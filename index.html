@@ -358,43 +358,64 @@ header {
 
 <div class="container">
 
-  <!-- STEP 1: SESSION INFO -->
+  <!-- DATE -->
   <div class="card">
-    <div class="card-title"><span class="step-badge">1</span> Session Information</div>
+    <div class="card-title">Date</div>
+    <div class="form-grid">
+      <div class="form-group form-full">
+        <input type="date" id="sessionDate" required>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 1: INSTRUCTOR INFORMATION -->
+  <div class="card">
+    <div class="card-title"><span class="step-badge">1</span> Instructor Information</div>
     <div class="form-grid">
 
       <div class="form-group form-full">
-        <label>Date</label>
-        <input type="date" id="sessionDate" required>
-      </div>
-
-      <div class="form-group form-full">
-        <label>Instructor Company Name</label>
-        <input type="text" id="companyName" placeholder="Instructor Company Name" autocapitalize="words" oninput="toTitleCase(this)" required>
+        <label>Company Name</label>
+        <input type="text" id="companyName" placeholder="Company Name" value="Victaulic" autocapitalize="words" oninput="toTitleCase(this)" required>
       </div>
 
       <div class="form-group">
-        <label>Instructor First Name</label>
+        <label>First Name</label>
         <input type="text" id="instructorFirstName" placeholder="First Name" autocapitalize="words" oninput="toTitleCase(this)" required>
       </div>
       <div class="form-group">
-        <label>Instructor Last Name</label>
+        <label>Last Name</label>
         <input type="text" id="instructorLastName" placeholder="Last Name" autocapitalize="words" oninput="toTitleCase(this)" required>
       </div>
 
+    </div>
+  </div>
+
+  <!-- STEP 2: CUSTOMER INFORMATION -->
+  <div class="card">
+    <div class="card-title"><span class="step-badge">2</span> Customer Information</div>
+    <div class="form-grid">
+
       <div class="form-group form-full">
-        <label>Customer Company Name</label>
-        <input type="text" id="customerName" placeholder="Customer Company Name" autocapitalize="words" oninput="toTitleCase(this)" required>
+        <label>Company Name</label>
+        <input type="text" id="customerName" placeholder="Company Name" autocapitalize="words" oninput="toTitleCase(this)" required>
       </div>
 
       <div class="form-group">
-        <label>Training Requested By — First Name</label>
+        <label>Requested By — First Name</label>
         <input type="text" id="trainingRequestedByFirst" placeholder="First Name" autocapitalize="words" oninput="toTitleCase(this)" required>
       </div>
       <div class="form-group">
-        <label>Training Requested By — Last Name</label>
+        <label>Requested By — Last Name</label>
         <input type="text" id="trainingRequestedByLast" placeholder="Last Name" autocapitalize="words" oninput="toTitleCase(this)" required>
       </div>
+
+    </div>
+  </div>
+
+  <!-- STEP 3: TRAINING INFORMATION -->
+  <div class="card">
+    <div class="card-title"><span class="step-badge">3</span> Training Information</div>
+    <div class="form-grid">
 
       <div class="form-group form-full">
         <label>Training Location</label>
@@ -437,9 +458,9 @@ header {
     </div>
   </div>
 
-  <!-- STEP 2: ATTENDEES -->
+  <!-- STEP 4: ATTENDEES -->
   <div class="card">
-    <div class="card-title"><span class="step-badge">2</span> Training Attendees</div>
+    <div class="card-title"><span class="step-badge">4</span> Attendees</div>
 
     <div class="add-form">
       <div class="add-form-grid">
@@ -496,9 +517,9 @@ header {
 
   </div>
 
-  <!-- STEP 3: EXPORT -->
+  <!-- STEP 5: EXPORT & SHARE -->
   <div class="card">
-    <div class="card-title"><span class="step-badge">3</span> Results</div>
+    <div class="card-title"><span class="step-badge">5</span> Export &amp; Share</div>
 
     <div class="action-row">
       <button class="btn btn-outline" onclick="downloadPDF()">
@@ -1508,7 +1529,7 @@ function saveEmailConfig() {
 // ── RESET ────────────────────────────────────────────────
 function resetAll() {
   if (!confirm('Reset everything? This will clear all session information and the attendee list.')) return;
-  document.getElementById('companyName').value = '';
+  document.getElementById('companyName').value = 'Victaulic';
   document.getElementById('instructorFirstName').value = '';
   document.getElementById('instructorLastName').value  = '';
   document.getElementById('customerName').value             = '';
