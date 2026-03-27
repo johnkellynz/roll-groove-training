@@ -479,19 +479,6 @@ header {
       </div>
 
       <div class="add-form-bottom">
-        <!-- Pass / Fail -->
-        <div class="pf-row">
-          <div class="pf-label">Result</div>
-          <div class="pf-btns">
-            <button class="pf-btn" id="addPassBtn" onclick="setPendingResult('pass')">&#10003; PASS</button>
-            <button class="pf-btn" id="addFailBtn" onclick="setPendingResult('fail')">&#10007; FAIL</button>
-          </div>
-          <div id="failCommentsWrap" style="display:none;margin-top:8px;">
-            <div class="pf-label" style="margin-bottom:4px;">Fail Reason <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(optional)</span></div>
-            <textarea id="addFailComments" rows="2" placeholder="Explain why the attendee failed..." style="width:100%;padding:8px 10px;border-radius:7px;border:1.5px solid var(--border);font-size:0.85rem;font-family:inherit;resize:vertical;box-sizing:border-box;"></textarea>
-          </div>
-        </div>
-
         <!-- Photos -->
         <div class="pending-photos-row">
           <div class="pf-label">Photos <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(optional — max 5)</span></div>
@@ -506,10 +493,23 @@ header {
             </button>
           </div>
         </div>
+
+        <!-- Pass / Fail -->
+        <div class="pf-row">
+          <div class="pf-label">Result</div>
+          <div class="pf-btns">
+            <button class="pf-btn" id="addPassBtn" onclick="setPendingResult('pass')">&#10003; PASS</button>
+            <button class="pf-btn" id="addFailBtn" onclick="setPendingResult('fail')">&#10007; FAIL</button>
+          </div>
+          <div id="failCommentsWrap" style="display:none;margin-top:8px;">
+            <div class="pf-label" style="margin-bottom:4px;">Fail Reason <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(optional)</span></div>
+            <textarea id="addFailComments" rows="2" placeholder="Explain why the attendee failed..." style="width:100%;padding:8px 10px;border-radius:7px;border:1.5px solid var(--border);font-size:0.85rem;font-family:inherit;resize:vertical;box-sizing:border-box;"></textarea>
+          </div>
+        </div>
       </div>
 
       <div style="display:flex;gap:10px;margin-top:4px;">
-        <button id="addAttendeeBtn" class="btn btn-primary" style="flex:1;padding:14px;font-size:1rem;justify-content:center;" onclick="addAttendee()">&#43; Add Groove Entry</button>
+        <button id="addAttendeeBtn" class="btn btn-primary" style="flex:1;padding:14px;font-size:1rem;justify-content:center;" onclick="addAttendee()">&#43; Log Attendee</button>
         <button class="btn btn-outline" style="flex:1;padding:14px;font-size:1rem;justify-content:center;" onclick="clearAddForm()">&#8635; Reset Form</button>
       </div>
     </div>
@@ -761,7 +761,7 @@ function clearAddForm() {
   pendingResult = null;
   renderPendingThumbs();
   var btn = document.getElementById('addAttendeeBtn');
-  btn.textContent = '+ Add Attendee';
+  btn.textContent = '+ Log Attendee';
   btn.style.background = '';
   document.getElementById('addFirstName').focus();
 }
@@ -1561,7 +1561,7 @@ function resetAll() {
   document.getElementById('addPassBtn').className = 'pf-btn';
   document.getElementById('addFailBtn').className = 'pf-btn';
   var btn = document.getElementById('addAttendeeBtn');
-  if (btn) { btn.textContent = '+ Add Attendee'; btn.style.background = ''; }
+  if (btn) { btn.textContent = '+ Log Attendee'; btn.style.background = ''; }
   renderAttendees();
 }
 </script>
