@@ -464,6 +464,10 @@ header {
 
     <div class="add-form">
       <div class="add-form-grid">
+        <div class="form-group" style="margin:0; grid-column: 1 / -1;">
+          <label>Company Name</label>
+          <input type="text" id="addCompany" placeholder="Attendee's Company" autocapitalize="words" oninput="toTitleCase(this)" onkeydown="onAttendeeKeydown(event)">
+        </div>
         <div class="form-group" style="margin:0;">
           <label>First Name</label>
           <input type="text" id="addFirstName" placeholder="First Name" autocapitalize="words" oninput="toTitleCase(this)" onkeydown="onAttendeeKeydown(event)">
@@ -471,10 +475,6 @@ header {
         <div class="form-group" style="margin:0;">
           <label>Last Name</label>
           <input type="text" id="addLastName" placeholder="Last Name" autocapitalize="words" oninput="toTitleCase(this)" onkeydown="onAttendeeKeydown(event)">
-        </div>
-        <div class="form-group" style="margin:0; grid-column: 1 / -1;">
-          <label>Company Name</label>
-          <input type="text" id="addCompany" placeholder="Attendee's Company" autocapitalize="words" oninput="toTitleCase(this)" onkeydown="onAttendeeKeydown(event)">
         </div>
       </div>
 
