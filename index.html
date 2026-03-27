@@ -400,13 +400,15 @@ header {
 
       <div class="form-group form-full">
         <label>Training Type</label>
-        <select id="trainingTypeSelect">
+        <select id="trainingTypeSelect" onchange="onTrainingTypeChange()">
           <option value="Roll Groove Training">Roll Groove Training</option>
           <option value="Installation Training">Installation Training</option>
           <option value="OGS &amp; AGS">OGS &amp; AGS</option>
-          <option value="OGS (Original Groove System)">OGS</option>
-          <option value="AGS (Advanced Groove System)">AGS</option>
+          <option value="OGS (Original Groove System)">OGS (Original Groove System)</option>
+          <option value="AGS (Advanced Groove System)">AGS (Advanced Groove System)</option>
+          <option value="Other">Other...</option>
         </select>
+        <input type="text" id="trainingTypeOther" placeholder="Enter training type" autocapitalize="words" oninput="toTitleCase(this)" style="display:none;margin-top:0.4rem;">
       </div>
 
       <div class="form-group form-full">
@@ -651,7 +653,11 @@ function getSessionInfo() {
     customerName:        document.getElementById('customerName').value.trim() || '(not set)',
     trainingRequestedBy: (document.getElementById('trainingRequestedByFirst').value.trim() + ' ' + document.getElementById('trainingRequestedByLast').value.trim()).trim() || '(not set)',
     trainingLocation:    document.getElementById('trainingLocation').value.trim() || '(not set)',
-    trainingType:        document.getElementById('trainingTypeSelect').value,
+    trainingType:        (function() {
+      var sel = document.getElementById('trainingTypeSelect').value;
+      if (sel === 'Other') return document.getElementById('trainingTypeOther').value.trim() || 'Other';
+      return sel;
+    })(),
     sessionNotes:        document.getElementById('sessionNotes').value.trim() || '',
     rollGrooveTool:      (function() {
       var sel = document.getElementById('rollGrooveToolSelect').value;
@@ -1509,6 +1515,8 @@ function resetAll() {
   document.getElementById('trainingLocation').value         = '';
   document.getElementById('sessionNotes').value        = '';
   document.getElementById('trainingTypeSelect').value  = 'Roll Groove Training';
+  document.getElementById('trainingTypeOther').value    = '';
+  document.getElementById('trainingTypeOther').style.display = 'none';
   document.getElementById('rollGrooveToolSelect').value = '';
   document.getElementById('rollGrooveToolOther').value  = '';
   document.getElementById('rollGrooveToolOther').style.display = 'none';
