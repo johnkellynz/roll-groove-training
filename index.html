@@ -1364,7 +1364,7 @@ function buildPDF() {
     doc.text('has successfully attended the', pageW/2, cy, { align: 'center' });
 
     cy += 9;
-    doc.setFontSize(14); doc.setFont('helvetica', 'bold');
+    doc.setFontSize(18); doc.setFont('helvetica', 'bold');
     doc.setTextColor.apply(doc, orange);
     doc.text(s.trainingType, pageW/2, cy, { align: 'center' });
 
@@ -1437,17 +1437,17 @@ function buildPDF() {
     doc.text('Instructor Signature', sigCx, cy, { align: 'center' });
 
     // Calculate disclaimer position first
-    var certLogoH = 18;
+    var certLogoH = 19.8;
     var certLogoW = orangeLogoDataUrl ? certLogoH * orangeLogoAspect : 0;
-    var borderBottom = 8 + (pageH - 8 - 9);  // inner border bottom Y = pageH - 9
+    var borderBottom = pageH - 9;  // inner border bottom edge
     var disclaimerMargin = margin + 6;
     var disclaimerW = contentW - 12;
     doc.setFontSize(7); doc.setFont('helvetica', 'normal');
     var disclaimer = 'Persons installing Victaulic products must read, be familiar with and follow Victaulic\u2019s detailed installation instructions and safety warnings applicable to the specific product. Persons operating Victaulic tools must read, be familiar with and follow the latest applicable Victaulic tool operating and safety instructions. This certificate is not intended to be a substitute for those instructions.';
     var disclaimerLines = doc.splitTextToSize(disclaimer, disclaimerW);
-    var lineH = 3.5;
+    var lineH = 3;
     var disclaimerTotalH = disclaimerLines.length * lineH;
-    var disclaimerY = borderBottom - disclaimerTotalH - 1;
+    var disclaimerY = borderBottom - disclaimerTotalH - 2;
 
     // Centre Victaulic logo between signature and disclaimer
     var logoBottom = disclaimerY - 3;
