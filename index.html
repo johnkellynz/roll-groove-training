@@ -492,15 +492,15 @@ header {
           </div>
         </div>
 
-        <!-- Groove Photos -->
+        <!-- Photos -->
         <div class="pending-photos-row">
-          <div class="pf-label">Groove Photos <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(optional)</span></div>
+          <div class="pf-label">Photos <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(optional — max 5)</span></div>
           <div class="pending-photos-wrap" id="pendingThumbs">
-            <button class="photo-add-btn large" onclick="triggerTakePhoto(-1)" title="Take a photo with your camera">
+            <button class="photo-add-btn" onclick="triggerTakePhoto(-1)" title="Take a photo with your camera">
               <span class="cam-icon">&#128247;</span>
               <span>Take Photo</span>
             </button>
-            <button class="photo-add-btn large" onclick="triggerAddPhoto(-1)" title="Choose from your files">
+            <button class="photo-add-btn" onclick="triggerAddPhoto(-1)" title="Choose from your files">
               <span class="cam-icon">&#128444;&#xFE0F;</span>
               <span>Choose File</span>
             </button>
@@ -508,7 +508,10 @@ header {
         </div>
       </div>
 
-      <button id="addAttendeeBtn" class="btn btn-primary" style="width:100%;padding:14px;font-size:1rem;" onclick="addAttendee()">&#43; Add Attendee</button>
+      <div style="display:flex;gap:10px;margin-top:4px;">
+        <button id="addAttendeeBtn" class="btn btn-primary" style="flex:1;padding:14px;font-size:1rem;justify-content:center;" onclick="addAttendee()">&#43; Add Groove Entry</button>
+        <button class="btn btn-outline" style="flex:1;padding:14px;font-size:1rem;justify-content:center;" onclick="clearAddForm()">&#8635; Reset Form</button>
+      </div>
     </div>
 
     <div id="attendeeListWrap">
@@ -576,7 +579,7 @@ header {
 var attendees = [];
 var lastRemoved = null;
 var undoTimer  = null;
-var MAX_PHOTOS = 4;
+var MAX_PHOTOS = 5;
 var currentPhotoIdx = -1;
 var pendingPhotos = [];
 var pendingResult = null;
