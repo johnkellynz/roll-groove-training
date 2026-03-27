@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Roll Groove Training</title>
 <link rel="icon" type="image/png" href="RG2300.png">
+<link rel="apple-touch-icon" href="RG2300.png">
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
@@ -302,9 +303,12 @@ header {
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
-.action-row .btn { width: 100%; justify-content: flex-start; }
+.action-row .btn { width: 100%; justify-content: flex-start; box-sizing: border-box; overflow: hidden; text-overflow: ellipsis; }
 .action-row .email-config-wrap { position: relative; }
 .action-row .email-config-wrap .btn { width: 100%; }
+@media (max-width: 520px) {
+  .action-row { grid-template-columns: 1fr; }
+}
 
 /* STATUS MESSAGE */
 #statusMsg {
@@ -578,6 +582,8 @@ var logoDataUrl      = null;
 var logoNavyDataUrl  = null;  // logo composited on navy (for header)
 var logoWhiteDataUrl = null;  // logo composited on white (for footer)
 var logoAspect       = 4.5;   // fallback width/height ratio if unknown
+var orangeLogoDataUrl = null; // dark/orange logo for certificates
+var orangeLogoAspect  = 4.5;
 var editingIndex  = -1;  // -1 = adding new, ≥0 = editing existing
 
 // ── INIT ─────────────────────────────────────────────────
@@ -631,6 +637,20 @@ var editingIndex  = -1;  // -1 = adding new, ≥0 = editing existing
     img.src = names[i] + '?_=' + Date.now(); // cache-bust
   }
   tryLogo(0);
+
+  // Load the orange/dark Victaulic logo for certificates
+  var orangeImg = new Image();
+  orangeImg.onload = function() {
+    orangeLogoAspect = orangeImg.naturalWidth / orangeImg.naturalHeight;
+    var cv = document.createElement('canvas');
+    cv.width = orangeImg.naturalWidth; cv.height = orangeImg.naturalHeight;
+    var ctx = cv.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, cv.width, cv.height);
+    ctx.drawImage(orangeImg, 0, 0);
+    orangeLogoDataUrl = cv.toDataURL('image/png');
+  };
+  orangeImg.src = 'Primary Logo Victaulic Orange.png?_=' + Date.now();
 })();
 
 // ── UTILITIES ────────────────────────────────────────────
@@ -1057,7 +1077,13 @@ function buildPDF() {
   doc.rect(0, 0, pageW, 22, 'F');
   doc.setFillColor.apply(doc, orange);
   doc.rect(0, 22, pageW, 2.5, 'F');
-  // "TRAINING RECORD" text — top right of header (no logo on summary page)
+  // Victaulic logo — top left of header
+  if (logoNavyDataUrl) {
+    var logoImgH = 14;
+    var logoImgW = logoImgH * logoAspect;
+    doc.addImage(logoNavyDataUrl, 'PNG', margin, (22 - logoImgH) / 2, logoImgW, logoImgH, undefined, 'FAST');
+  }
+  // "TRAINING RECORD" text — top right of header
   doc.setTextColor.apply(doc, white);
   doc.setFontSize(13); doc.setFont('helvetica', 'bold');
   doc.text('TRAINING RECORD', pageW - margin, 14, { align: 'right' });
@@ -1065,7 +1091,7 @@ function buildPDF() {
   var y = 30;
 
   // Session info box
-  var boxH = 48;
+  var boxH = 38;
   doc.setFillColor.apply(doc, lightGrey);
   doc.roundedRect(margin, y, contentW, boxH, 2, 2, 'F');
   doc.setDrawColor.apply(doc, midGrey);
@@ -1085,14 +1111,13 @@ function buildPDF() {
   }
 
   var c1 = margin + 5, c2 = margin + contentW/2 + 5;
-  var r1=y+8, r2=y+20, r3=y+32, r4=y+44;
+  var r1=y+8, r2=y+20, r3=y+32;
   infoCell('Date', s.date, c1, r1);
   infoCell('Training Type', s.trainingType, c2, r1);
   infoCell('Instructor', s.instructor + '  ·  ' + s.company, c1, r2);
   infoCell('Training Location', s.trainingLocation, c2, r2);
   infoCell('Customer', s.customerName, c1, r3);
   infoCell('Roll Groove Tool', s.rollGrooveTool || '(not set)', c2, r3);
-  infoCell('Total Attendees', String(attendees.length), c1, r4);
 
   y += boxH + 4;
 
@@ -1118,14 +1143,13 @@ function buildPDF() {
     margin: { left: margin, right: margin },
     head: [['#', 'First Name', 'Last Name', 'Company', 'Result', 'Photos']],
     body: attendees.map(function(a, i) {
-      var photoCount = (a.photos || []).length;
       return [
         String(i+1),
         a.firstName || '',
         a.lastName  || '',
         a.company   || '',
         (a.result === 'pass' ? 'PASS' : a.result === 'fail' ? 'FAIL' : '—'),
-        String(photoCount)
+        '' // photos drawn via didDrawCell
       ];
     }),
     theme: 'grid',
@@ -1147,13 +1171,44 @@ function buildPDF() {
       2: { cellWidth: 'auto', halign: 'center' },
       3: { cellWidth: 'auto', halign: 'center' },
       4: { cellWidth: 18, halign: 'center', fontStyle: 'bold' },
-      5: { cellWidth: 16, halign: 'center' }
+      5: { cellWidth: 40, halign: 'center' }
     },
     didParseCell: function(data) {
       if (data.section === 'body' && data.column.index === 4) {
         var v = data.cell.raw;
         if (v === 'PASS') { data.cell.styles.textColor = [0, 140, 60]; }
         else if (v === 'FAIL') { data.cell.styles.textColor = [200, 30, 30]; }
+      }
+    },
+    didDrawCell: function(data) {
+      if (data.section === 'body' && data.column.index === 5) {
+        var rowIdx = data.row.index;
+        var photos = (attendees[rowIdx] && attendees[rowIdx].photos) ? attendees[rowIdx].photos : [];
+        var cellX = data.cell.x;
+        var cellY = data.cell.y;
+        var cellW = data.cell.width;
+        var cellH = data.cell.height;
+        var boxSize = 7;
+        var gap = 2;
+        var totalW = 4 * boxSize + 3 * gap;
+        var startX = cellX + (cellW - totalW) / 2;
+        var startY = cellY + (cellH - boxSize) / 2;
+        for (var p = 0; p < 4; p++) {
+          var bx = startX + p * (boxSize + gap);
+          if (photos[p]) {
+            try {
+              var fmt = photos[p].indexOf('data:image/png') === 0 ? 'PNG' : 'JPEG';
+              doc.addImage(photos[p], fmt, bx, startY, boxSize, boxSize, undefined, 'FAST');
+            } catch(e) {
+              doc.setFillColor(230, 230, 235);
+              doc.rect(bx, startY, boxSize, boxSize, 'F');
+            }
+          } else {
+            doc.setDrawColor(200, 200, 205);
+            doc.setLineWidth(0.3);
+            doc.rect(bx, startY, boxSize, boxSize, 'S');
+          }
+        }
       }
     }
   });
@@ -1290,6 +1345,15 @@ function buildPDF() {
     doc.setFontSize(6.5); doc.setFont('helvetica', 'bold');
     doc.setTextColor.apply(doc, navy);
     doc.text(s.instructor, sigCx, cy, { align: 'center' });
+
+    // Victaulic orange logo under signature
+    if (orangeLogoDataUrl) {
+      cy += 8;
+      var certLogoH = 12;
+      var certLogoW = certLogoH * orangeLogoAspect;
+      doc.addImage(orangeLogoDataUrl, 'PNG', sigCx - certLogoW/2, cy, certLogoW, certLogoH, undefined, 'FAST');
+      cy += certLogoH;
+    }
 
     // Photos (if any)
     var photos = attendee.photos || [];
