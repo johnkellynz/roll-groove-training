@@ -487,15 +487,11 @@ header {
             <button class="pf-btn" id="addPassBtn" onclick="setPendingResult('pass')">&#10003; PASS</button>
             <button class="pf-btn" id="addFailBtn" onclick="setPendingResult('fail')">&#10007; FAIL</button>
           </div>
-          <div id="failCommentsWrap" style="display:none;margin-top:8px;">
-            <div class="pf-label" style="margin-bottom:4px;">Fail Reason <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(optional)</span></div>
-            <textarea id="addFailComments" rows="2" placeholder="Explain why the attendee failed..." style="width:100%;padding:8px 10px;border-radius:7px;border:1.5px solid var(--border);font-size:0.85rem;font-family:inherit;resize:vertical;box-sizing:border-box;"></textarea>
-          </div>
         </div>
 
         <!-- Photos -->
         <div class="pending-photos-row">
-          <div class="pf-label">Photos <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(optional — max 5)</span></div>
+          <div class="pf-label">Photos <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(optional — max 4)</span></div>
           <div class="pending-photos-wrap" id="pendingThumbs">
             <button class="pf-btn" onclick="triggerTakePhoto(-1)" title="Take a photo with your camera">
               &#128248; Take Photo
@@ -578,12 +574,14 @@ header {
 var attendees = [];
 var lastRemoved = null;
 var undoTimer  = null;
-var MAX_PHOTOS = 5;
+var MAX_PHOTOS = 4;
 var currentPhotoIdx = -1;
 var pendingPhotos = [];
 var pendingResult = null;
-var logoDataUrl   = null;
-var logoAspect    = 4.5; // fallback width/height ratio if unknown
+var logoDataUrl      = null;
+var logoNavyDataUrl  = null;  // logo composited on navy (for header)
+var logoWhiteDataUrl = null;  // logo composited on white (for footer)
+var logoAspect       = 4.5;   // fallback width/height ratio if unknown
 var editingIndex  = -1;  // -1 = adding new, ≥0 = editing existing
 
 // ── INIT ─────────────────────────────────────────────────
@@ -607,10 +605,31 @@ var editingIndex  = -1;  // -1 = adding new, ≥0 = editing existing
     var img = new Image();
     img.onload = function() {
       logoAspect = img.naturalWidth / img.naturalHeight;
+      var w = img.naturalWidth, h = img.naturalHeight;
+
+      // Raw logo (transparent)
       var cv = document.createElement('canvas');
-      cv.width = img.naturalWidth; cv.height = img.naturalHeight;
+      cv.width = w; cv.height = h;
       cv.getContext('2d').drawImage(img, 0, 0);
       logoDataUrl = cv.toDataURL('image/png');
+
+      // Logo on navy background (for PDF header)
+      var cvN = document.createElement('canvas');
+      cvN.width = w; cvN.height = h;
+      var ctxN = cvN.getContext('2d');
+      ctxN.fillStyle = '#1a1a2e';
+      ctxN.fillRect(0, 0, w, h);
+      ctxN.drawImage(img, 0, 0);
+      logoNavyDataUrl = cvN.toDataURL('image/png');
+
+      // Logo on white background (for PDF footer)
+      var cvW = document.createElement('canvas');
+      cvW.width = w; cvW.height = h;
+      var ctxW = cvW.getContext('2d');
+      ctxW.fillStyle = '#ffffff';
+      ctxW.fillRect(0, 0, w, h);
+      ctxW.drawImage(img, 0, 0);
+      logoWhiteDataUrl = cvW.toDataURL('image/png');
     };
     img.onerror = function() { tryLogo(i + 1); };
     img.src = names[i] + '?_=' + Date.now(); // cache-bust
@@ -707,7 +726,7 @@ function addAttendee() {
   var fn = document.getElementById('addFirstName').value.trim();
   var ln = document.getElementById('addLastName').value.trim();
   var co = document.getElementById('addCompany').value.trim();
-  var fc = (pendingResult === 'fail') ? document.getElementById('addFailComments').value.trim() : '';
+  var fc = '';
   if (!fn && !ln) {
     alert('Please enter at least a first or last name.');
     document.getElementById('addFirstName').focus();
@@ -739,13 +758,6 @@ function startEditAttendee(i) {
   renderPendingThumbs();
   document.getElementById('addPassBtn').className = 'pf-btn' + (pendingResult === 'pass' ? ' active-pass' : '');
   document.getElementById('addFailBtn').className = 'pf-btn' + (pendingResult === 'fail' ? ' active-fail' : '');
-  if (pendingResult === 'fail') {
-    document.getElementById('failCommentsWrap').style.display = 'block';
-    document.getElementById('addFailComments').value = a.failComments || '';
-  } else {
-    document.getElementById('failCommentsWrap').style.display = 'none';
-    document.getElementById('addFailComments').value = '';
-  }
   // Update button label
   document.getElementById('addAttendeeBtn').textContent = '✓ Save Changes';
   document.getElementById('addAttendeeBtn').style.background = '#3b5bdb';
@@ -758,8 +770,6 @@ function clearAddForm() {
   document.getElementById('addFirstName').value = '';
   document.getElementById('addLastName').value  = '';
   document.getElementById('addCompany').value = document.getElementById('customerName').value.trim();
-  document.getElementById('addFailComments').value = '';
-  document.getElementById('failCommentsWrap').style.display = 'none';
   document.getElementById('addPassBtn').className = 'pf-btn';
   document.getElementById('addFailBtn').className = 'pf-btn';
   pendingPhotos = [];
@@ -775,8 +785,6 @@ function setPendingResult(val) {
   pendingResult = (pendingResult === val) ? null : val;
   document.getElementById('addPassBtn').className = 'pf-btn' + (pendingResult === 'pass' ? ' active-pass' : '');
   document.getElementById('addFailBtn').className = 'pf-btn' + (pendingResult === 'fail' ? ' active-fail' : '');
-  document.getElementById('failCommentsWrap').style.display = (pendingResult === 'fail') ? 'block' : 'none';
-  if (pendingResult !== 'fail') document.getElementById('addFailComments').value = '';
 }
 
 function setAttendeeResult(i, val) {
@@ -850,7 +858,6 @@ function renderAttendees() {
       '<td style="min-width:120px;">' +
         '<div style="display:flex;flex-direction:column;gap:5px;">' +
           badge(a.result) +
-          (a.result === 'fail' && a.failComments ? '<div style="font-size:0.72rem;color:#c0392b;font-style:italic;max-width:160px;">' + escHtml(a.failComments) + '</div>' : '') +
           '<div style="display:flex;gap:4px;">' +
             '<button class="' + passClass + '" onclick="setAttendeeResult(' + i + ',\'pass\')">&#10003; Pass</button>' +
             '<button class="' + failClass + '" onclick="setAttendeeResult(' + i + ',\'fail\')">&#10007; Fail</button>' +
@@ -939,10 +946,10 @@ function renderPendingThumbs() {
   }).join('');
   var canAdd = pendingPhotos.length < MAX_PHOTOS;
   var takeBtn = canAdd
-    ? '<button class="photo-add-btn large" onclick="triggerTakePhoto(-1)" title="Take photo"><span class="cam-icon">&#128247;</span><span>Take Photo</span></button>'
+    ? '<button class="pf-btn" onclick="triggerTakePhoto(-1)" title="Take photo">&#128248; Take Photo</button>'
     : '';
   var addBtn = canAdd
-    ? '<button class="photo-add-btn large" onclick="triggerAddPhoto(-1)" title="Choose file"><span class="cam-icon">&#128444;&#xFE0F;</span><span>Choose File</span></button>'
+    ? '<button class="pf-btn" onclick="triggerAddPhoto(-1)" title="Choose file">&#128193; Choose File</button>'
     : '';
   wrap.innerHTML = thumbs + takeBtn + addBtn;
 }
@@ -1016,10 +1023,11 @@ function makeSignatureImg(name) {
 
 // ── PDF GENERATION ───────────────────────────────────────
 function addFooterLogo(doc, pageW, pageH) {
-  if (logoDataUrl) {
+  var src = logoWhiteDataUrl || logoDataUrl;
+  if (src) {
     var lh = 13.5;
     var lw = Math.min(lh * logoAspect, 82);
-    doc.addImage(logoDataUrl, 'PNG', pageW/2 - lw/2, pageH - lh - 10, lw, lh, undefined, 'FAST');
+    doc.addImage(src, 'PNG', pageW/2 - lw/2, pageH - lh - 10, lw, lh, undefined, 'FAST');
   }
 }
 
@@ -1053,11 +1061,11 @@ function buildPDF() {
   doc.rect(0, 0, pageW, 22, 'F');
   doc.setFillColor.apply(doc, orange);
   doc.rect(0, 22, pageW, 2.5, 'F');
-  // Victaulic logo on header
-  if (logoDataUrl) {
+  // Victaulic logo on header (navy-composited — no white box)
+  if (logoNavyDataUrl) {
     var logoImgH = 14;
     var logoImgW = logoImgH * logoAspect;
-    doc.addImage(logoDataUrl, 'PNG', margin, (22 - logoImgH) / 2, logoImgW, logoImgH, undefined, 'FAST');
+    doc.addImage(logoNavyDataUrl, 'PNG', margin, (22 - logoImgH) / 2, logoImgW, logoImgH, undefined, 'FAST');
     // "TRAINING RECORD" text after logo
     doc.setTextColor.apply(doc, white);
     doc.setFontSize(13); doc.setFont('helvetica', 'bold');
@@ -1071,7 +1079,7 @@ function buildPDF() {
   var y = 30;
 
   // Session info box
-  var boxH = 60;
+  var boxH = 48;
   doc.setFillColor.apply(doc, lightGrey);
   doc.roundedRect(margin, y, contentW, boxH, 2, 2, 'F');
   doc.setDrawColor.apply(doc, midGrey);
@@ -1091,15 +1099,14 @@ function buildPDF() {
   }
 
   var c1 = margin + 5, c2 = margin + contentW/2 + 5;
-  var r1=y+9, r2=y+22, r3=y+35, r4=y+48;
+  var r1=y+8, r2=y+20, r3=y+32, r4=y+44;
   infoCell('Date', s.date, c1, r1);
   infoCell('Training Type', s.trainingType, c2, r1);
   infoCell('Instructor', s.instructor + '  ·  ' + s.company, c1, r2);
   infoCell('Training Location', s.trainingLocation, c2, r2);
   infoCell('Customer', s.customerName, c1, r3);
-  infoCell('Training Requested By', s.trainingRequestedBy, c2, r3);
-  infoCell('Roll Groove Tool', s.rollGrooveTool || '(not set)', c1, r4);
-  infoCell('Total Attendees', String(attendees.length), c2, r4);
+  infoCell('Roll Groove Tool', s.rollGrooveTool || '(not set)', c2, r3);
+  infoCell('Total Attendees', String(attendees.length), c1, r4);
 
   y += boxH + 4;
 
@@ -1123,15 +1130,16 @@ function buildPDF() {
   doc.autoTable({
     startY: y,
     margin: { left: margin, right: margin },
-    head: [['#', 'First Name', 'Last Name', 'Company', 'Result', 'Comments']],
+    head: [['#', 'First Name', 'Last Name', 'Company', 'Result', 'Photos']],
     body: attendees.map(function(a, i) {
+      var photoCount = (a.photos || []).length;
       return [
         String(i+1),
         a.firstName || '',
         a.lastName  || '',
         a.company   || '',
         (a.result   || '—').toUpperCase(),
-        (a.result === 'fail' && a.failComments) ? a.failComments : ''
+        String(photoCount)
       ];
     }),
     theme: 'grid',
@@ -1149,11 +1157,11 @@ function buildPDF() {
     alternateRowStyles: { fillColor: [250, 250, 252] },
     columnStyles: {
       0: { cellWidth: 10, halign: 'center' },
-      1: { cellWidth: 32 },
-      2: { cellWidth: 32 },
-      3: { cellWidth: 40 },
+      1: { cellWidth: 'auto', halign: 'center' },
+      2: { cellWidth: 'auto', halign: 'center' },
+      3: { cellWidth: 'auto', halign: 'center' },
       4: { cellWidth: 18, halign: 'center', fontStyle: 'bold' },
-      5: { cellWidth: 'auto', fontStyle: 'italic' }
+      5: { cellWidth: 16, halign: 'center' }
     },
     didParseCell: function(data) {
       if (data.section === 'body' && data.column.index === 4) {
@@ -1161,17 +1169,12 @@ function buildPDF() {
         if (v === 'PASS') { data.cell.styles.textColor = [0, 140, 60]; }
         else if (v === 'FAIL') { data.cell.styles.textColor = [200, 30, 30]; }
       }
-      if (data.section === 'body' && data.column.index === 5) {
-        data.cell.styles.textColor = [180, 30, 30];
-        data.cell.styles.fontSize = 7;
-      }
     }
   });
 
   // Footer p1 — logo centred at bottom
   var passingCount = attendees.filter(function(a){ return a.result !== 'fail'; }).length;
   var totalPages = 1 + passingCount;
-  addFooterLogo(doc, pageW, pageH);
 
   // ═══════════════════════════════════════════════════════
   // PAGES 2+ — CERTIFICATES OF ATTENDANCE (landscape)
