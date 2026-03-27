@@ -1393,7 +1393,7 @@ function buildPDF() {
     try {
       doc.addImage(makeSignatureImg(s.instructor), 'PNG', sigCx - sigImgW/2, cy - sigImgH - 1, sigImgW, sigImgH, undefined, 'FAST');
     } catch(e) {
-      doc.setFontSize(13); doc.setFont('helvetica', 'bolditalic');
+      doc.setFontSize(14); doc.setFont('helvetica', 'bolditalic');
       doc.setTextColor.apply(doc, navy);
       doc.text(s.instructor, sigCx, cy - 3, { align: 'center' });
     }
@@ -1422,6 +1422,12 @@ function buildPDF() {
         cy = logoY + certLogoH;
       }
     }
+
+    // Disclaimer text at bottom of certificate
+    doc.setFontSize(5); doc.setFont('helvetica', 'normal');
+    doc.setTextColor(180, 180, 180);
+    var disclaimer = 'Persons installing Victaulic products must read, be familiar with and follow Victaulic\u2019s detailed installation instructions and safety warnings applicable to the specific product. Persons operating Victaulic tools must read, be familiar with and follow the latest applicable Victaulic tool operating and safety instructions. This certificate is not intended to be a substitute for those instructions.';
+    doc.text(disclaimer, margin, pageH - 5, { maxWidth: contentW });
 
   });
 
