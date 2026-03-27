@@ -1262,8 +1262,8 @@ function buildPDF() {
       0: { cellWidth: 12, halign: 'center', cellPadding: { top: 3, bottom: 3, left: 2, right: 2 } },
       1: { cellWidth: 38, halign: 'center' },
       2: { cellWidth: 38, halign: 'center' },
-      3: { cellWidth: 'auto', halign: 'center' },
-      4: { cellWidth: 'auto', halign: 'center' },
+      3: { cellWidth: 30, halign: 'center' },
+      4: { cellWidth: 30, halign: 'center' },
       5: { cellWidth: 24, halign: 'center', fontStyle: 'bold' },
       6: { cellWidth: 38, halign: 'center' }
     },
@@ -1432,14 +1432,14 @@ function buildPDF() {
     var certLogoH = 18;
     var certLogoW = orangeLogoDataUrl ? certLogoH * orangeLogoAspect : 0;
     var borderBottom = pageH - 8 - 9;  // inner border bottom edge
-    var disclaimerMargin = margin + 4;
-    var disclaimerW = contentW - 8;
-    doc.setFontSize(6); doc.setFont('helvetica', 'normal');
+    var disclaimerMargin = margin + 6;
+    var disclaimerW = contentW - 12;
+    doc.setFontSize(7); doc.setFont('helvetica', 'normal');
     var disclaimer = 'Persons installing Victaulic products must read, be familiar with and follow Victaulic\u2019s detailed installation instructions and safety warnings applicable to the specific product. Persons operating Victaulic tools must read, be familiar with and follow the latest applicable Victaulic tool operating and safety instructions. This certificate is not intended to be a substitute for those instructions.';
     var disclaimerLines = doc.splitTextToSize(disclaimer, disclaimerW);
-    var lineH = 3;
+    var lineH = 3.5;
     var disclaimerTotalH = disclaimerLines.length * lineH;
-    var disclaimerY = borderBottom - disclaimerTotalH - 2;
+    var disclaimerY = borderBottom - disclaimerTotalH - 4;
 
     // Centre Victaulic logo between signature and disclaimer
     var logoBottom = disclaimerY - 3;
@@ -1451,8 +1451,8 @@ function buildPDF() {
     }
 
     // Draw disclaimer text above bottom border
-    doc.setFontSize(6); doc.setFont('helvetica', 'normal');
-    doc.setTextColor(180, 180, 180);
+    doc.setFontSize(7); doc.setFont('helvetica', 'normal');
+    doc.setTextColor(150, 150, 150);
     doc.text(disclaimerLines, disclaimerMargin, disclaimerY);
 
   });
