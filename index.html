@@ -493,19 +493,15 @@ header {
         <div class="pending-photos-row">
           <div class="pf-label">Photos <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(optional — max 4)</span></div>
           <div class="pending-photos-wrap" id="pendingThumbs">
-            <button class="pf-btn" onclick="triggerTakePhoto(-1)" title="Take a photo with your camera">
-              &#128248; Take Photo
-            </button>
-            <button class="pf-btn" onclick="triggerAddPhoto(-1)" title="Choose from your files">
-              &#128193; Choose File
-            </button>
+            <button class="photo-add-btn" onclick="triggerTakePhoto(-1)" title="Take a photo with your camera"><span class="cam-icon">&#128247;</span><span>Take Photo</span></button>
+            <button class="photo-add-btn" onclick="triggerAddPhoto(-1)" title="Choose from your files"><span class="cam-icon">&#128193;</span><span>Choose File</span></button>
           </div>
         </div>
       </div>
 
       <div style="display:flex;gap:10px;margin-top:4px;">
-        <button id="addAttendeeBtn" class="btn btn-primary" style="flex:1;padding:14px;font-size:1rem;justify-content:center;" onclick="addAttendee()">&#43; Log Attendee</button>
-        <button class="btn btn-outline" style="flex:1;padding:14px;font-size:1rem;justify-content:center;" onclick="clearAddForm()">&#8635; Reset Form</button>
+        <button id="addAttendeeBtn" class="btn btn-primary" style="padding:12px 24px;font-size:0.95rem;" onclick="addAttendee()">&#43; Log Attendee</button>
+        <button class="btn btn-outline" style="padding:12px 24px;font-size:0.95rem;" onclick="clearAddForm()">&#8635; Reset Form</button>
       </div>
     </div>
 
@@ -946,10 +942,10 @@ function renderPendingThumbs() {
   }).join('');
   var canAdd = pendingPhotos.length < MAX_PHOTOS;
   var takeBtn = canAdd
-    ? '<button class="pf-btn" onclick="triggerTakePhoto(-1)" title="Take photo">&#128248; Take Photo</button>'
+    ? '<button class="photo-add-btn" onclick="triggerTakePhoto(-1)" title="Take photo"><span class="cam-icon">&#128247;</span><span>Take Photo</span></button>'
     : '';
   var addBtn = canAdd
-    ? '<button class="pf-btn" onclick="triggerAddPhoto(-1)" title="Choose file">&#128193; Choose File</button>'
+    ? '<button class="photo-add-btn" onclick="triggerAddPhoto(-1)" title="Choose file"><span class="cam-icon">&#128193;</span><span>Choose File</span></button>'
     : '';
   wrap.innerHTML = thumbs + takeBtn + addBtn;
 }
