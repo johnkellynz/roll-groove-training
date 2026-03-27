@@ -780,39 +780,36 @@ function addAttendee() {
   var ln = document.getElementById('addLastName').value.trim();
   var co = document.getElementById('addCompany').value.trim();
   var fc = '';
-  // Validate session fields first
-  var sessionMissing = [];
-  if (!document.getElementById('sessionDate').value) sessionMissing.push('Date');
-  if (!document.getElementById('companyName').value.trim()) sessionMissing.push('Instructor Company');
-  if (!document.getElementById('instructorFirstName').value.trim()) sessionMissing.push('Instructor First Name');
-  if (!document.getElementById('instructorLastName').value.trim()) sessionMissing.push('Instructor Last Name');
-  if (!document.getElementById('customerName').value.trim()) sessionMissing.push('Customer Company');
-  if (!document.getElementById('trainingRequestedByFirst').value.trim()) sessionMissing.push('Customer First Name');
-  if (!document.getElementById('trainingRequestedByLast').value.trim()) sessionMissing.push('Customer Last Name');
-  if (!document.getElementById('trainingLocation').value.trim()) sessionMissing.push('Training Location');
+  // Validate session fields first — jump to first empty one
+  var sessionChecks = [
+    ['sessionDate', 'Date'],
+    ['companyName', 'Instructor Company'],
+    ['instructorFirstName', 'Instructor First Name'],
+    ['instructorLastName', 'Instructor Last Name'],
+    ['customerName', 'Customer Company'],
+    ['trainingRequestedByFirst', 'Customer First Name'],
+    ['trainingRequestedByLast', 'Customer Last Name'],
+    ['trainingLocation', 'Training Location']
+  ];
+  for (var i = 0; i < sessionChecks.length; i++) {
+    var el = document.getElementById(sessionChecks[i][0]);
+    if (!el.value || !el.value.trim()) {
+      alert(sessionChecks[i][1] + ' is required.');
+      el.focus(); el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+  }
   var toolVal = document.getElementById('rollGrooveToolSelect').value;
-  if (!toolVal) sessionMissing.push('Roll Groove Tool');
-  else if (toolVal === 'Other' && !document.getElementById('rollGrooveToolOther').value.trim()) sessionMissing.push('Roll Groove Tool (Other)');
+  if (!toolVal) { alert('Roll Groove Tool is required.'); var e = document.getElementById('rollGrooveToolSelect'); e.focus(); e.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  if (toolVal === 'Other' && !document.getElementById('rollGrooveToolOther').value.trim()) { alert('Please enter the Roll Groove Tool name.'); var e2 = document.getElementById('rollGrooveToolOther'); e2.focus(); e2.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
   var typeVal = document.getElementById('trainingTypeSelect').value;
-  if (!typeVal) sessionMissing.push('Training Type');
-  else if (typeVal === 'Other' && !document.getElementById('trainingTypeOther').value.trim()) sessionMissing.push('Training Type (Other)');
-  if (sessionMissing.length > 0) {
-    alert('Please complete the following session fields before logging an attendee:\n• ' + sessionMissing.join('\n• '));
-    return;
-  }
-  // Validate attendee fields
-  var missing = [];
-  if (!fn) missing.push('Attendee First Name');
-  if (!ln) missing.push('Attendee Last Name');
-  if (!co) missing.push('Attendee Company');
-  if (pendingResult === null && editingIndex < 0) missing.push('Result (Pass/Fail)');
-  if (missing.length > 0) {
-    alert('Please fill in the following fields:\n• ' + missing.join('\n• '));
-    if (!fn) document.getElementById('addFirstName').focus();
-    else if (!ln) document.getElementById('addLastName').focus();
-    else if (!co) document.getElementById('addCompany').focus();
-    return;
-  }
+  if (!typeVal) { alert('Training Type is required.'); var e3 = document.getElementById('trainingTypeSelect'); e3.focus(); e3.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  if (typeVal === 'Other' && !document.getElementById('trainingTypeOther').value.trim()) { alert('Please enter the Training Type.'); var e4 = document.getElementById('trainingTypeOther'); e4.focus(); e4.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  // Validate attendee fields — jump to first empty one
+  if (!fn) { alert('First Name is required.'); var ef = document.getElementById('addFirstName'); ef.focus(); ef.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  if (!ln) { alert('Last Name is required.'); var el2 = document.getElementById('addLastName'); el2.focus(); el2.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  if (!co) { alert('Company is required.'); var ec = document.getElementById('addCompany'); ec.focus(); ec.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  if (pendingResult === null && editingIndex < 0) { alert('Please select Pass or Fail.'); return; }
   if (editingIndex >= 0) {
     var existing = attendees[editingIndex];
     attendees[editingIndex] = {
