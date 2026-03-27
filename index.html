@@ -127,6 +127,9 @@ header {
   transition: border-color 0.15s, background 0.15s; min-height: 46px;
   font-family: inherit;
 }
+.form-group select { color: var(--text); -webkit-appearance: none; }
+.form-group select option { color: var(--text); }
+.form-group select option[value=""] { color: var(--muted); }
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
@@ -401,9 +404,8 @@ header {
       <div class="form-group form-full">
         <label>Training Type</label>
         <select id="trainingTypeSelect" onchange="onTrainingTypeChange()">
-          <option value="Roll Groove Training">Roll Groove Training</option>
+          <option value="">— Select Option —</option>
           <option value="Installation Training">Installation Training</option>
-          <option value="OGS &amp; AGS">OGS &amp; AGS</option>
           <option value="OGS (Original Groove System)">OGS (Original Groove System)</option>
           <option value="AGS (Advanced Groove System)">AGS (Advanced Groove System)</option>
           <option value="Other">Other...</option>
@@ -1514,7 +1516,7 @@ function resetAll() {
   document.getElementById('trainingRequestedByLast').value  = '';
   document.getElementById('trainingLocation').value         = '';
   document.getElementById('sessionNotes').value        = '';
-  document.getElementById('trainingTypeSelect').value  = 'Roll Groove Training';
+  document.getElementById('trainingTypeSelect').value  = '';
   document.getElementById('trainingTypeOther').value    = '';
   document.getElementById('trainingTypeOther').style.display = 'none';
   document.getElementById('rollGrooveToolSelect').value = '';
