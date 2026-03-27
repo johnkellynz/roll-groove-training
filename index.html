@@ -848,16 +848,36 @@ function startEditAttendee(i) {
 
 function clearAddForm(skipConfirm) {
   if (!skipConfirm) {
-    var hasData = document.getElementById('addFirstName').value.trim() ||
-                  document.getElementById('addLastName').value.trim() ||
-                  pendingPhotos.length > 0 || pendingResult !== null;
-    if (hasData && !confirm('Are you sure you want to reset the form? Any unsaved data will be lost.')) return;
+    if (!confirm('Are you sure you want to reset the entire form? All session data and attendees will be lost.')) return;
+    // Reset all session fields
+    var d = new Date();
+    var today = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    document.getElementById('sessionDate').value = today;
+    document.getElementById('companyName').value = 'Victaulic';
+    document.getElementById('instructorFirstName').value = '';
+    document.getElementById('instructorLastName').value = '';
+    document.getElementById('customerName').value = '';
+    document.getElementById('trainingRequestedByFirst').value = '';
+    document.getElementById('trainingRequestedByLast').value = '';
+    document.getElementById('trainingLocation').value = '';
+    document.getElementById('rollGrooveToolSelect').value = '';
+    document.getElementById('rollGrooveToolOther').value = '';
+    document.getElementById('rollGrooveToolOther').style.display = 'none';
+    document.getElementById('trainingTypeSelect').value = '';
+    document.getElementById('trainingTypeOther').value = '';
+    document.getElementById('trainingTypeOther').style.display = 'none';
+    document.getElementById('sessionNotes').value = '';
+    // Clear all attendees
+    attendees = [];
+    renderAttendees();
+    // Clear status message
+    var msg = document.getElementById('statusMsg');
+    if (msg) msg.innerHTML = '';
   }
-  var lastCompany = document.getElementById('addCompany').value.trim();
   editingIndex = -1;
   document.getElementById('addFirstName').value = '';
   document.getElementById('addLastName').value  = '';
-  document.getElementById('addCompany').value = lastCompany || document.getElementById('customerName').value.trim();
+  document.getElementById('addCompany').value = '';
   document.getElementById('addPassBtn').className = 'pf-btn';
   document.getElementById('addFailBtn').className = 'pf-btn';
   pendingPhotos = [];
