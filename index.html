@@ -215,6 +215,12 @@ header {
 .add-form-bottom { display: flex; flex-direction: column; gap: 0; margin-bottom: 14px; }
 .pending-photos-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
 .pending-photos-wrap { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 4px; }
+.pending-photos-wrap > .photo-add-btn {
+  flex: 1; padding: 14px 8px; border-radius: 8px;
+  border: 2px solid var(--border); background: #f7f8fb;
+  font-size: 1rem; font-weight: 700; cursor: pointer;
+  min-height: 52px; letter-spacing: 0.03em; justify-content: center;
+}
 
 /* PHOTOS */
 .photo-thumbs { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
@@ -764,7 +770,7 @@ function addAttendee() {
   } else {
     attendees.push({ firstName: fn, lastName: ln, company: co, photos: pendingPhotos.slice(), result: pendingResult, failComments: fc });
   }
-  clearAddForm();
+  clearAddForm(true);
   renderAttendees();
 }
 
@@ -786,7 +792,13 @@ function startEditAttendee(i) {
   document.getElementById('addFirstName').scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-function clearAddForm() {
+function clearAddForm(skipConfirm) {
+  if (!skipConfirm) {
+    var hasData = document.getElementById('addFirstName').value.trim() ||
+                  document.getElementById('addLastName').value.trim() ||
+                  pendingPhotos.length > 0 || pendingResult !== null;
+    if (hasData && !confirm('Are you sure you want to reset the form? Any unsaved data will be lost.')) return;
+  }
   editingIndex = -1;
   document.getElementById('addFirstName').value = '';
   document.getElementById('addLastName').value  = '';
@@ -1351,7 +1363,7 @@ function buildPDF() {
 
     // Work out what fits below: logo + optional photos must stay inside border
     var photos = attendee.photos || [];
-    var innerBottom = pageH - 8 - 9;  // inner border bottom edge
+    var innerBottom = pageH - 8 - 14;  // inner border bottom edge with safe margin
     var certLogoH = 18;
     var certLogoW = orangeLogoDataUrl ? certLogoH * orangeLogoAspect : 0;
 
@@ -1366,6 +1378,17 @@ function buildPDF() {
       // Total needed: logo + gap + photo block
       var totalNeeded = certLogoH + 6 + photoBlockH;
       var availableH = innerBottom - cy;
+
+      // If photos would overflow, shrink them to fit
+      if (totalNeeded > availableH - 4) {
+        var maxPhotoBlockH = availableH - 4 - certLogoH - 6;
+        photoH = maxPhotoBlockH - 7 - 5;
+        if (photoH < 10) photoH = 10;
+        photoW = photoH / 0.72;
+        photoBlockH = 7 + photoH + 5;
+        totalNeeded = certLogoH + 6 + photoBlockH;
+      }
+
       var topPad = (availableH - totalNeeded) / 2;
       if (topPad < 2) topPad = 2;
 
