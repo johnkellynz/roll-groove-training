@@ -484,6 +484,15 @@ header {
       </div>
 
       <div class="add-form-bottom">
+        <!-- Photos -->
+        <div class="pending-photos-row">
+          <div class="pf-label">Photos <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(optional — max 2)</span></div>
+          <div class="pending-photos-wrap" id="pendingThumbs">
+            <button class="photo-add-btn" onclick="triggerTakePhoto(-1)" title="Take a photo with your camera"><span class="cam-icon">&#128247;</span><span>Take Photo</span></button>
+            <button class="photo-add-btn" onclick="triggerAddPhoto(-1)" title="Choose from your files"><span class="cam-icon">&#128193;</span><span>Choose File</span></button>
+          </div>
+        </div>
+
         <!-- Pass / Fail -->
         <div class="pf-row">
           <div class="pf-label">Result</div>
@@ -499,15 +508,6 @@ header {
         <button id="addAttendeeBtn" class="btn btn-primary" style="padding:12px 24px;font-size:0.95rem;" onclick="addAttendee()">&#43; Log Attendee</button>
         <button class="btn btn-outline" style="padding:12px 24px;font-size:0.95rem;" onclick="clearAddForm()">&#8635; Reset Form</button>
       </div>
-
-        <!-- Photos -->
-        <div class="pending-photos-row" style="margin-top:14px;">
-          <div class="pf-label">Photos <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(optional — max 2)</span></div>
-          <div class="pending-photos-wrap" id="pendingThumbs">
-            <button class="photo-add-btn" onclick="triggerTakePhoto(-1)" title="Take a photo with your camera"><span class="cam-icon">&#128247;</span><span>Take Photo</span></button>
-            <button class="photo-add-btn" onclick="triggerAddPhoto(-1)" title="Choose from your files"><span class="cam-icon">&#128193;</span><span>Choose File</span></button>
-          </div>
-        </div>
     </div>
 
     <div id="attendeeListWrap">
@@ -1189,10 +1189,10 @@ function buildPDF() {
         var cellY = data.cell.y;
         var cellW = data.cell.width;
         var cellH = data.cell.height;
-        var boxSize = 16;
-        var pad = 3; // padding from cell edges
+        var boxSize = cellH * 0.95;
+        var pad = 1.5; // padding from cell edges
         var innerW = cellW - pad * 2;
-        var spacing = (innerW - 2 * boxSize) / 1;
+        var spacing = (innerW - 2 * boxSize) / 3;
         var startY = cellY + (cellH - boxSize) / 2;
         for (var p = 0; p < 2; p++) {
           var bx = cellX + pad + p * (boxSize + spacing);
@@ -1205,9 +1205,7 @@ function buildPDF() {
               doc.rect(bx, startY, boxSize, boxSize, 'F');
             }
           } else {
-            doc.setDrawColor(200, 200, 205);
-            doc.setLineWidth(0.3);
-            doc.rect(bx, startY, boxSize, boxSize, 'S');
+            // no border for empty photo slots
           }
         }
       }
