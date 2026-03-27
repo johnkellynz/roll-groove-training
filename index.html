@@ -212,7 +212,7 @@ header {
 @media (max-width: 520px) { .add-form-grid { grid-template-columns: 1fr; } }
 .add-form-bottom { display: flex; flex-direction: column; gap: 0; margin-bottom: 14px; }
 .pending-photos-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
-.pending-photos-wrap { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 4px; }
+.pending-photos-wrap { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 4px; }
 
 /* PHOTOS */
 .photo-thumbs { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
@@ -239,7 +239,7 @@ header {
 }
 .photo-add-btn:hover { background: #f0f1f5; border-color: #aab; }
 .photo-add-btn .cam-icon { font-size: 1.1rem; line-height: 1; }
-.photo-add-btn.large { padding: 9px 16px; font-size: 0.85rem; width: auto; height: auto; }
+.photo-add-btn.large { padding: 14px 8px; font-size: 1rem; font-weight: 700; min-height: 52px; width: auto; height: auto; flex: 1; justify-content: center; border-width: 2px; letter-spacing: 0.03em; }
 .photo-cell { min-width: 160px; vertical-align: middle !important; }
 
 /* PHOTO MODAL */
@@ -392,12 +392,12 @@ header {
 
   <!-- STEP 2: CUSTOMER INFORMATION -->
   <div class="card">
-    <div class="card-title"><span class="step-badge">2</span> Customer Information <span style="font-weight:400;font-size:0.85rem;color:var(--muted);">(Training Requested By)</span></div>
+    <div class="card-title"><span class="step-badge">2</span> Customer Information <span style="font-weight:400;font-size:0.72rem;color:var(--muted);">(Training Requested By)</span></div>
     <div class="form-grid">
 
       <div class="form-group form-full">
         <label>Company Name</label>
-        <input type="text" id="customerName" placeholder="Company Name" autocapitalize="words" oninput="toTitleCase(this);var ac=document.getElementById('addCompany');if(!ac._edited)ac.value=this.value.trim();" required>
+        <input type="text" id="customerName" placeholder="Company Name" autocapitalize="words" oninput="toTitleCase(this);document.getElementById('addCompany').value=this.value;" required>
       </div>
 
       <div class="form-group">
@@ -474,7 +474,7 @@ header {
         </div>
         <div class="form-group" style="margin:0; grid-column: 1 / -1;">
           <label>Company Name</label>
-          <input type="text" id="addCompany" placeholder="Attendee's Company" autocapitalize="words" oninput="toTitleCase(this);this._edited=true;" onkeydown="onAttendeeKeydown(event)" onfocus="if(!this.value){this.value=document.getElementById('customerName').value.trim();this._edited=false;}">
+          <input type="text" id="addCompany" placeholder="Attendee's Company" autocapitalize="words" oninput="toTitleCase(this)" onkeydown="onAttendeeKeydown(event)">
         </div>
       </div>
 
@@ -749,9 +749,7 @@ function clearAddForm() {
   editingIndex = -1;
   document.getElementById('addFirstName').value = '';
   document.getElementById('addLastName').value  = '';
-  var acField = document.getElementById('addCompany');
-  acField.value = document.getElementById('customerName').value.trim();
-  acField._edited = false;
+  document.getElementById('addCompany').value = document.getElementById('customerName').value.trim();
   document.getElementById('addFailComments').value = '';
   document.getElementById('failCommentsWrap').style.display = 'none';
   document.getElementById('addPassBtn').className = 'pf-btn';
