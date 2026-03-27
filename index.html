@@ -1088,7 +1088,7 @@ function buildPDF() {
   doc.setFontSize(13); doc.setFont('helvetica', 'bold');
   doc.text('TRAINING RECORD', pageW - margin, 14, { align: 'right' });
 
-  var y = 30;
+  var y = 32;
 
   // Session info box
   var boxH = 38;
@@ -1167,11 +1167,11 @@ function buildPDF() {
     alternateRowStyles: { fillColor: [250, 250, 252] },
     columnStyles: {
       0: { cellWidth: 10, halign: 'center' },
-      1: { cellWidth: 'auto', halign: 'center' },
-      2: { cellWidth: 'auto', halign: 'center' },
-      3: { cellWidth: 'auto', halign: 'center' },
+      1: { cellWidth: 28, halign: 'center' },
+      2: { cellWidth: 28, halign: 'center' },
+      3: { cellWidth: 34, halign: 'center' },
       4: { cellWidth: 18, halign: 'center', fontStyle: 'bold' },
-      5: { cellWidth: 40, halign: 'center' }
+      5: { cellWidth: 'auto', halign: 'center' }
     },
     didParseCell: function(data) {
       if (data.section === 'body' && data.column.index === 4) {
@@ -1285,9 +1285,10 @@ function buildPDF() {
 
     cy += 9;
 
-    // Session details (2-column grid)
+    // Session details (2-column grid — equally spaced)
+    var detailAreaW = contentW - 40;  // inner padding each side
     var col1x = margin + 20;
-    var col2x = pageW/2 + 12;
+    var col2x = margin + 20 + detailAreaW / 2;
 
     function certDetail(label, value, x, yy) {
       doc.setFontSize(6.5); doc.setFont('helvetica', 'bold');
@@ -1304,9 +1305,6 @@ function buildPDF() {
     certDetail('Training Location', s.trainingLocation, col2x, cy);
     cy += 14;
     certDetail('Instructor', s.instructor, col1x, cy);
-    certDetail('Training Requested By', s.trainingRequestedBy, col2x, cy);
-    cy += 14;
-    certDetail('Instructor Company', s.company, col1x, cy);
     certDetail('Customer Company', s.customerName, col2x, cy);
     cy += 14;
     certDetail('Roll Groove Tool', s.rollGrooveTool || '—', col1x, cy);
@@ -1337,14 +1335,9 @@ function buildPDF() {
     doc.line(sigX, cy, sigX + sigW, cy);
 
     cy += 4;
-    doc.setFontSize(7); doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8); doc.setFont('helvetica', 'normal');
     doc.setTextColor(150, 150, 150);
     doc.text('Instructor Signature', sigCx, cy, { align: 'center' });
-
-    cy += 4;
-    doc.setFontSize(6.5); doc.setFont('helvetica', 'bold');
-    doc.setTextColor.apply(doc, navy);
-    doc.text(s.instructor, sigCx, cy, { align: 'center' });
 
     // Victaulic orange logo under signature
     if (orangeLogoDataUrl) {
