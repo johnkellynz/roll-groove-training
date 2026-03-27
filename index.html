@@ -397,7 +397,7 @@ header {
 
   <!-- STEP 2: CUSTOMER INFORMATION -->
   <div class="card">
-    <div class="card-title"><span class="step-badge">2</span> Customer Information <span style="font-weight:400;font-size:0.72rem;color:var(--muted);">(Training Requested By)</span></div>
+    <div class="card-title" style="white-space:nowrap;"><span class="step-badge">2</span> Customer <span style="font-weight:400;font-size:0.72rem;color:var(--muted);">(Training Requested By)</span></div>
     <div class="form-grid">
 
       <div class="form-group form-full">
@@ -747,6 +747,10 @@ function addAttendee() {
   if (!fn && !ln) {
     alert('Please enter at least a first or last name.');
     document.getElementById('addFirstName').focus();
+    return;
+  }
+  if (pendingResult === null && editingIndex < 0) {
+    alert('Please select PASS or FAIL before logging an attendee.');
     return;
   }
   if (editingIndex >= 0) {
@@ -1189,13 +1193,16 @@ function buildPDF() {
         var cellY = data.cell.y;
         var cellW = data.cell.width;
         var cellH = data.cell.height;
-        var boxSize = cellH * 0.95;
-        var pad = 1.5; // padding from cell edges
+        var pad = 2;
+        var gap = 3;
         var innerW = cellW - pad * 2;
-        var spacing = (innerW - 2 * boxSize) / 3;
+        var boxSize = (innerW - gap) / 2;
+        if (boxSize > cellH * 0.9) boxSize = cellH * 0.9;
+        var totalW = 2 * boxSize + gap;
+        var startX = cellX + (cellW - totalW) / 2;
         var startY = cellY + (cellH - boxSize) / 2;
         for (var p = 0; p < 2; p++) {
-          var bx = cellX + pad + p * (boxSize + spacing);
+          var bx = startX + p * (boxSize + gap);
           if (photos[p]) {
             try {
               var fmt = photos[p].indexOf('data:image/png') === 0 ? 'PNG' : 'JPEG';
@@ -1204,6 +1211,9 @@ function buildPDF() {
               doc.setFillColor(230, 230, 235);
               doc.rect(bx, startY, boxSize, boxSize, 'F');
             }
+            doc.setDrawColor(200, 200, 205);
+            doc.setLineWidth(0.3);
+            doc.rect(bx, startY, boxSize, boxSize, 'S');
           } else {
             // no border for empty photo slots
           }
