@@ -493,6 +493,13 @@ header {
           </div>
         </div>
 
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:4px;">
+        <button id="addAttendeeBtn" class="btn btn-primary" style="padding:12px 24px;font-size:0.95rem;" onclick="addAttendee()">&#43; Log Attendee</button>
+        <button class="btn btn-outline" style="padding:12px 24px;font-size:0.95rem;" onclick="clearAddForm()">&#8635; Reset Form</button>
+      </div>
+
         <!-- Photos -->
         <div class="pending-photos-row">
           <div class="pf-label">Photos <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(optional — max 2)</span></div>
@@ -501,12 +508,6 @@ header {
             <button class="photo-add-btn" onclick="triggerAddPhoto(-1)" title="Choose from your files"><span class="cam-icon">&#128193;</span><span>Choose File</span></button>
           </div>
         </div>
-      </div>
-
-      <div style="display:flex;gap:10px;margin-top:4px;">
-        <button id="addAttendeeBtn" class="btn btn-primary" style="padding:12px 24px;font-size:0.95rem;" onclick="addAttendee()">&#43; Log Attendee</button>
-        <button class="btn btn-outline" style="padding:12px 24px;font-size:0.95rem;" onclick="clearAddForm()">&#8635; Reset Form</button>
-      </div>
     </div>
 
     <div id="attendeeListWrap">
