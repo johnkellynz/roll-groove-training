@@ -872,9 +872,10 @@ function clearAddForm(skipConfirm) {
     if (msg) msg.innerHTML = '';
   }
   editingIndex = -1;
+  var keepCompany = document.getElementById('addCompany').value;
   document.getElementById('addFirstName').value = '';
   document.getElementById('addLastName').value  = '';
-  // Keep company name — it typically repeats across attendees
+  document.getElementById('addCompany').value   = keepCompany; // preserve — repeats across attendees
   document.getElementById('addPassBtn').className = 'pf-btn';
   document.getElementById('addFailBtn').className = 'pf-btn';
   pendingPhotos = [];
@@ -1438,7 +1439,7 @@ function buildPDF() {
     // Calculate disclaimer position first
     var certLogoH = 18;
     var certLogoW = orangeLogoDataUrl ? certLogoH * orangeLogoAspect : 0;
-    var borderBottom = pageH - 8 - 9;  // inner border bottom edge
+    var borderBottom = 8 + (pageH - 8 - 9);  // inner border bottom Y = pageH - 9
     var disclaimerMargin = margin + 6;
     var disclaimerW = contentW - 12;
     doc.setFontSize(7); doc.setFont('helvetica', 'normal');
