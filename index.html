@@ -157,6 +157,7 @@ header {
   background: var(--vic-dark); color: #fff;
   padding: 8px 12px; text-align: left;
   font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em;
+  vertical-align: middle;
 }
 .attendee-table th:first-child { border-radius: 6px 0 0 0; width: 40px; }
 .attendee-table th:last-child { border-radius: 0 6px 0 0; width: 46px; text-align: center; }
@@ -592,9 +593,15 @@ var editingIndex  = -1;  // -1 = adding new, ≥0 = editing existing
   var dateEl = document.getElementById('sessionDate');
   dateEl.value = today;
   dateEl.max = today;
+  dateEl.addEventListener('change', function() {
+    if (this.value > today) {
+      alert('Date cannot be in the future.');
+      this.value = today;
+    }
+  });
 
   // Try to load a Victaulic logo from common filenames in the same folder
-  var names = ['Primary Logo Victaulic Orange.png','victaulic_logo.png','victaulic_logo.jpg','logo.png','logo.jpg','victaulic.png','victaulic.jpg'];
+  var names = ['Secondary Logo Victaulic Reverse_PNG (1) copy.png','Primary Logo Victaulic Orange.png','victaulic_logo.png','victaulic_logo.jpg','logo.png','logo.jpg','victaulic.png','victaulic.jpg'];
   function tryLogo(i) {
     if (i >= names.length) return;
     var img = new Image();
@@ -1010,9 +1017,9 @@ function makeSignatureImg(name) {
 // ── PDF GENERATION ───────────────────────────────────────
 function addFooterLogo(doc, pageW, pageH) {
   if (logoDataUrl) {
-    var lh = 9;
-    var lw = Math.min(lh * logoAspect, 55);
-    doc.addImage(logoDataUrl, 'PNG', pageW/2 - lw/2, pageH - lh - 4, lw, lh, undefined, 'FAST');
+    var lh = 13.5;
+    var lw = Math.min(lh * logoAspect, 82);
+    doc.addImage(logoDataUrl, 'PNG', pageW/2 - lw/2, pageH - lh - 10, lw, lh, undefined, 'FAST');
   }
 }
 
@@ -1046,27 +1053,25 @@ function buildPDF() {
   doc.rect(0, 0, pageW, 22, 'F');
   doc.setFillColor.apply(doc, orange);
   doc.rect(0, 22, pageW, 2.5, 'F');
-  // Victaulic logo in white rounded button
+  // Victaulic logo on header
   if (logoDataUrl) {
-    var logoBtnH = 14;
-    var logoBtnW = logoBtnH * logoAspect + 10;
-    var logoBtnX = margin;
-    var logoBtnY = (22 - logoBtnH) / 2;
-    doc.setFillColor.apply(doc, white);
-    doc.roundedRect(logoBtnX, logoBtnY, logoBtnW, logoBtnH, 2, 2, 'F');
-    var logoImgH = logoBtnH - 4;
+    var logoImgH = 14;
     var logoImgW = logoImgH * logoAspect;
-    doc.addImage(logoDataUrl, 'PNG', logoBtnX + (logoBtnW - logoImgW)/2, logoBtnY + 2, logoImgW, logoImgH, undefined, 'FAST');
+    doc.addImage(logoDataUrl, 'PNG', margin, (22 - logoImgH) / 2, logoImgW, logoImgH, undefined, 'FAST');
+    // "TRAINING RECORD" text after logo
+    doc.setTextColor.apply(doc, white);
+    doc.setFontSize(13); doc.setFont('helvetica', 'bold');
+    doc.text('TRAINING RECORD', margin + logoImgW + 6, 14);
   } else {
     doc.setTextColor.apply(doc, white);
     doc.setFontSize(13); doc.setFont('helvetica', 'bold');
-    doc.text('VICTAULIC', margin, 14);
+    doc.text('TRAINING RECORD', margin, 14);
   }
 
   var y = 30;
 
   // Session info box
-  var boxH = 73;
+  var boxH = 60;
   doc.setFillColor.apply(doc, lightGrey);
   doc.roundedRect(margin, y, contentW, boxH, 2, 2, 'F');
   doc.setDrawColor.apply(doc, midGrey);
@@ -1094,10 +1099,7 @@ function buildPDF() {
   infoCell('Customer', s.customerName, c1, r3);
   infoCell('Training Requested By', s.trainingRequestedBy, c2, r3);
   infoCell('Roll Groove Tool', s.rollGrooveTool || '(not set)', c1, r4);
-  var genDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-  infoCell('Generated', genDate, c2, r4);
-  var r5 = y + 61;
-  infoCell('Total Attendees', String(attendees.length), c1, r5);
+  infoCell('Total Attendees', String(attendees.length), c2, r4);
 
   y += boxH + 4;
 
@@ -1136,11 +1138,13 @@ function buildPDF() {
     headStyles: {
       fillColor: navy, textColor: white,
       fontStyle: 'bold', fontSize: 7.5,
-      cellPadding: { top: 3, bottom: 3, left: 5, right: 5 }
+      cellPadding: { top: 3, bottom: 3, left: 5, right: 5 },
+      valign: 'middle'
     },
     bodyStyles: {
       fontSize: 8, textColor: navy,
-      cellPadding: { top: 3.5, bottom: 3.5, left: 5, right: 5 }
+      cellPadding: { top: 3.5, bottom: 3.5, left: 5, right: 5 },
+      valign: 'middle'
     },
     alternateRowStyles: { fillColor: [250, 250, 252] },
     columnStyles: {
@@ -1264,8 +1268,11 @@ function buildPDF() {
     certDetail('Roll Groove Tool', s.rollGrooveTool || '—', col1x, cy);
     certDetail('Training Type', s.trainingType, col2x, cy);
 
-    // Single centred instructor signature (script-style auto-filled)
-    cy += 22;
+    // Single centred instructor signature — vertically centred in white space
+    var detailsBottom = cy + 7;
+    var footerTop = pageH - 23.5;
+    var sigMid = detailsBottom + (footerTop - detailsBottom) / 2;
+    cy = sigMid - 4;
     var sigW = 90;
     var sigCx = pageW / 2;
     var sigX = sigCx - sigW / 2;
