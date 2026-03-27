@@ -220,7 +220,7 @@ header {
 .photo-thumbs { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
 .photo-thumb-wrap { position: relative; display: inline-block; }
 .photo-thumb {
-  width: 54px; height: 54px; object-fit: cover;
+  width: 40px; height: 40px; object-fit: cover;
   border-radius: 6px; border: 1.5px solid var(--border);
   cursor: zoom-in; display: block;
 }
@@ -495,7 +495,7 @@ header {
 
         <!-- Photos -->
         <div class="pending-photos-row">
-          <div class="pf-label">Photos <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(optional — max 4)</span></div>
+          <div class="pf-label">Photos <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(optional — max 2)</span></div>
           <div class="pending-photos-wrap" id="pendingThumbs">
             <button class="photo-add-btn" onclick="triggerTakePhoto(-1)" title="Take a photo with your camera"><span class="cam-icon">&#128247;</span><span>Take Photo</span></button>
             <button class="photo-add-btn" onclick="triggerAddPhoto(-1)" title="Choose from your files"><span class="cam-icon">&#128193;</span><span>Choose File</span></button>
@@ -574,7 +574,7 @@ header {
 var attendees = [];
 var lastRemoved = null;
 var undoTimer  = null;
-var MAX_PHOTOS = 4;
+var MAX_PHOTOS = 2;
 var currentPhotoIdx = -1;
 var pendingPhotos = [];
 var pendingResult = null;
@@ -1188,12 +1188,12 @@ function buildPDF() {
         var cellY = data.cell.y;
         var cellW = data.cell.width;
         var cellH = data.cell.height;
-        var boxSize = 21;
+        var boxSize = 16;
         var pad = 3; // padding from cell edges
         var innerW = cellW - pad * 2;
-        var spacing = (innerW - 4 * boxSize) / 3;
+        var spacing = (innerW - 2 * boxSize) / 1;
         var startY = cellY + (cellH - boxSize) / 2;
-        for (var p = 0; p < 4; p++) {
+        for (var p = 0; p < 2; p++) {
           var bx = cellX + pad + p * (boxSize + spacing);
           if (photos[p]) {
             try {
@@ -1273,7 +1273,7 @@ function buildPDF() {
     doc.text(s.trainingType, pageW/2, cy, { align: 'center' });
 
     cy += 7;
-    doc.setFontSize(8.5); doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10); doc.setFont('helvetica', 'normal');
     doc.setTextColor(130, 130, 130);
     doc.text('training session conducted by ' + s.company, pageW/2, cy, { align: 'center' });
 
@@ -1285,17 +1285,17 @@ function buildPDF() {
 
     cy += 9;
 
-    // Session details (2-column grid — equal padding left, centre, right)
-    var colZoneW = contentW * 0.35;
+    // Session details (2-column grid — equal whitespace left, centre, right)
+    var colZoneW = contentW * 0.30;
     var detailPad = (contentW - 2 * colZoneW) / 3;
     var col1x = margin + detailPad;
     var col2x = margin + detailPad + colZoneW + detailPad;
 
     function certDetail(label, value, x, yy) {
-      doc.setFontSize(6.5); doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10); doc.setFont('helvetica', 'bold');
       doc.setTextColor.apply(doc, orange);
       doc.text(label.toUpperCase(), x, yy);
-      doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10); doc.setFont('helvetica', 'bold');
       doc.setTextColor.apply(doc, navy);
       var v = String(value || '—');
       if (v.length > 38) v = v.substring(0, 36) + '…';
@@ -1336,7 +1336,7 @@ function buildPDF() {
     doc.line(sigX, cy, sigX + sigW, cy);
 
     cy += 4;
-    doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10); doc.setFont('helvetica', 'normal');
     doc.setTextColor(150, 150, 150);
     doc.text('Instructor Signature', sigCx, cy, { align: 'center' });
 
@@ -1350,7 +1350,7 @@ function buildPDF() {
       // Layout: logo (with small gap) then photos — all inside border
       var photoCols = photos.length;
       var pGap = 4;
-      var photoW = (contentW - (photoCols - 1) * pGap) / photoCols;
+      var photoW = ((contentW - (photoCols - 1) * pGap) / photoCols) * 0.75;
       var photoH = photoW * 0.72;
       var photoBlockH = 7 + photoH + 5;  // label + image + caption
 
