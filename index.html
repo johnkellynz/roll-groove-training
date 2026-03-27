@@ -410,6 +410,22 @@ header {
       </div>
 
       <div class="form-group form-full">
+        <label>Roll Groove Tool</label>
+        <select id="rollGrooveToolSelect" onchange="onRollGrooveToolChange()">
+          <option value="">— Select Tool —</option>
+          <option value="RG2300">RG2300</option>
+          <option value="RG3210">RG3210</option>
+          <option value="RG3400">RG3400</option>
+          <option value="RG4200">RG4200</option>
+          <option value="VE271">VE271</option>
+          <option value="VE417">VE417</option>
+          <option value="VE460">VE460</option>
+          <option value="Other">Other...</option>
+        </select>
+        <input type="text" id="rollGrooveToolOther" placeholder="Enter tool name" autocapitalize="characters" style="display:none;margin-top:0.4rem;">
+      </div>
+
+      <div class="form-group form-full">
         <label>Comments <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(optional)</span></label>
         <textarea id="sessionNotes" placeholder="Any general comments for this training session..." rows="2" autocapitalize="words" oninput="toTitleCase(this)" style="resize:vertical;line-height:1.5;"></textarea>
       </div>
@@ -592,6 +608,13 @@ document.addEventListener('click', function(e) {
 });
 
 // ── FORM ─────────────────────────────────────────────────
+function onRollGrooveToolChange() {
+  var sel = document.getElementById('rollGrooveToolSelect').value;
+  var other = document.getElementById('rollGrooveToolOther');
+  other.style.display = sel === 'Other' ? 'block' : 'none';
+  if (sel !== 'Other') other.value = '';
+}
+
 function onTrainingTypeChange() {
   var sel = document.getElementById('trainingTypeSelect').value;
   var other = document.getElementById('trainingTypeOther');
@@ -629,7 +652,12 @@ function getSessionInfo() {
     trainingRequestedBy: (document.getElementById('trainingRequestedByFirst').value.trim() + ' ' + document.getElementById('trainingRequestedByLast').value.trim()).trim() || '(not set)',
     trainingLocation:    document.getElementById('trainingLocation').value.trim() || '(not set)',
     trainingType:        document.getElementById('trainingTypeSelect').value,
-    sessionNotes:        document.getElementById('sessionNotes').value.trim() || ''
+    sessionNotes:        document.getElementById('sessionNotes').value.trim() || '',
+    rollGrooveTool:      (function() {
+      var sel = document.getElementById('rollGrooveToolSelect').value;
+      if (sel === 'Other') return document.getElementById('rollGrooveToolOther').value.trim() || '';
+      return sel;
+    })()
   };
 }
 
@@ -995,7 +1023,7 @@ function buildPDF() {
   var y = 30;
 
   // Session info box
-  var boxH = 60;
+  var boxH = 73;
   doc.setFillColor.apply(doc, lightGrey);
   doc.roundedRect(margin, y, contentW, boxH, 2, 2, 'F');
   doc.setDrawColor.apply(doc, midGrey);
@@ -1022,9 +1050,11 @@ function buildPDF() {
   infoCell('Training Location', s.trainingLocation, c2, r2);
   infoCell('Customer', s.customerName, c1, r3);
   infoCell('Training Requested By', s.trainingRequestedBy, c2, r3);
+  infoCell('Roll Groove Tool', s.rollGrooveTool || '(not set)', c1, r4);
   var genDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-  infoCell('Generated', genDate, c1, r4);
-  infoCell('Total Attendees', String(attendees.length), c2, r4);
+  infoCell('Generated', genDate, c2, r4);
+  var r5 = y + 61;
+  infoCell('Total Attendees', String(attendees.length), c1, r5);
 
   y += boxH + 4;
 
@@ -1314,7 +1344,7 @@ function downloadCSV() {
   if (!validateSession()) return;
   if (attendees.length === 0) { alert('Please add at least one attendee before exporting.'); return; }
   var s = getSessionInfo();
-  var headers = ['#', 'First Name', 'Last Name', 'Company', 'Result', 'Date', 'Training Type', 'Instructor', 'Instructor Company', 'Customer Company', 'Training Requested By', 'Training Location'];
+  var headers = ['#', 'First Name', 'Last Name', 'Company', 'Result', 'Date', 'Training Type', 'Roll Groove Tool', 'Instructor', 'Instructor Company', 'Customer Company', 'Training Requested By', 'Training Location'];
   var rows = attendees.map(function(a, i) {
     return [
       i+1,
@@ -1324,6 +1354,7 @@ function downloadCSV() {
       (a.result||'').toUpperCase(),
       s.date,
       s.trainingType,
+      s.rollGrooveTool || '',
       s.instructor,
       s.company,
       s.customerName,
@@ -1355,6 +1386,7 @@ function buildEmailBody(s) {
     div1,
     'Date:                 ' + s.date,
     'Training Type:        ' + s.trainingType,
+    'Roll Groove Tool:     ' + (s.rollGrooveTool || '(not set)'),
     'Instructor:           ' + s.instructor,
     'Instructor Company:   ' + s.company,
     'Customer Company:     ' + s.customerName,
@@ -1477,6 +1509,9 @@ function resetAll() {
   document.getElementById('trainingLocation').value         = '';
   document.getElementById('sessionNotes').value        = '';
   document.getElementById('trainingTypeSelect').value  = 'Roll Groove Training';
+  document.getElementById('rollGrooveToolSelect').value = '';
+  document.getElementById('rollGrooveToolOther').value  = '';
+  document.getElementById('rollGrooveToolOther').style.display = 'none';
   document.getElementById('addFirstName').value = '';
   document.getElementById('addLastName').value  = '';
   var d = new Date();
