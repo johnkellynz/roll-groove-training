@@ -1215,7 +1215,7 @@ function buildPDF() {
   infoCell('Instructor', s.instructor + '  ·  ' + s.company, c1, r2);
   infoCell('Training Location', s.trainingLocation, c2, r2);
   infoCell('Customer', s.customerName, c1, r3);
-  infoCell('Requested By', s.trainingRequestedBy, c2, r3);
+  infoCell('Training Requested By', s.trainingRequestedBy, c2, r3);
 
   y += boxH + 4;
 
@@ -1553,7 +1553,7 @@ function buildEmailBody(s) {
     'Instructor:           ' + s.instructor,
     'Instructor Company:   ' + s.company,
     'Customer Company:     ' + s.customerName,
-    'Requested By:         ' + s.trainingRequestedBy,
+    'Training Requested By: ' + s.trainingRequestedBy,
     'Training Location:    ' + s.trainingLocation,
     s.sessionNotes ? 'Comments:             ' + s.sessionNotes : '',
     '',
