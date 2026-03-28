@@ -60,30 +60,32 @@ header {
 
 /* HAMBURGER */
 .hamburger-btn {
-  background: none; border: none; cursor: pointer;
-  display: flex; flex-direction: column; gap: 5px;
-  padding: 6px; border-radius: 6px; flex-shrink: 0;
+  background: var(--vic-dark); border: 2px solid var(--vic-orange);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0;
+  font-size: 1.5rem; color: #fff; line-height: 1; padding: 0;
+  transition: background 0.15s, border-color 0.15s;
 }
-.hamburger-btn span {
-  display: block; width: 22px; height: 2px;
-  background: #fff; border-radius: 2px;
-}
-.hamburger-btn:hover { background: rgba(255,255,255,0.1); }
+.hamburger-btn:hover { background: rgba(232,86,10,0.15); border-color: #fff; }
 .hamburger-wrap { position: relative; }
 .hamburger-menu {
   display: none; position: absolute;
-  top: 100%; right: 0;
-  background: #fff; border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.18);
-  min-width: 280px; z-index: 100; overflow: hidden; white-space: nowrap;
+  top: calc(100% + 8px); right: 0;
+  background: #fff; border-radius: 10px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+  min-width: 260px; z-index: 100; overflow: hidden; white-space: nowrap;
+  border: 1px solid var(--border);
 }
 .hamburger-menu.open { display: block; }
 .hamburger-menu a {
-  display: flex; align-items: center; gap: 10px;
-  padding: 13px 16px; color: var(--text);
-  text-decoration: none; font-size: 0.88rem;
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 18px; color: var(--text);
+  text-decoration: none; font-size: 0.9rem;
   font-weight: 600; border-bottom: 1px solid var(--border);
   transition: background 0.12s;
+}
+.hamburger-menu a .menu-icon {
+  width: 22px; text-align: center; font-size: 1.1rem; flex-shrink: 0;
 }
 .hamburger-menu a:last-child { border-bottom: none; }
 .hamburger-menu a:hover { background: #f7f8fb; }
@@ -355,14 +357,12 @@ header {
     <p>Victaulic Training &amp; Attendance</p>
   </div>
   <div class="hamburger-wrap">
-    <button class="hamburger-btn" onclick="toggleHamburger()" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
+    <button class="hamburger-btn" onclick="toggleHamburger()" aria-label="Menu">&#9776;</button>
     <div class="hamburger-menu" id="hamburgerMenu">
-      <a href="https://assets.victaulic.com/assets/uploads/literature/I-100.pdf" target="_blank">&#128196; I-100 Installation Guide</a>
-      <a href="https://assets.victaulic.com/assets/uploads/literature/I-W100.pdf" target="_blank">&#128196; I-W100 Installation Guide</a>
-      <a href="https://www.victaulic.com/" target="_blank">&#127760; Victaulic Website</a>
-      <a href="#" onclick="shareApp(); return false;">&#128279; Share This App</a>
+      <a href="https://assets.victaulic.com/assets/uploads/literature/I-100.pdf" target="_blank"><span class="menu-icon">&#128196;</span> I-100 Installation Guide</a>
+      <a href="https://assets.victaulic.com/assets/uploads/literature/I-W100.pdf" target="_blank"><span class="menu-icon">&#128196;</span> I-W100 Installation Guide</a>
+      <a href="https://www.victaulic.com/" target="_blank"><span class="menu-icon">&#127760;</span> Victaulic Website</a>
+      <a href="#" onclick="shareApp(); return false;"><span class="menu-icon">&#128279;</span> Share This App</a>
     </div>
   </div>
 </div>
@@ -1167,16 +1167,18 @@ function buildPDF() {
   doc.rect(0, 0, pageW, 22, 'F');
   doc.setFillColor.apply(doc, orange);
   doc.rect(0, 22, pageW, 2.5, 'F');
-  // Victaulic logo — top left of header
+  // "TRAINING RECORD" text — top left of header
+  doc.setTextColor.apply(doc, white);
+  doc.setFontSize(13); doc.setFont('helvetica', 'bold');
+  doc.text('TRAINING RECORD', margin, 10);
+  doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+  doc.text('Victaulic Training & Attendance', margin, 16);
+  // Victaulic logo — top right of header
   if (logoNavyDataUrl) {
     var logoImgH = 14;
     var logoImgW = logoImgH * logoAspect;
-    doc.addImage(logoNavyDataUrl, 'PNG', margin, (22 - logoImgH) / 2, logoImgW, logoImgH, undefined, 'FAST');
+    doc.addImage(logoNavyDataUrl, 'PNG', pageW - margin - logoImgW, (22 - logoImgH) / 2, logoImgW, logoImgH, undefined, 'FAST');
   }
-  // "TRAINING RECORD" text — top right of header
-  doc.setTextColor.apply(doc, white);
-  doc.setFontSize(13); doc.setFont('helvetica', 'bold');
-  doc.text('TRAINING RECORD', pageW - margin, 14, { align: 'right' });
 
   var y = 32;
 
