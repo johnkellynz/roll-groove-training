@@ -59,14 +59,17 @@ header {
 }
 
 /* HAMBURGER */
+.header-right { display: flex; align-items: center; gap: 12px; }
+.header-logo img { height: 28px; width: auto; display: block; }
+@media (max-width: 480px) { .header-logo img { height: 22px; } }
 .hamburger-btn {
-  background: var(--vic-dark); border: 2px solid var(--vic-orange);
+  background: transparent; border: 2px solid rgba(255,255,255,0.25);
   cursor: pointer; display: flex; align-items: center; justify-content: center;
   width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0;
   font-size: 1.5rem; color: #fff; line-height: 1; padding: 0;
   transition: background 0.15s, border-color 0.15s;
 }
-.hamburger-btn:hover { background: rgba(232,86,10,0.15); border-color: #fff; }
+.hamburger-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.5); }
 .hamburger-wrap { position: relative; }
 .hamburger-menu {
   display: none; position: absolute;
@@ -356,6 +359,8 @@ header {
     <h1>Roll Groove Training Record</h1>
     <p>Victaulic Training &amp; Attendance</p>
   </div>
+  <div class="header-right">
+  <div class="header-logo"><img src="Secondary Logo Victaulic Reverse.png" alt="Victaulic"></div>
   <div class="hamburger-wrap">
     <button class="hamburger-btn" onclick="toggleHamburger()" aria-label="Menu">&#9776;</button>
     <div class="hamburger-menu" id="hamburgerMenu">
@@ -364,6 +369,7 @@ header {
       <a href="https://www.victaulic.com/" target="_blank"><span class="menu-icon">&#127760;</span> Victaulic Website</a>
       <a href="#" onclick="shareApp(); return false;"><span class="menu-icon">&#128279;</span> Share This App</a>
     </div>
+  </div>
   </div>
 </div>
 </header>
