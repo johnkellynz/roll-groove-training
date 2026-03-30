@@ -672,7 +672,7 @@ function formatDateDDMMYYYY(dateStr) {
   if (!dateStr) return '';
   var parts = dateStr.split('-');
   if (parts.length !== 3) return dateStr;
-  return parts[2] + ' ' + parts[1] + ' ' + parts[0];
+  return parts[2] + '.' + parts[1] + '.' + parts[0];
 }
 
 function toTitleCase(el) {
@@ -1173,12 +1173,12 @@ function buildPDF() {
   doc.rect(0, 0, pageW, 22, 'F');
   doc.setFillColor.apply(doc, orange);
   doc.rect(0, 22, pageW, 2.5, 'F');
-  // "TRAINING RECORD" text — top left of header
+  // "Roll Groove Register" text — top left of header
   doc.setTextColor.apply(doc, white);
   doc.setFontSize(13); doc.setFont('helvetica', 'bold');
-  doc.text('TRAINING RECORD', margin, 10);
+  doc.text('Roll Groove Register', margin, 10);
   doc.setFontSize(8); doc.setFont('helvetica', 'normal');
-  doc.text('Victaulic Training & Attendance', margin, 16);
+  doc.text('Victaulic Roll Groove Register', margin, 16);
   // Victaulic logo — top right of header
   if (logoNavyDataUrl) {
     var logoImgH = 14;
@@ -1545,7 +1545,7 @@ function downloadCSV() {
 function buildEmailBody(s) {
   var div1 = '================================================';
   var lines = [
-    'ROLL GROOVE TRAINING RECORD',
+    'ROLL GROOVE REGISTER',
     div1,
     'Date:                 ' + s.date,
     'Training Type:        ' + s.trainingType,
