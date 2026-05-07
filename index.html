@@ -1167,6 +1167,17 @@ function buildPDF() {
   var jsPDF = window.jspdf.jsPDF;
   var doc   = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
 
+  // Alphabetical-by-last-name copy used for PDF output only (does not affect on-screen log)
+  var sortedAttendees = attendees.slice().sort(function(a, b) {
+    var la = (a.lastName  || '').toLowerCase();
+    var lb = (b.lastName  || '').toLowerCase();
+    if (la !== lb) return la < lb ? -1 : 1;
+    var fa = (a.firstName || '').toLowerCase();
+    var fb = (b.firstName || '').toLowerCase();
+    if (fa !== fb) return fa < fb ? -1 : 1;
+    return 0;
+  });
+
   var pageW    = doc.internal.pageSize.getWidth();
   var pageH    = doc.internal.pageSize.getHeight();
   var margin   = 16;
@@ -1255,7 +1266,7 @@ function buildPDF() {
     startY: y,
     margin: { left: margin, right: margin },
     head: [['#', 'First Name', 'Last Name', 'Company', 'Roll Groove Tool', 'Result', 'Photo Record']],
-    body: attendees.map(function(a, i) {
+    body: sortedAttendees.map(function(a, i) {
       return [
         String(i+1),
         a.firstName || '',
@@ -1308,7 +1319,7 @@ function buildPDF() {
     didDrawCell: function(data) {
       if (data.section === 'body' && data.column.index === 6) {
         var rowIdx = data.row.index;
-        var photos = (attendees[rowIdx] && attendees[rowIdx].photos) ? attendees[rowIdx].photos : [];
+        var photos = (sortedAttendees[rowIdx] && sortedAttendees[rowIdx].photos) ? sortedAttendees[rowIdx].photos : [];
         var cellX = data.cell.x;
         var cellY = data.cell.y;
         var cellW = data.cell.width;
@@ -1340,7 +1351,7 @@ function buildPDF() {
   // PAGES 2+ — CERTIFICATES OF ATTENDANCE (landscape)
   // ═══════════════════════════════════════════════════════
   var certPageNum = 1;
-  attendees.forEach(function(attendee, idx) {
+  sortedAttendees.forEach(function(attendee, idx) {
     if (attendee.result === 'fail') return;
     certPageNum++;
     doc.addPage();
