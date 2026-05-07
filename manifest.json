@@ -1,6 +1,6 @@
 {
-  "name": "Roll Groove Register",
-  "short_name": "Roll Groove Register",
+  "name": "Roll Groove Training Record",
+  "short_name": "Roll Groove Training Record",
   "description": "Victaulic Roll Groove QA tool",
   "start_url": "/",
   "scope": "/",

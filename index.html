@@ -3,7 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Roll Groove Training</title>
+<title>Roll Groove Training Record</title>
+<meta name="apple-mobile-web-app-title" content="Roll Groove Training Record">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="application-name" content="Roll Groove Training Record">
+<link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="RG2300.png">
 <link rel="apple-touch-icon" href="RG2300.png">
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
@@ -393,16 +398,16 @@ header {
 
       <div class="form-group form-full">
         <label>Company Name</label>
-        <input type="text" id="companyName" placeholder="Company Name" value="Victaulic" autocapitalize="words" oninput="toTitleCase(this)" required>
+        <input type="text" id="companyName" placeholder="Company Name" value="VICTAULIC" autocapitalize="characters" oninput="toUpperCaseInput(this)" required>
       </div>
 
       <div class="form-group">
         <label>First Name</label>
-        <input type="text" id="instructorFirstName" placeholder="First Name" autocapitalize="words" oninput="toTitleCase(this)" required>
+        <input type="text" id="instructorFirstName" placeholder="First Name" autocapitalize="characters" oninput="toUpperCaseInput(this)" required>
       </div>
       <div class="form-group">
         <label>Last Name</label>
-        <input type="text" id="instructorLastName" placeholder="Last Name" autocapitalize="words" oninput="toTitleCase(this)" required>
+        <input type="text" id="instructorLastName" placeholder="Last Name" autocapitalize="characters" oninput="toUpperCaseInput(this)" required>
       </div>
 
     </div>
@@ -415,16 +420,16 @@ header {
 
       <div class="form-group form-full">
         <label>Company Name</label>
-        <input type="text" id="customerName" placeholder="Company Name" autocapitalize="words" oninput="toTitleCase(this);document.getElementById('addCompany').value=this.value;" required>
+        <input type="text" id="customerName" placeholder="Company Name" autocapitalize="characters" oninput="toUpperCaseInput(this);document.getElementById('addCompany').value=this.value;" required>
       </div>
 
       <div class="form-group">
         <label>First Name</label>
-        <input type="text" id="trainingRequestedByFirst" placeholder="First Name" autocapitalize="words" oninput="toTitleCase(this)" required>
+        <input type="text" id="trainingRequestedByFirst" placeholder="First Name" autocapitalize="characters" oninput="toUpperCaseInput(this)" required>
       </div>
       <div class="form-group">
         <label>Last Name</label>
-        <input type="text" id="trainingRequestedByLast" placeholder="Last Name" autocapitalize="words" oninput="toTitleCase(this)" required>
+        <input type="text" id="trainingRequestedByLast" placeholder="Last Name" autocapitalize="characters" oninput="toUpperCaseInput(this)" required>
       </div>
 
     </div>
@@ -437,7 +442,7 @@ header {
 
       <div class="form-group form-full">
         <label>Training Location</label>
-        <input type="text" id="trainingLocation" placeholder="Training Location" autocapitalize="words" oninput="toTitleCase(this)" required>
+        <input type="text" id="trainingLocation" placeholder="Training Location" autocapitalize="characters" oninput="toUpperCaseInput(this)" required>
       </div>
 
       <div class="form-group form-full">
@@ -465,7 +470,7 @@ header {
           <option value="Installation Training">Installation Training</option>
           <option value="Other">Other...</option>
         </select>
-        <input type="text" id="trainingTypeOther" placeholder="Enter training type" autocapitalize="words" oninput="toTitleCase(this)" style="display:none;margin-top:0.4rem;">
+        <input type="text" id="trainingTypeOther" placeholder="Enter training type" autocapitalize="characters" oninput="toUpperCaseInput(this)" style="display:none;margin-top:0.4rem;">
       </div>
 
       <div class="form-group form-full">
@@ -484,15 +489,15 @@ header {
       <div class="add-form-grid">
         <div class="form-group" style="margin:0; grid-column: 1 / -1;">
           <label>Company Name <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(REPEATS)</span></label>
-          <input type="text" id="addCompany" placeholder="Attendee's Company" autocapitalize="words" oninput="toTitleCase(this)" onkeydown="onAttendeeKeydown(event)">
+          <input type="text" id="addCompany" placeholder="Attendee's Company" autocapitalize="characters" oninput="toUpperCaseInput(this)" onkeydown="onAttendeeKeydown(event)">
         </div>
         <div class="form-group" style="margin:0;">
           <label>First Name</label>
-          <input type="text" id="addFirstName" placeholder="First Name" autocapitalize="words" oninput="toTitleCase(this)" onkeydown="onAttendeeKeydown(event)">
+          <input type="text" id="addFirstName" placeholder="First Name" autocapitalize="characters" oninput="toUpperCaseInput(this)" onkeydown="onAttendeeKeydown(event)">
         </div>
         <div class="form-group" style="margin:0;">
           <label>Last Name</label>
-          <input type="text" id="addLastName" placeholder="Last Name" autocapitalize="words" oninput="toTitleCase(this)" onkeydown="onAttendeeKeydown(event)">
+          <input type="text" id="addLastName" placeholder="Last Name" autocapitalize="characters" oninput="toUpperCaseInput(this)" onkeydown="onAttendeeKeydown(event)">
         </div>
       </div>
 
@@ -682,6 +687,12 @@ function toTitleCase(el) {
   try { el.setSelectionRange(pos, pos); } catch(e) {}
 }
 
+function toUpperCaseInput(el) {
+  var pos = el.selectionStart;
+  el.value = el.value.toUpperCase();
+  try { el.setSelectionRange(pos, pos); } catch(e) {}
+}
+
 function toggleHamburger() {
   document.getElementById('hamburgerMenu').classList.toggle('open');
 }
@@ -856,7 +867,7 @@ function clearAddForm(skipConfirm) {
     var d = new Date();
     var today = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
     document.getElementById('sessionDate').value = today;
-    document.getElementById('companyName').value = 'Victaulic';
+    document.getElementById('companyName').value = 'VICTAULIC';
     document.getElementById('instructorFirstName').value = '';
     document.getElementById('instructorLastName').value = '';
     document.getElementById('customerName').value = '';
