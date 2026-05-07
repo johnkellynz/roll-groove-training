@@ -9,9 +9,12 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="application-name" content="Roll Groove Training">
 <link rel="manifest" href="manifest.json">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
-<link rel="apple-touch-icon" href="icon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png">
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
@@ -399,16 +402,16 @@ header {
 
       <div class="form-group form-full">
         <label>Company Name</label>
-        <input type="text" id="companyName" placeholder="Company Name" autocapitalize="characters" oninput="toUpperCaseInput(this)" required>
+        <input type="text" id="companyName" placeholder="Company Name" required>
       </div>
 
       <div class="form-group">
         <label>First Name</label>
-        <input type="text" id="instructorFirstName" placeholder="First Name" autocapitalize="characters" oninput="toUpperCaseInput(this)" required>
+        <input type="text" id="instructorFirstName" placeholder="First Name" required>
       </div>
       <div class="form-group">
         <label>Last Name</label>
-        <input type="text" id="instructorLastName" placeholder="Last Name" autocapitalize="characters" oninput="toUpperCaseInput(this)" required>
+        <input type="text" id="instructorLastName" placeholder="Last Name" required>
       </div>
 
     </div>
@@ -421,16 +424,16 @@ header {
 
       <div class="form-group form-full">
         <label>Company Name</label>
-        <input type="text" id="customerName" placeholder="Company Name" autocapitalize="characters" oninput="toUpperCaseInput(this);document.getElementById('addCompany').value=this.value;" required>
+        <input type="text" id="customerName" placeholder="Company Name" oninput="document.getElementById('addCompany').value=this.value;" required>
       </div>
 
       <div class="form-group">
         <label>First Name</label>
-        <input type="text" id="trainingRequestedByFirst" placeholder="First Name" autocapitalize="characters" oninput="toUpperCaseInput(this)" required>
+        <input type="text" id="trainingRequestedByFirst" placeholder="First Name" required>
       </div>
       <div class="form-group">
         <label>Last Name</label>
-        <input type="text" id="trainingRequestedByLast" placeholder="Last Name" autocapitalize="characters" oninput="toUpperCaseInput(this)" required>
+        <input type="text" id="trainingRequestedByLast" placeholder="Last Name" required>
       </div>
 
     </div>
@@ -443,7 +446,7 @@ header {
 
       <div class="form-group form-full">
         <label>Training Location</label>
-        <input type="text" id="trainingLocation" placeholder="Training Location" autocapitalize="characters" oninput="toUpperCaseInput(this)" required>
+        <input type="text" id="trainingLocation" placeholder="Training Location" required>
       </div>
 
       <div class="form-group form-full">
@@ -459,7 +462,7 @@ header {
           <option value="VE460">VE460</option>
           <option value="Other">Other...</option>
         </select>
-        <input type="text" id="rollGrooveToolOther" placeholder="Enter tool name" autocapitalize="characters" style="display:none;margin-top:0.4rem;">
+        <input type="text" id="rollGrooveToolOther" placeholder="Enter tool name" style="display:none;margin-top:0.4rem;">
       </div>
 
       <div class="form-group form-full">
@@ -471,12 +474,12 @@ header {
           <option value="Installation Training">Installation Training</option>
           <option value="Other">Other...</option>
         </select>
-        <input type="text" id="trainingTypeOther" placeholder="Enter training type" autocapitalize="characters" oninput="toUpperCaseInput(this)" style="display:none;margin-top:0.4rem;">
+        <input type="text" id="trainingTypeOther" placeholder="Enter training type" style="display:none;margin-top:0.4rem;">
       </div>
 
       <div class="form-group form-full">
         <label>Comments <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(optional)</span></label>
-        <textarea id="sessionNotes" placeholder="Any general comments for this training session..." rows="2" autocapitalize="words" oninput="toTitleCase(this)" style="resize:vertical;line-height:1.5;"></textarea>
+        <textarea id="sessionNotes" placeholder="Any general comments for this training session..." rows="2" style="resize:vertical;line-height:1.5;"></textarea>
       </div>
 
     </div>
@@ -490,15 +493,15 @@ header {
       <div class="add-form-grid">
         <div class="form-group" style="margin:0; grid-column: 1 / -1;">
           <label>Company Name <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(REPEATS)</span></label>
-          <input type="text" id="addCompany" placeholder="Attendee's Company" autocapitalize="characters" oninput="toUpperCaseInput(this)" onkeydown="onAttendeeKeydown(event)">
+          <input type="text" id="addCompany" placeholder="Attendee's Company" onkeydown="onAttendeeKeydown(event)">
         </div>
         <div class="form-group" style="margin:0;">
           <label>First Name</label>
-          <input type="text" id="addFirstName" placeholder="First Name" autocapitalize="characters" oninput="toUpperCaseInput(this)" onkeydown="onAttendeeKeydown(event)">
+          <input type="text" id="addFirstName" placeholder="First Name" onkeydown="onAttendeeKeydown(event)">
         </div>
         <div class="form-group" style="margin:0;">
           <label>Last Name</label>
-          <input type="text" id="addLastName" placeholder="Last Name" autocapitalize="characters" oninput="toUpperCaseInput(this)" onkeydown="onAttendeeKeydown(event)">
+          <input type="text" id="addLastName" placeholder="Last Name" onkeydown="onAttendeeKeydown(event)">
         </div>
       </div>
 
