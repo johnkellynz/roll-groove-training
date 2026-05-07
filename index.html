@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Roll Groove Training Record</title>
-<meta name="apple-mobile-web-app-title" content="Roll Groove Training Record">
+<title>Roll Groove Training</title>
+<meta name="apple-mobile-web-app-title" content="Roll Groove Training">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="application-name" content="Roll Groove Training Record">
+<meta name="application-name" content="Roll Groove Training">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
@@ -362,7 +362,7 @@ header {
 <header>
 <div class="header-inner">
   <div class="header-text">
-    <h1>Roll Groove Training Record</h1>
+    <h1>Roll Groove Training</h1>
     <p>Victaulic Training &amp; Attendance</p>
   </div>
   <div class="header-right">
@@ -702,7 +702,7 @@ function shareApp() {
   document.getElementById('hamburgerMenu').classList.remove('open');
   var url = window.location.href;
   if (navigator.share) {
-    navigator.share({ title: 'Roll Groove Training Record', url: url }).catch(function(){});
+    navigator.share({ title: 'Roll Groove Training', url: url }).catch(function(){});
   } else if (navigator.clipboard) {
     navigator.clipboard.writeText(url).then(function() {
       alert('Link copied to clipboard!');
@@ -1578,7 +1578,7 @@ function buildEmailBody(s) {
     lines.push((i+1) + '. ' + (a.firstName+' '+a.lastName).trim());
   });
   lines.push(div1);
-  lines.push('Sent via Roll Groove Training Record');
+  lines.push('Sent via Roll Groove Training');
   return lines.filter(function(l){ return l !== null; }).join('\n');
 }
 
@@ -1586,7 +1586,7 @@ function sendEmail() {
   if (!validateSession()) return;
   if (attendees.length === 0) { alert('Please add at least one attendee.'); return; }
   var s = getSessionInfo();
-  var subj = 'Roll Groove Training Record - ' + s.date + ' - ' + s.projectName;
+  var subj = 'Roll Groove Training - ' + s.date + ' - ' + s.projectName;
   var body = buildEmailBody(s);
   var em = '';
   try { var sv = localStorage.getItem('rgt_emails'); em = sv ? JSON.parse(sv).join(',') : ''; } catch(x) {}
