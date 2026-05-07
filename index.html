@@ -9,8 +9,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="application-name" content="Roll Groove Training Record">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/png" href="RG2300.png">
-<link rel="apple-touch-icon" href="RG2300.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="apple-touch-icon" href="icon-512.png">
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
@@ -398,7 +399,7 @@ header {
 
       <div class="form-group form-full">
         <label>Company Name</label>
-        <input type="text" id="companyName" placeholder="Company Name" value="VICTAULIC" autocapitalize="characters" oninput="toUpperCaseInput(this)" required>
+        <input type="text" id="companyName" placeholder="Company Name" autocapitalize="characters" oninput="toUpperCaseInput(this)" required>
       </div>
 
       <div class="form-group">
@@ -867,7 +868,7 @@ function clearAddForm(skipConfirm) {
     var d = new Date();
     var today = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
     document.getElementById('sessionDate').value = today;
-    document.getElementById('companyName').value = 'VICTAULIC';
+    document.getElementById('companyName').value = '';
     document.getElementById('instructorFirstName').value = '';
     document.getElementById('instructorLastName').value = '';
     document.getElementById('customerName').value = '';
@@ -1674,7 +1675,7 @@ function saveEmailConfig() {
 // ── RESET ────────────────────────────────────────────────
 function resetAll() {
   if (!confirm('Reset everything? This will clear all session information and the attendee list.')) return;
-  document.getElementById('companyName').value = 'Victaulic';
+  document.getElementById('companyName').value = '';
   document.getElementById('instructorFirstName').value = '';
   document.getElementById('instructorLastName').value  = '';
   document.getElementById('customerName').value             = '';
