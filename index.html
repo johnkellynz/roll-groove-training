@@ -1001,6 +1001,10 @@ function setPendingResult(val) {
   pendingResult = (pendingResult === val) ? null : val;
   document.getElementById('addPassBtn').className = 'pf-btn' + (pendingResult === 'pass' ? ' active-pass' : '');
   document.getElementById('addFailBtn').className = 'pf-btn' + (pendingResult === 'fail' ? ' active-fail' : '');
+  // Auto-log the attendee when a result is selected (Pass/Fail acts as a shortcut)
+  if (pendingResult !== null) {
+    addAttendee();
+  }
 }
 
 function setAttendeeResult(i, val) {
