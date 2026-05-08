@@ -1350,21 +1350,29 @@ function buildPDF() {
   doc.text('TRAINING ATTENDEES', margin, y);
   y += 5;
 
-  // Attendees table
+  // Attendees table — Photo Record column is omitted when no attendee has photos
+  var hasAnyPhotos = sortedAttendees.some(function(a) {
+    return a.photos && a.photos.length > 0;
+  });
+
+  var headRow = ['#', 'First Name', 'Last Name', 'Company', 'Roll Groove Tool', 'Result'];
+  if (hasAnyPhotos) headRow.push('Photo Record');
+
   doc.autoTable({
     startY: y,
     margin: { left: margin, right: margin },
-    head: [['#', 'First Name', 'Last Name', 'Company', 'Roll Groove Tool', 'Result', 'Photo Record']],
+    head: [headRow],
     body: sortedAttendees.map(function(a, i) {
-      return [
+      var row = [
         String(i+1),
         a.firstName || '',
         a.lastName  || '',
         a.company   || '',
         s.rollGrooveTool || '—',
-        (a.result === 'pass' ? 'PASS' : a.result === 'fail' ? 'FAIL' : '—'),
-        '' // photos drawn via didDrawCell
+        (a.result === 'pass' ? 'PASS' : a.result === 'fail' ? 'FAIL' : '—')
       ];
+      if (hasAnyPhotos) row.push(''); // photos drawn via didDrawCell
+      return row;
     }),
     theme: 'grid',
     headStyles: {
@@ -1376,27 +1384,28 @@ function buildPDF() {
     bodyStyles: {
       fontSize: 10, textColor: navy,
       cellPadding: { top: 5, bottom: 5, left: 5, right: 5 },
-      valign: 'middle', minCellHeight: 35
+      valign: 'middle', minCellHeight: hasAnyPhotos ? 35 : 12
     },
     alternateRowStyles: { fillColor: [250, 250, 252] },
     tableWidth: contentW,
     columnStyles: (function() {
       var hashW = 12;
-      var photoW = 35;
+      var photoW = hasAnyPhotos ? 35 : 0;
       var remaining = contentW - hashW - photoW;
       var colW = remaining / 5;
       var companyExtra = colW * 0.3;
       var otherW = colW - companyExtra / 4;
       var compW = colW + companyExtra;
-      return {
+      var styles = {
         0: { cellWidth: hashW, halign: 'center', cellPadding: { top: 3, bottom: 3, left: 2, right: 2 } },
         1: { cellWidth: otherW, halign: 'center' },
         2: { cellWidth: otherW, halign: 'center' },
         3: { cellWidth: compW, halign: 'center' },
         4: { cellWidth: otherW, halign: 'center' },
-        5: { cellWidth: otherW, halign: 'center', fontStyle: 'bold' },
-        6: { cellWidth: photoW, halign: 'center' }
+        5: { cellWidth: otherW, halign: 'center', fontStyle: 'bold' }
       };
+      if (hasAnyPhotos) styles[6] = { cellWidth: photoW, halign: 'center' };
+      return styles;
     })(),
     didParseCell: function(data) {
       if (data.section === 'body' && data.column.index === 5) {
@@ -1406,7 +1415,7 @@ function buildPDF() {
       }
     },
     didDrawCell: function(data) {
-      if (data.section === 'body' && data.column.index === 6) {
+      if (hasAnyPhotos && data.section === 'body' && data.column.index === 6) {
         var rowIdx = data.row.index;
         var photos = (sortedAttendees[rowIdx] && sortedAttendees[rowIdx].photos) ? sortedAttendees[rowIdx].photos : [];
         var cellX = data.cell.x;
@@ -1540,7 +1549,7 @@ function buildPDF() {
     var sigX = sigCx - sigW / 2;
 
     // Script-style name image above the line
-    var sigImgW = 80; var sigImgH = 16;
+    var sigImgW = 100; var sigImgH = 20;
     try {
       doc.addImage(makeSignatureImg(s.instructor), 'PNG', sigCx - sigImgW/2, cy - sigImgH - 1, sigImgW, sigImgH, undefined, 'FAST');
     } catch(e) {
