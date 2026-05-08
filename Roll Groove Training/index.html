@@ -1,0 +1,1817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roll Groove Training</title>
+<meta name="apple-mobile-web-app-title" content="Roll Groove Training">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="application-name" content="Roll Groove Training">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
+<style>
+:root {
+  --vic-orange: #E8560A;
+  --vic-dark:   #1a1a2e;
+  --text:       #1a1a2e;
+  --muted:      #6b7280;
+  --border:     #e2e4ea;
+  --card-bg:    #ffffff;
+  --shadow:     0 1px 4px rgba(0,0,0,0.08);
+  --radius:     12px;
+  --pass-bg:    #e8f5ee;
+  --pass-color: #2d7d46;
+  --fail-bg:    #fdecea;
+  --fail-color: #c0392b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #f0f2f7;
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* HEADER */
+header {
+  background: var(--vic-dark);
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  border-bottom: 3px solid var(--vic-orange);
+}
+.header-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header-text h1 { font-size: 1.15rem; font-weight: 700; letter-spacing: 0.01em; }
+.header-text p  { font-size: 0.76rem; opacity: 0.65; margin-top: 2px; }
+@media (max-width: 480px) {
+  .header-text h1 { font-size: 0.98rem; }
+  .header-inner { gap: 10px; padding: 12px 14px; }
+}
+
+/* HAMBURGER */
+.header-right { display: flex; align-items: center; gap: 12px; }
+.header-logo img { height: 40px; width: auto; display: block; }
+@media (max-width: 480px) { .header-logo img { height: 22px; } }
+.hamburger-btn {
+  background: transparent; border: 2px solid rgba(255,255,255,0.25);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0;
+  font-size: 1.5rem; color: #fff; line-height: 1; padding: 0;
+  transition: background 0.15s, border-color 0.15s;
+}
+.hamburger-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.5); }
+.hamburger-wrap { position: relative; }
+.hamburger-menu {
+  display: none; position: absolute;
+  top: calc(100% + 8px); right: 0;
+  background: #fff; border-radius: 10px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+  min-width: 260px; z-index: 100; overflow: hidden; white-space: nowrap;
+  border: 1px solid var(--border);
+}
+.hamburger-menu.open { display: block; }
+.hamburger-menu a {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 18px; color: var(--text);
+  text-decoration: none; font-size: 0.9rem;
+  font-weight: 600; border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+}
+.hamburger-menu a .menu-icon {
+  width: 22px; text-align: center; font-size: 1.1rem; flex-shrink: 0;
+}
+.hamburger-menu a:last-child { border-bottom: none; }
+.hamburger-menu a:hover { background: #f7f8fb; }
+
+/* LAYOUT */
+.container { max-width: 1080px; margin: 0 auto; padding: 20px 16px 48px; }
+
+/* CARDS */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+}
+.card-title {
+  font-size: 0.72rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--vic-orange); margin-bottom: 14px;
+  padding-bottom: 8px; border-bottom: 2px solid var(--vic-orange);
+  display: flex; align-items: center; gap: 6px;
+}
+.step-badge {
+  background: var(--vic-orange); color: #fff;
+  border-radius: 50%; width: 20px; height: 20px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 800; flex-shrink: 0;
+}
+
+/* FORM GRID */
+.form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.form-full { grid-column: 1 / -1; }
+.form-group { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.form-group label { font-size: 0.75rem; font-weight: 600; color: var(--text); text-transform: uppercase; letter-spacing: 0.05em; }
+.form-group input,
+.form-group select,
+.form-group textarea {
+  border: 1.5px solid var(--border); border-radius: 10px;
+  padding: 12px 14px; font-size: 0.92rem;
+  color: var(--text); background: #f5f6fa;
+  transition: border-color 0.15s, background 0.15s; min-height: 46px;
+  font-family: inherit;
+}
+.form-group select { color: var(--text); -webkit-appearance: none; }
+.form-group select option { color: var(--text); }
+.form-group select option[value=""] { color: var(--muted); }
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none; border-color: var(--vic-orange); background: #fff;
+}
+@media (max-width: 520px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .form-group input, .form-group select { font-size: 16px; }
+}
+
+/* ATTENDEES */
+.attendee-add-row {
+  display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px;
+  align-items: end; margin-bottom: 16px;
+}
+@media (max-width: 520px) {
+  .attendee-add-row { grid-template-columns: 1fr; }
+}
+.attendee-table-wrap { overflow-x: auto; }
+.attendee-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 0.88rem;
+}
+.attendee-table th {
+  background: var(--vic-dark); color: #fff;
+  padding: 8px 12px; text-align: left;
+  font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em;
+  vertical-align: middle;
+}
+.attendee-table th:first-child { border-radius: 6px 0 0 0; width: 40px; }
+.attendee-table th:last-child { border-radius: 0 6px 0 0; width: 46px; text-align: center; }
+.attendee-table td {
+  padding: 9px 12px; border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.attendee-table tr:last-child td { border-bottom: none; }
+.attendee-table tr:nth-child(even) td { background: #f9fafb; }
+.attendee-table .num { color: var(--muted); font-size: 0.8rem; }
+.attendee-table .actions { text-align: center; }
+.attendee-empty {
+  padding: 28px; text-align: center;
+  color: var(--muted); font-style: italic; font-size: 0.88rem;
+  background: #fafbfc; border-radius: 8px;
+  border: 1.5px dashed var(--border);
+}
+.attendee-count {
+  font-size: 0.82rem; color: var(--muted);
+  margin-top: 10px; text-align: right;
+}
+.attendee-count strong { color: var(--vic-orange); }
+
+/* PASS / FAIL BUTTONS */
+.pf-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.pf-label { font-size: 0.75rem; font-weight: 600; color: var(--vic-orange); text-transform: uppercase; letter-spacing: 0.05em; }
+.pf-btns { display: flex; gap: 10px; }
+.pf-btn {
+  flex: 1; padding: 14px 8px; border-radius: 8px;
+  border: 2px solid var(--border); background: #f7f8fb;
+  font-size: 1rem; font-weight: 700; cursor: pointer;
+  transition: all 0.12s; min-height: 52px; letter-spacing: 0.03em;
+}
+.pf-btn:hover { border-color: #aab; background: #f0f1f5; }
+.pf-btn.active-pass { background: var(--pass-bg); border-color: var(--pass-color); color: var(--pass-color); }
+.pf-btn.active-fail { background: var(--fail-bg); border-color: var(--fail-color); color: var(--fail-color); }
+.pf-btn-sm { font-size: 0.7rem; padding: 4px 7px; min-height: 28px; }
+
+/* BADGES */
+.badge { display: inline-block; padding: 3px 9px; border-radius: 5px; font-size: 0.72rem; font-weight: 700; }
+.badge-pass { background: var(--pass-bg); color: var(--pass-color); }
+.badge-fail { background: var(--fail-bg); color: var(--fail-color); }
+.badge-na   { background: #f0f0f0; color: #888; }
+
+/* ADD FORM */
+.add-form {
+  background: #f9fafc; border-radius: 10px;
+  border: 1.5px solid var(--border); padding: 18px; margin-bottom: 16px;
+}
+.add-form-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;
+}
+@media (max-width: 520px) { .add-form-grid { grid-template-columns: 1fr; } }
+.add-form-bottom { display: flex; flex-direction: column; gap: 0; margin-bottom: 14px; }
+.pending-photos-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.pending-photos-wrap { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 4px; }
+.pending-photos-wrap > .photo-add-btn {
+  flex: 1; padding: 14px 8px; border-radius: 8px;
+  border: 2px solid var(--border); background: #f7f8fb;
+  font-size: 1rem; font-weight: 700; cursor: pointer;
+  min-height: 52px; letter-spacing: 0.03em; justify-content: center;
+}
+
+/* PHOTOS */
+.photo-thumbs { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; justify-content: center; }
+.photo-thumb-wrap { position: relative; display: inline-block; }
+.photo-thumb {
+  width: 40px; height: 40px; object-fit: cover;
+  border-radius: 6px; border: 1.5px solid var(--border);
+  cursor: zoom-in; display: block;
+}
+.photo-thumb-del {
+  position: absolute; top: -5px; right: -5px;
+  background: var(--fail-color); color: #fff;
+  border: none; border-radius: 50%;
+  width: 18px; height: 18px; font-size: 0.58rem; font-weight: 700;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.photo-add-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 16px; border-radius: 7px;
+  border: 1.5px solid var(--border); background: #fff;
+  color: #444; font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; transition: background 0.12s, border-color 0.12s;
+  flex-shrink: 0; white-space: nowrap;
+}
+.photo-add-btn:hover { background: #f0f1f5; border-color: #aab; }
+.photo-add-btn .cam-icon { font-size: 1.1rem; line-height: 1; }
+.photo-add-btn.large { padding: 14px 8px; font-size: 1rem; font-weight: 700; min-height: 52px; width: auto; height: auto; flex: 1; justify-content: center; border-width: 2px; letter-spacing: 0.03em; }
+.photo-cell { min-width: 120px; vertical-align: middle !important; text-align: center; }
+
+/* PHOTO MODAL */
+#photoModal {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.88); z-index: 1000;
+  align-items: center; justify-content: center; cursor: pointer;
+}
+#photoModal.open { display: flex; }
+#photoModal img { max-width: 90vw; max-height: 88vh; border-radius: 8px; cursor: default; }
+#photoModal .modal-close {
+  position: absolute; top: 16px; right: 20px;
+  background: #fff; border: none; border-radius: 50%;
+  width: 40px; height: 40px; font-size: 1.4rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #1a1a2e; font-weight: bold; box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+/* BUTTONS */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 18px; border-radius: 8px; border: none;
+  font-size: 0.88rem; font-weight: 600; cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  text-decoration: none; white-space: nowrap;
+  min-height: 44px;
+}
+.btn:active { transform: scale(0.97); }
+.btn:hover { opacity: 0.88; }
+.btn-primary  { background: var(--vic-orange); color: #fff; }
+.btn-secondary{ background: var(--vic-dark); color: #fff; }
+.btn-outline  { background: #fff; color: var(--vic-dark); border: 2px solid var(--border); }
+.btn-outline:hover { border-color: var(--vic-dark); }
+.btn-sm {
+  padding: 6px 12px; font-size: 0.8rem; min-height: 34px;
+  border-radius: 6px;
+}
+.del-btn {
+  background: var(--fail-bg); color: var(--fail-color);
+  border: 1.5px solid #f5c6c2; border-radius: 6px;
+  cursor: pointer; font-size: 0.85rem; font-weight: 700;
+  padding: 4px 8px; min-height: 32px; min-width: 32px;
+  transition: background 0.12s;
+}
+.del-btn:hover { background: #fad2ce; }
+.edit-btn {
+  background: #eef3ff; color: #3b5bdb;
+  border: 1.5px solid #c5d0f5; border-radius: 6px;
+  cursor: pointer; font-size: 0.85rem; font-weight: 700;
+  padding: 4px 8px; min-height: 32px; min-width: 32px;
+  transition: background 0.12s;
+}
+.edit-btn:hover { background: #dce4ff; }
+.row-actions { display: flex; gap: 5px; align-items: center; }
+
+/* ACTION ROW — 2×2 grid matching export layout */
+.action-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.action-row .btn { width: 100%; justify-content: flex-start; box-sizing: border-box; overflow: hidden; text-overflow: ellipsis; }
+.action-row .email-config-wrap { position: relative; }
+.action-row .email-config-wrap .btn { width: 100%; }
+@media (max-width: 520px) {
+  .action-row { grid-template-columns: 1fr; }
+}
+
+/* STATUS MESSAGE */
+#statusMsg {
+  display: none; padding: 10px 14px; border-radius: 8px;
+  font-size: 0.88rem; font-weight: 500; margin-top: 12px;
+}
+#statusMsg.success { background: var(--pass-bg); color: var(--pass-color); display: block; }
+#statusMsg.error   { background: var(--fail-bg); color: var(--fail-color); display: block; }
+
+/* EMAIL CONFIG */
+.email-config-wrap { position: relative; display: inline-block; }
+.email-config-panel {
+  display: none; position: absolute;
+  bottom: calc(100% + 8px); left: 0;
+  background: #fff; border: 1.5px solid var(--border);
+  border-radius: 10px; padding: 14px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.14);
+  z-index: 200; min-width: 280px;
+}
+.email-config-panel.open { display: block; }
+.email-config-panel h4 { font-size: 0.82rem; color: var(--text); margin-bottom: 10px; }
+
+/* RESET LINK */
+.reset-link {
+  font-size: 0.78rem; color: var(--muted); background: none;
+  border: none; cursor: pointer; text-decoration: underline;
+  padding: 0; margin-top: 4px;
+}
+.reset-link:hover { color: var(--fail-color); }
+</style>
+</head>
+<body>
+
+<header>
+<div class="header-inner">
+  <div class="header-text">
+    <h1>Roll Groove Training</h1>
+    <p>Victaulic Training &amp; Attendance</p>
+  </div>
+  <div class="header-right">
+  <div class="header-logo"><img src="Secondary Logo Victaulic Reverse.png" alt="Victaulic"></div>
+  <div class="hamburger-wrap">
+    <button class="hamburger-btn" onclick="toggleHamburger()" aria-label="Menu">&#9776;</button>
+    <div class="hamburger-menu" id="hamburgerMenu">
+      <a href="https://assets.victaulic.com/assets/uploads/literature/I-100.pdf" target="_blank"><span class="menu-icon">&#128196;</span> I-100 Installation Guide</a>
+      <a href="https://assets.victaulic.com/assets/uploads/literature/I-W100.pdf" target="_blank"><span class="menu-icon">&#128196;</span> I-W100 Installation Guide</a>
+      <a href="https://www.victaulic.com/" target="_blank"><span class="menu-icon">&#127760;</span> Victaulic Website</a>
+      <a href="#" onclick="shareApp(); return false;"><span class="menu-icon">&#128279;</span> Share This App</a>
+    </div>
+  </div>
+  </div>
+</div>
+</header>
+
+<div class="container">
+
+  <!-- DATE -->
+  <div class="card">
+    <div class="card-title">Date</div>
+    <div class="form-grid">
+      <div class="form-group form-full">
+        <input type="date" id="sessionDate" required>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 1: INSTRUCTOR INFORMATION -->
+  <div class="card">
+    <div class="card-title"><span class="step-badge">1</span> Instructor Information</div>
+    <div class="form-grid">
+
+      <div class="form-group form-full">
+        <label>Company Name</label>
+        <input type="text" id="companyName" placeholder="Company Name" required>
+      </div>
+
+      <div class="form-group">
+        <label>First Name</label>
+        <input type="text" id="instructorFirstName" placeholder="First Name" required>
+      </div>
+      <div class="form-group">
+        <label>Last Name</label>
+        <input type="text" id="instructorLastName" placeholder="Last Name" required>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STEP 2: CUSTOMER INFORMATION -->
+  <div class="card">
+    <div class="card-title" style="white-space:nowrap;"><span class="step-badge">2</span> Customer <span style="font-weight:400;font-size:0.72rem;color:var(--muted);">(Training Requested By)</span></div>
+    <div class="form-grid">
+
+      <div class="form-group form-full">
+        <label>Company Name</label>
+        <input type="text" id="customerName" placeholder="Company Name" oninput="onCustomerNameChange(this.value);" required>
+      </div>
+
+      <div class="form-group">
+        <label>First Name</label>
+        <input type="text" id="trainingRequestedByFirst" placeholder="First Name" required>
+      </div>
+      <div class="form-group">
+        <label>Last Name</label>
+        <input type="text" id="trainingRequestedByLast" placeholder="Last Name" required>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STEP 3: TRAINING INFORMATION -->
+  <div class="card">
+    <div class="card-title"><span class="step-badge">3</span> Training Information</div>
+    <div class="form-grid">
+
+      <div class="form-group form-full">
+        <label>Training Location</label>
+        <input type="text" id="trainingLocation" placeholder="Training Location" required>
+      </div>
+
+      <div class="form-group form-full">
+        <label>Roll Groove Tool</label>
+        <select id="rollGrooveToolSelect" onchange="onRollGrooveToolChange()">
+          <option value="">— Select Tool —</option>
+          <option value="RG2300">RG2300</option>
+          <option value="RG3210">RG3210</option>
+          <option value="RG3400">RG3400</option>
+          <option value="RG4200">RG4200</option>
+          <option value="VE271">VE271</option>
+          <option value="VE417">VE417</option>
+          <option value="VE460">VE460</option>
+          <option value="Other">Other...</option>
+        </select>
+        <input type="text" id="rollGrooveToolOther" placeholder="Enter tool name" style="display:none;margin-top:0.4rem;">
+      </div>
+
+      <div class="form-group form-full">
+        <label>Training Type</label>
+        <select id="trainingTypeSelect" onchange="onTrainingTypeChange()">
+          <option value="">— Select Option —</option>
+          <option value="OGS (Original Groove System)">OGS (Original Groove System)</option>
+          <option value="AGS (Advanced Groove System)">AGS (Advanced Groove System)</option>
+          <option value="Installation Training">Installation Training</option>
+          <option value="Other">Other...</option>
+        </select>
+        <input type="text" id="trainingTypeOther" placeholder="Enter training type" style="display:none;margin-top:0.4rem;">
+      </div>
+
+      <div class="form-group form-full">
+        <label>Comments <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(optional)</span></label>
+        <textarea id="sessionNotes" placeholder="Any general comments for this training session..." rows="2" style="resize:vertical;line-height:1.5;"></textarea>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STEP 4: ATTENDEES -->
+  <div class="card">
+    <div class="card-title"><span class="step-badge">4</span> Training Attendees</div>
+
+    <div class="add-form">
+      <div class="add-form-grid">
+        <div class="form-group" style="margin:0; grid-column: 1 / -1;">
+          <label>Company Name <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(SELECT OR ADD)</span></label>
+          <div style="display:flex; gap:8px; align-items:stretch;">
+            <select id="addCompany" style="flex:1; min-width:0;" onkeydown="onAttendeeKeydown(event)"></select>
+            <button type="button" class="btn btn-outline" style="padding:0 14px; min-height:46px; white-space:nowrap; flex-shrink:0;" onclick="addNewCustomerCompany()">+ Company</button>
+          </div>
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label>First Name</label>
+          <input type="text" id="addFirstName" placeholder="First Name" onkeydown="onAttendeeKeydown(event)">
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label>Last Name</label>
+          <input type="text" id="addLastName" placeholder="Last Name" onkeydown="onAttendeeKeydown(event)">
+        </div>
+      </div>
+
+      <div class="add-form-bottom">
+        <!-- Photos -->
+        <div class="pending-photos-row">
+          <div class="pf-label">Photos <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(optional — max 1)</span></div>
+          <div class="pending-photos-wrap" id="pendingThumbs">
+            <button class="photo-add-btn" onclick="triggerTakePhoto(-1)" title="Take a photo with your camera"><span class="cam-icon">&#128247;</span><span>Take Photo</span></button>
+            <button class="photo-add-btn" onclick="triggerAddPhoto(-1)" title="Choose photos from your files"><span class="cam-icon">&#128193;</span><span>Choose Photos</span></button>
+          </div>
+        </div>
+
+        <!-- Pass / Fail -->
+        <div class="pf-row">
+          <div class="pf-label">Result</div>
+          <div class="pf-btns">
+            <button class="pf-btn" id="addPassBtn" onclick="setPendingResult('pass')">&#10003; PASS</button>
+            <button class="pf-btn" id="addFailBtn" onclick="setPendingResult('fail')">&#10007; FAIL</button>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:4px;">
+        <button id="addAttendeeBtn" class="btn btn-primary" style="padding:12px 24px;font-size:0.95rem;" onclick="addAttendee()">&#43; Log Attendee</button>
+        <button class="btn btn-outline" style="padding:12px 24px;font-size:0.95rem;" onclick="clearAddForm()">&#8635; Reset Form</button>
+      </div>
+    </div>
+
+    <div id="attendeeListWrap">
+      <div class="attendee-empty">No attendees yet &mdash; add the first one above.</div>
+    </div>
+
+  </div>
+
+  <!-- STEP 5: EXPORT & SHARE -->
+  <div class="card">
+    <div class="card-title"><span class="step-badge">5</span> Export &amp; Share</div>
+
+    <div class="action-row">
+      <button class="btn btn-outline" onclick="downloadPDF()">
+        <strong>Download PDF</strong>&nbsp; <span style="color:var(--vic-orange);font-size:0.8rem;">With Photos</span>
+      </button>
+      <button class="btn btn-outline" onclick="downloadCSV()">
+        <strong>Download CSV</strong>&nbsp; <span style="color:var(--muted);font-size:0.8rem;">Without Photos</span>
+      </button>
+      <div class="email-config-wrap">
+        <button class="btn btn-outline" onclick="toggleEmailConfig()">
+          Set Email Address
+        </button>
+        <div class="email-config-panel" id="emailConfigPanel">
+          <h4>Recipient Email Addresses</h4>
+          <div id="emailList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;"></div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-outline btn-sm" onclick="addEmailField('')" style="flex:1;">+ Add</button>
+            <button class="btn btn-primary btn-sm" onclick="saveEmailConfig()" style="flex:1;">Save</button>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-secondary" onclick="sendEmail()">
+        Send via Email
+      </button>
+    </div>
+
+    <div id="statusMsg"></div>
+
+    <div style="margin-top:14px;">
+      <button class="reset-link" onclick="resetAll()">&#8635; Reset everything</button>
+    </div>
+  </div>
+
+</div><!-- end .container -->
+
+<!-- HIDDEN PHOTO INPUTS -->
+<input type="file" id="photoCaptureInput" accept="image/*" capture="environment" style="display:none;" onchange="handlePhotoFile(this)">
+<input type="file" id="photoFileInput" accept="image/*" multiple style="display:none;" onchange="handlePhotoFile(this)">
+
+<!-- PHOTO MODAL -->
+<div id="photoModal" onclick="closePhotoModal()">
+  <button class="modal-close" onclick="closePhotoModal()" title="Close">&#10005;</button>
+  <img id="photoModalImg" src="" onclick="event.stopPropagation()">
+</div>
+
+<!-- UNDO TOAST -->
+<div id="undoToast" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#fff;padding:12px 20px;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.3);z-index:2000;align-items:center;gap:14px;font-size:0.95rem;white-space:nowrap;">
+  <span>Attendee removed</span>
+  <button onclick="undoRemove()" style="background:var(--vic-orange);color:#fff;border:none;border-radius:6px;padding:6px 14px;font-weight:700;cursor:pointer;font-size:0.9rem;">Undo</button>
+</div>
+
+<script>
+// ── STATE ────────────────────────────────────────────────
+var attendees = [];
+// List of customer companies that attendees can be assigned to.
+// First entry always mirrors the organising customer (Step 2 — customerName).
+// Additional entries can be added via the "+ Company" button.
+var customerCompanies = [''];
+var lastRemoved = null;
+var undoTimer  = null;
+var MAX_PHOTOS = 1;
+var currentPhotoIdx = -1;
+var pendingPhotos = [];
+var pendingResult = null;
+var logoDataUrl      = null;
+var logoNavyDataUrl  = null;  // logo composited on navy (for header)
+var logoWhiteDataUrl = null;  // logo composited on white (for footer)
+var logoAspect       = 4.5;   // fallback width/height ratio if unknown
+var orangeLogoDataUrl = null; // dark/orange logo for certificates
+var orangeLogoAspect  = 4.5;
+var editingIndex  = -1;  // -1 = adding new, ≥0 = editing existing
+
+// ── INIT ─────────────────────────────────────────────────
+(function() {
+  var d = new Date();
+  var today = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  var dateEl = document.getElementById('sessionDate');
+  dateEl.value = today;
+  dateEl.max = today;
+  dateEl.addEventListener('change', function() {
+    if (this.value > today) {
+      alert('Date cannot be in the future.');
+      this.value = today;
+    }
+  });
+
+  // Try to load a Victaulic logo from common filenames in the same folder
+  var names = ['Secondary Logo Victaulic Reverse_PNG (1) copy.png','Primary Logo Victaulic Orange.png','victaulic_logo.png','victaulic_logo.jpg','logo.png','logo.jpg','victaulic.png','victaulic.jpg'];
+  function tryLogo(i) {
+    if (i >= names.length) return;
+    var img = new Image();
+    img.onload = function() {
+      logoAspect = img.naturalWidth / img.naturalHeight;
+      var w = img.naturalWidth, h = img.naturalHeight;
+
+      // Raw logo (transparent)
+      var cv = document.createElement('canvas');
+      cv.width = w; cv.height = h;
+      cv.getContext('2d').drawImage(img, 0, 0);
+      logoDataUrl = cv.toDataURL('image/png');
+
+      // Logo on navy background (for PDF header)
+      var cvN = document.createElement('canvas');
+      cvN.width = w; cvN.height = h;
+      var ctxN = cvN.getContext('2d');
+      ctxN.fillStyle = '#1a1a2e';
+      ctxN.fillRect(0, 0, w, h);
+      ctxN.drawImage(img, 0, 0);
+      logoNavyDataUrl = cvN.toDataURL('image/png');
+
+      // Logo on white background (for PDF footer)
+      var cvW = document.createElement('canvas');
+      cvW.width = w; cvW.height = h;
+      var ctxW = cvW.getContext('2d');
+      ctxW.fillStyle = '#ffffff';
+      ctxW.fillRect(0, 0, w, h);
+      ctxW.drawImage(img, 0, 0);
+      logoWhiteDataUrl = cvW.toDataURL('image/png');
+    };
+    img.onerror = function() { tryLogo(i + 1); };
+    img.src = names[i] + '?_=' + Date.now(); // cache-bust
+  }
+  tryLogo(0);
+
+  // Load the orange/dark Victaulic logo for certificates
+  var orangeImg = new Image();
+  orangeImg.onload = function() {
+    orangeLogoAspect = orangeImg.naturalWidth / orangeImg.naturalHeight;
+    var cv = document.createElement('canvas');
+    cv.width = orangeImg.naturalWidth; cv.height = orangeImg.naturalHeight;
+    var ctx = cv.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, cv.width, cv.height);
+    ctx.drawImage(orangeImg, 0, 0);
+    orangeLogoDataUrl = cv.toDataURL('image/png');
+  };
+  orangeImg.src = 'Primary Logo Victaulic Orange.png?_=' + Date.now();
+
+  // Initialise the attendee company dropdown
+  renderCompanyOptions('');
+})();
+
+// ── UTILITIES ────────────────────────────────────────────
+function formatDateDDMMYYYY(dateStr) {
+  if (!dateStr) return '';
+  var parts = dateStr.split('-');
+  if (parts.length !== 3) return dateStr;
+  return parts[2] + '.' + parts[1] + '.' + parts[0];
+}
+
+function toTitleCase(el) {
+  var v = el.value;
+  var pos = el.selectionStart;
+  el.value = v.replace(/\b\w/g, function(c){ return c.toUpperCase(); }).replace(/\B\w/g, function(c){ return c.toLowerCase(); });
+  try { el.setSelectionRange(pos, pos); } catch(e) {}
+}
+
+function toUpperCaseInput(el) {
+  var pos = el.selectionStart;
+  el.value = el.value.toUpperCase();
+  try { el.setSelectionRange(pos, pos); } catch(e) {}
+}
+
+function toggleHamburger() {
+  document.getElementById('hamburgerMenu').classList.toggle('open');
+}
+
+function shareApp() {
+  document.getElementById('hamburgerMenu').classList.remove('open');
+  var url = window.location.href;
+  if (navigator.share) {
+    navigator.share({ title: 'Roll Groove Training', url: url }).catch(function(){});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(function() {
+      alert('Link copied to clipboard!');
+    }).catch(function() {
+      prompt('Copy this link to share:', url);
+    });
+  } else {
+    prompt('Copy this link to share:', url);
+  }
+}
+document.addEventListener('click', function(e) {
+  var menu = document.getElementById('hamburgerMenu');
+  if (menu && menu.classList.contains('open') && !e.target.closest('.hamburger-wrap')) {
+    menu.classList.remove('open');
+  }
+  var panel = document.getElementById('emailConfigPanel');
+  if (panel && panel.classList.contains('open') && !e.target.closest('.email-config-wrap')) {
+    panel.classList.remove('open');
+  }
+});
+
+// ── FORM ─────────────────────────────────────────────────
+function onRollGrooveToolChange() {
+  var sel = document.getElementById('rollGrooveToolSelect').value;
+  var other = document.getElementById('rollGrooveToolOther');
+  other.style.display = sel === 'Other' ? 'block' : 'none';
+  if (sel !== 'Other') other.value = '';
+}
+
+function onTrainingTypeChange() {
+  var sel = document.getElementById('trainingTypeSelect').value;
+  var other = document.getElementById('trainingTypeOther');
+  other.style.display = sel === 'Other' ? 'block' : 'none';
+  if (sel !== 'Other') other.value = '';
+}
+
+function validateSession() {
+  var fields = [
+    ['sessionDate',        'Date'],
+    ['companyName',         'Instructor Company Name'],
+    ['instructorFirstName', 'Instructor First Name'],
+    ['instructorLastName',  'Instructor Last Name'],
+    ['customerName',             'Customer Company Name'],
+    ['trainingRequestedByFirst', 'Customer First Name'],
+    ['trainingRequestedByLast',  'Customer Last Name'],
+    ['trainingLocation',         'Training Location']
+  ];
+  for (var i = 0; i < fields.length; i++) {
+    if (!document.getElementById(fields[i][0]).value.trim()) {
+      alert(fields[i][1] + ' is required.');
+      document.getElementById(fields[i][0]).focus();
+      return false;
+    }
+  }
+  var toolVal = document.getElementById('rollGrooveToolSelect').value;
+  if (!toolVal) { alert('Roll Groove Tool is required.'); document.getElementById('rollGrooveToolSelect').focus(); return false; }
+  if (toolVal === 'Other' && !document.getElementById('rollGrooveToolOther').value.trim()) { alert('Please enter the Roll Groove Tool name.'); document.getElementById('rollGrooveToolOther').focus(); return false; }
+  var typeVal = document.getElementById('trainingTypeSelect').value;
+  if (!typeVal) { alert('Training Type is required.'); document.getElementById('trainingTypeSelect').focus(); return false; }
+  if (typeVal === 'Other' && !document.getElementById('trainingTypeOther').value.trim()) { alert('Please enter the Training Type.'); document.getElementById('trainingTypeOther').focus(); return false; }
+  return true;
+}
+
+function getSessionInfo() {
+  return {
+    date:                document.getElementById('sessionDate').value || '',
+    company:             document.getElementById('companyName').value.trim() || '(not set)',
+    instructor:          (document.getElementById('instructorFirstName').value.trim() + ' ' + document.getElementById('instructorLastName').value.trim()).trim() || '(not set)',
+    customerName:        document.getElementById('customerName').value.trim() || '(not set)',
+    trainingRequestedBy: (document.getElementById('trainingRequestedByFirst').value.trim() + ' ' + document.getElementById('trainingRequestedByLast').value.trim()).trim() || '(not set)',
+    trainingLocation:    document.getElementById('trainingLocation').value.trim() || '(not set)',
+    trainingType:        (function() {
+      var sel = document.getElementById('trainingTypeSelect').value;
+      if (sel === 'Other') return document.getElementById('trainingTypeOther').value.trim() || 'Other';
+      return sel;
+    })(),
+    sessionNotes:        document.getElementById('sessionNotes').value.trim() || '',
+    rollGrooveTool:      (function() {
+      var sel = document.getElementById('rollGrooveToolSelect').value;
+      if (sel === 'Other') return document.getElementById('rollGrooveToolOther').value.trim() || '';
+      return sel;
+    })()
+  };
+}
+
+// ── CUSTOMER COMPANIES ───────────────────────────────────
+// The first entry in customerCompanies always tracks Step 2's customerName
+// (the company that organised the training). Additional entries can be added
+// by the user when training covers attendees from multiple companies.
+function onCustomerNameChange(val) {
+  customerCompanies[0] = (val || '').trim();
+  // Drop any duplicate entries that match the new organiser name
+  for (var i = customerCompanies.length - 1; i > 0; i--) {
+    if (customerCompanies[i].toLowerCase() === customerCompanies[0].toLowerCase()) {
+      customerCompanies.splice(i, 1);
+    }
+  }
+  renderCompanyOptions(customerCompanies[0]);
+}
+
+function addNewCustomerCompany() {
+  var name = prompt('Enter the additional customer company name:');
+  if (name === null) return;
+  name = name.trim();
+  if (!name) return;
+  // Avoid duplicates (case-insensitive)
+  for (var i = 0; i < customerCompanies.length; i++) {
+    if (customerCompanies[i].toLowerCase() === name.toLowerCase()) {
+      renderCompanyOptions(customerCompanies[i]);
+      return;
+    }
+  }
+  customerCompanies.push(name);
+  renderCompanyOptions(name);
+}
+
+function ensureCompanyInList(name) {
+  if (!name) return;
+  for (var i = 0; i < customerCompanies.length; i++) {
+    if (customerCompanies[i].toLowerCase() === name.toLowerCase()) return;
+  }
+  customerCompanies.push(name);
+}
+
+function renderCompanyOptions(selectedValue) {
+  var sel = document.getElementById('addCompany');
+  if (!sel) return;
+  var prev = (typeof selectedValue !== 'undefined') ? selectedValue : sel.value;
+  sel.innerHTML = '';
+  var seen = {};
+  for (var i = 0; i < customerCompanies.length; i++) {
+    var c = customerCompanies[i];
+    var key = c.toLowerCase();
+    if (seen[key]) continue;
+    seen[key] = true;
+    var opt = document.createElement('option');
+    opt.value = c;
+    if (i === 0 && !c) {
+      opt.textContent = '— enter customer company in Step 2 —';
+      opt.disabled = true;
+    } else {
+      opt.textContent = (i === 0 ? c + '  (organiser)' : c);
+    }
+    sel.appendChild(opt);
+  }
+  // Restore selection
+  var matched = false;
+  if (prev) {
+    for (var j = 0; j < sel.options.length; j++) {
+      if (sel.options[j].value === prev) { sel.value = prev; matched = true; break; }
+    }
+  }
+  if (!matched) {
+    for (var k = 0; k < sel.options.length; k++) {
+      if (!sel.options[k].disabled) { sel.value = sel.options[k].value; break; }
+    }
+  }
+}
+
+// ── ATTENDEES ────────────────────────────────────────────
+function onAttendeeKeydown(e) {
+  if (e.key === 'Enter') { e.preventDefault(); addAttendee(); }
+}
+
+function addAttendee() {
+  var fn = document.getElementById('addFirstName').value.trim();
+  var ln = document.getElementById('addLastName').value.trim();
+  var co = document.getElementById('addCompany').value.trim();
+  var fc = '';
+  // Validate session fields first — jump to first empty one
+  var sessionChecks = [
+    ['sessionDate', 'Date'],
+    ['companyName', 'Instructor Company'],
+    ['instructorFirstName', 'Instructor First Name'],
+    ['instructorLastName', 'Instructor Last Name'],
+    ['customerName', 'Customer Company'],
+    ['trainingRequestedByFirst', 'Customer First Name'],
+    ['trainingRequestedByLast', 'Customer Last Name'],
+    ['trainingLocation', 'Training Location']
+  ];
+  for (var i = 0; i < sessionChecks.length; i++) {
+    var el = document.getElementById(sessionChecks[i][0]);
+    if (!el.value || !el.value.trim()) {
+      alert(sessionChecks[i][1] + ' is required.');
+      el.focus(); el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+  }
+  var toolVal = document.getElementById('rollGrooveToolSelect').value;
+  if (!toolVal) { alert('Roll Groove Tool is required.'); var e = document.getElementById('rollGrooveToolSelect'); e.focus(); e.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  if (toolVal === 'Other' && !document.getElementById('rollGrooveToolOther').value.trim()) { alert('Please enter the Roll Groove Tool name.'); var e2 = document.getElementById('rollGrooveToolOther'); e2.focus(); e2.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  var typeVal = document.getElementById('trainingTypeSelect').value;
+  if (!typeVal) { alert('Training Type is required.'); var e3 = document.getElementById('trainingTypeSelect'); e3.focus(); e3.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  if (typeVal === 'Other' && !document.getElementById('trainingTypeOther').value.trim()) { alert('Please enter the Training Type.'); var e4 = document.getElementById('trainingTypeOther'); e4.focus(); e4.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  // Validate attendee fields — jump to first empty one
+  if (!fn) { alert('First Name is required.'); var ef = document.getElementById('addFirstName'); ef.focus(); ef.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  if (!ln) { alert('Last Name is required.'); var el2 = document.getElementById('addLastName'); el2.focus(); el2.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  if (!co) { alert('Company is required.'); var ec = document.getElementById('addCompany'); ec.focus(); ec.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  if (pendingResult === null && editingIndex < 0) { alert('Please select Pass or Fail.'); return; }
+  if (editingIndex >= 0) {
+    var existing = attendees[editingIndex];
+    attendees[editingIndex] = {
+      firstName: fn, lastName: ln, company: co,
+      photos: pendingPhotos.length > 0 ? pendingPhotos.slice() : existing.photos,
+      result: pendingResult !== null ? pendingResult : existing.result,
+      failComments: fc
+    };
+  } else {
+    attendees.push({ firstName: fn, lastName: ln, company: co, photos: pendingPhotos.slice(), result: pendingResult, failComments: fc });
+  }
+  clearAddForm(true);
+  renderAttendees();
+}
+
+function startEditAttendee(i) {
+  var a = attendees[i];
+  editingIndex = i;
+  document.getElementById('addFirstName').value = a.firstName || '';
+  document.getElementById('addLastName').value  = a.lastName  || '';
+  // Make sure this attendee's company appears in the dropdown
+  ensureCompanyInList(a.company || '');
+  renderCompanyOptions(a.company || '');
+  pendingPhotos = (a.photos || []).slice();
+  pendingResult = a.result || null;
+  renderPendingThumbs();
+  document.getElementById('addPassBtn').className = 'pf-btn' + (pendingResult === 'pass' ? ' active-pass' : '');
+  document.getElementById('addFailBtn').className = 'pf-btn' + (pendingResult === 'fail' ? ' active-fail' : '');
+  // Update button label
+  document.getElementById('addAttendeeBtn').textContent = '✓ Save Changes';
+  document.getElementById('addAttendeeBtn').style.background = '#3b5bdb';
+  document.getElementById('addFirstName').focus();
+  document.getElementById('addFirstName').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function clearAddForm(skipConfirm) {
+  if (!skipConfirm) {
+    if (!confirm('Are you sure you want to reset the entire form? All session data and attendees will be lost.')) return;
+    // Reset all session fields
+    var d = new Date();
+    var today = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    document.getElementById('sessionDate').value = today;
+    document.getElementById('companyName').value = '';
+    document.getElementById('instructorFirstName').value = '';
+    document.getElementById('instructorLastName').value = '';
+    document.getElementById('customerName').value = '';
+    document.getElementById('trainingRequestedByFirst').value = '';
+    document.getElementById('trainingRequestedByLast').value = '';
+    document.getElementById('trainingLocation').value = '';
+    document.getElementById('rollGrooveToolSelect').value = '';
+    document.getElementById('rollGrooveToolOther').value = '';
+    document.getElementById('rollGrooveToolOther').style.display = 'none';
+    document.getElementById('trainingTypeSelect').value = '';
+    document.getElementById('trainingTypeOther').value = '';
+    document.getElementById('trainingTypeOther').style.display = 'none';
+    document.getElementById('sessionNotes').value = '';
+    // Reset customer company list and dropdown
+    customerCompanies = [''];
+    renderCompanyOptions('');
+    // Clear all attendees
+    attendees = [];
+    renderAttendees();
+    // Clear status message
+    var msg = document.getElementById('statusMsg');
+    if (msg) msg.innerHTML = '';
+  }
+  editingIndex = -1;
+  var keepCompany = document.getElementById('addCompany').value;
+  document.getElementById('addFirstName').value = '';
+  document.getElementById('addLastName').value  = '';
+  document.getElementById('addCompany').value   = keepCompany; // preserve — repeats across attendees
+  document.getElementById('addPassBtn').className = 'pf-btn';
+  document.getElementById('addFailBtn').className = 'pf-btn';
+  pendingPhotos = [];
+  pendingResult = null;
+  renderPendingThumbs();
+  var btn = document.getElementById('addAttendeeBtn');
+  btn.textContent = '+ Log Attendee';
+  btn.style.background = '';
+  document.getElementById('addFirstName').focus();
+}
+
+function setPendingResult(val) {
+  pendingResult = (pendingResult === val) ? null : val;
+  document.getElementById('addPassBtn').className = 'pf-btn' + (pendingResult === 'pass' ? ' active-pass' : '');
+  document.getElementById('addFailBtn').className = 'pf-btn' + (pendingResult === 'fail' ? ' active-fail' : '');
+}
+
+function setAttendeeResult(i, val) {
+  attendees[i].result = (attendees[i].result === val) ? null : val;
+  renderAttendees();
+}
+
+function badge(v) {
+  if (!v) return '<span class="badge badge-na">—</span>';
+  if (v === 'pass') return '<span class="badge badge-pass">PASS</span>';
+  return '<span class="badge badge-fail">FAIL</span>';
+}
+
+function removeAttendee(i) {
+  lastRemoved = { attendee: attendees[i], index: i };
+  attendees.splice(i, 1);
+  renderAttendees();
+  showUndoToast();
+}
+
+function showUndoToast() {
+  if (undoTimer) clearTimeout(undoTimer);
+  var toast = document.getElementById('undoToast');
+  toast.style.display = 'flex';
+  undoTimer = setTimeout(function() {
+    toast.style.display = 'none';
+    lastRemoved = null;
+  }, 6000);
+}
+
+function undoRemove() {
+  if (!lastRemoved) return;
+  attendees.splice(lastRemoved.index, 0, lastRemoved.attendee);
+  lastRemoved = null;
+  if (undoTimer) clearTimeout(undoTimer);
+  document.getElementById('undoToast').style.display = 'none';
+  renderAttendees();
+}
+
+function renderAttendees() {
+  var wrap = document.getElementById('attendeeListWrap');
+  if (attendees.length === 0) {
+    wrap.innerHTML = '<div class="attendee-empty">No attendees yet &mdash; add the first one above.</div>';
+    return;
+  }
+  var rows = attendees.map(function(a, i) {
+    var full = (a.firstName + ' ' + a.lastName).trim();
+    var photos = a.photos || [];
+    var thumbs = photos.map(function(src, j) {
+      return '<div class="photo-thumb-wrap">' +
+        '<img class="photo-thumb" src="' + src + '" onclick="viewPhoto(' + i + ',' + j + ')" title="View photo">' +
+        '<button class="photo-thumb-del" onclick="removePhoto(' + i + ',' + j + ')" title="Remove photo">&#10005;</button>' +
+      '</div>';
+    }).join('');
+    var canAdd = photos.length < MAX_PHOTOS;
+    var takeBtn = canAdd ? '<button class="photo-add-btn" onclick="triggerTakePhoto(' + i + ')" title="Take photo"><span class="cam-icon">&#128247;</span><span>TAKE</span></button>' : '';
+    var addBtn  = canAdd ? '<button class="photo-add-btn" onclick="triggerAddPhoto(' + i + ')"  title="Add from files"><span class="cam-icon">&#128444;</span><span>ADD</span></button>' : '';
+    var passClass = 'pf-btn pf-btn-sm' + (a.result === 'pass' ? ' active-pass' : '');
+    var failClass = 'pf-btn pf-btn-sm' + (a.result === 'fail' ? ' active-fail' : '');
+    return '<tr>' +
+      '<td class="actions">' +
+        '<div class="row-actions">' +
+          '<button class="edit-btn" onclick="startEditAttendee(' + i + ')" title="Edit attendee">&#9998;</button>' +
+          '<button class="del-btn"  onclick="removeAttendee(' + i + ')"       title="Remove attendee">&#10005;</button>' +
+        '</div>' +
+      '</td>' +
+      '<td class="num">' + (i+1) + '</td>' +
+      '<td>' + escHtml(a.firstName) + '</td>' +
+      '<td>' + escHtml(a.lastName)  + '</td>' +
+      '<td>' + escHtml(a.company || '') + '</td>' +
+      '<td style="min-width:120px;">' +
+        '<div style="display:flex;flex-direction:column;gap:5px;">' +
+          badge(a.result) +
+          '<div style="display:flex;gap:4px;">' +
+            '<button class="' + passClass + '" onclick="setAttendeeResult(' + i + ',\'pass\')">&#10003; Pass</button>' +
+            '<button class="' + failClass + '" onclick="setAttendeeResult(' + i + ',\'fail\')">&#10007; Fail</button>' +
+          '</div>' +
+        '</div>' +
+      '</td>' +
+      '<td class="photo-cell"><div class="photo-thumbs">' + thumbs + takeBtn + addBtn + '</div></td>' +
+    '</tr>';
+  }).join('');
+  var passed = attendees.filter(function(a){ return a.result === 'pass'; }).length;
+  var failed = attendees.filter(function(a){ return a.result === 'fail'; }).length;
+  wrap.innerHTML =
+    '<div class="attendee-table-wrap">' +
+    '<table class="attendee-table">' +
+    '<thead><tr><th style="width:56px;"></th><th>#</th><th>First Name</th><th>Last Name</th><th>Company</th><th>Result</th><th>Photos</th></tr></thead>' +
+    '<tbody>' + rows + '</tbody>' +
+    '</table></div>' +
+    '<div class="attendee-count">' +
+      '<strong>' + attendees.length + '</strong> attendee' + (attendees.length !== 1 ? 's' : '') +
+      (passed ? ' &nbsp;·&nbsp; <span style="color:var(--pass-color);font-weight:700;">' + passed + ' passed</span>' : '') +
+      (failed ? ' &nbsp;·&nbsp; <span style="color:var(--fail-color);font-weight:700;">' + failed + ' failed</span>' : '') +
+    '</div>';
+}
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── PHOTOS ───────────────────────────────────────────────
+function triggerTakePhoto(i) {
+  currentPhotoIdx = (i === undefined) ? -1 : i;
+  var input = document.getElementById('photoCaptureInput');
+  input.value = '';
+  input.click();
+}
+
+function triggerAddPhoto(i) {
+  currentPhotoIdx = (i === undefined) ? -1 : i;
+  var input = document.getElementById('photoFileInput');
+  input.value = '';
+  input.click();
+}
+
+function handlePhotoFile(input) {
+  var files = input.files;
+  if (!files || !files.length) return;
+  var isPending = (currentPhotoIdx === -1);
+  var currentArr = isPending ? pendingPhotos : (attendees[currentPhotoIdx] ? attendees[currentPhotoIdx].photos : null);
+  if (!currentArr && !isPending) return;
+  var remaining = MAX_PHOTOS - currentArr.length;
+  if (remaining <= 0) { alert('Maximum ' + MAX_PHOTOS + ' groove photos per attendee.'); return; }
+  var toLoad = Math.min(files.length, remaining);
+  var loaded = 0;
+  var snapIdx = currentPhotoIdx;
+  for (var i = 0; i < toLoad; i++) {
+    (function(file) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        if (snapIdx === -1) {
+          pendingPhotos.push(e.target.result);
+        } else {
+          if (attendees[snapIdx] && attendees[snapIdx].photos) {
+            attendees[snapIdx].photos.push(e.target.result);
+          }
+        }
+        loaded++;
+        if (loaded === toLoad) {
+          if (snapIdx === -1) { renderPendingThumbs(); }
+          else { renderAttendees(); }
+        }
+      };
+      reader.readAsDataURL(file);
+    })(files[i]);
+  }
+  input.value = '';
+}
+
+function renderPendingThumbs() {
+  var wrap = document.getElementById('pendingThumbs');
+  if (!wrap) return;
+  var thumbs = pendingPhotos.map(function(src, j) {
+    return '<div class="photo-thumb-wrap">' +
+      '<img class="photo-thumb" src="' + src + '" onclick="viewPendingPhoto(' + j + ')" title="View">' +
+      '<button class="photo-thumb-del" onclick="removePendingPhoto(' + j + ')" title="Remove">&#10005;</button>' +
+    '</div>';
+  }).join('');
+  var canAdd = pendingPhotos.length < MAX_PHOTOS;
+  var takeBtn = canAdd
+    ? '<button class="photo-add-btn" onclick="triggerTakePhoto(-1)" title="Take photo"><span class="cam-icon">&#128247;</span><span>Take Photo</span></button>'
+    : '';
+  var addBtn = canAdd
+    ? '<button class="photo-add-btn" onclick="triggerAddPhoto(-1)" title="Choose photos from your files"><span class="cam-icon">&#128193;</span><span>Choose Photos</span></button>'
+    : '';
+  wrap.innerHTML = thumbs + takeBtn + addBtn;
+}
+
+function removePendingPhoto(j) {
+  pendingPhotos.splice(j, 1);
+  renderPendingThumbs();
+}
+
+function viewPendingPhoto(j) {
+  document.getElementById('photoModalImg').src = pendingPhotos[j];
+  document.getElementById('photoModal').classList.add('open');
+}
+
+function removePhoto(attendeeIdx, photoIdx) {
+  attendees[attendeeIdx].photos.splice(photoIdx, 1);
+  renderAttendees();
+}
+
+function viewPhoto(attendeeIdx, photoIdx) {
+  document.getElementById('photoModalImg').src = attendees[attendeeIdx].photos[photoIdx];
+  document.getElementById('photoModal').classList.add('open');
+}
+
+function closePhotoModal() {
+  document.getElementById('photoModal').classList.remove('open');
+  document.getElementById('photoModalImg').src = '';
+}
+
+// ── PDF CANVAS HELPERS ───────────────────────────────────
+function makePassBadgeImg() {
+  var s = 200;
+  var cv = document.createElement('canvas');
+  cv.width = s; cv.height = s;
+  var ctx = cv.getContext('2d');
+  ctx.clearRect(0, 0, s, s);
+  // Outer ring
+  ctx.beginPath();
+  ctx.arc(s/2, s/2, s/2 - 5, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(0,140,60,0.08)';
+  ctx.fill();
+  ctx.strokeStyle = '#008C3C';
+  ctx.lineWidth = 10;
+  ctx.stroke();
+  // Bold checkmark
+  ctx.strokeStyle = '#008C3C';
+  ctx.lineWidth = 18;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  ctx.moveTo(s * 0.22, s * 0.50);
+  ctx.lineTo(s * 0.43, s * 0.70);
+  ctx.lineTo(s * 0.78, s * 0.30);
+  ctx.stroke();
+  return cv.toDataURL('image/png');
+}
+
+function makeSignatureImg(name) {
+  var w = 600, h = 100;
+  var cv = document.createElement('canvas');
+  cv.width = w; cv.height = h;
+  var ctx = cv.getContext('2d');
+  ctx.clearRect(0, 0, w, h);
+  ctx.font = '62px "Dancing Script", "Brush Script MT", "Segoe Script", cursive';
+  ctx.fillStyle = '#1a1a2e';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(name, w/2, h/2 + 6);
+  return cv.toDataURL('image/png');
+}
+
+// ── PDF GENERATION ───────────────────────────────────────
+function addFooterLogo(doc, pageW, pageH) {
+  var src = logoWhiteDataUrl || logoDataUrl;
+  if (src) {
+    var lh = 13.5;
+    var lw = Math.min(lh * logoAspect, 82);
+    doc.addImage(src, 'PNG', pageW/2 - lw/2, pageH - lh - 10, lw, lh, undefined, 'FAST');
+  }
+}
+
+function buildPDF() {
+  if (!validateSession()) return null;
+  if (attendees.length === 0) { alert('Please add at least one attendee.'); return null; }
+  if (!window.jspdf) { alert('PDF library not loaded. Please check your internet connection.'); return null; }
+
+  var s = getSessionInfo();
+  var jsPDF = window.jspdf.jsPDF;
+  var doc   = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+  // Alphabetical-by-last-name copy used for PDF output only (does not affect on-screen log)
+  var sortedAttendees = attendees.slice().sort(function(a, b) {
+    var la = (a.lastName  || '').toLowerCase();
+    var lb = (b.lastName  || '').toLowerCase();
+    if (la !== lb) return la < lb ? -1 : 1;
+    var fa = (a.firstName || '').toLowerCase();
+    var fb = (b.firstName || '').toLowerCase();
+    if (fa !== fb) return fa < fb ? -1 : 1;
+    return 0;
+  });
+
+  var pageW    = doc.internal.pageSize.getWidth();
+  var pageH    = doc.internal.pageSize.getHeight();
+  var margin   = 16;
+  var contentW = pageW - margin * 2;
+
+  // Colour palette
+  var navy      = [26, 26, 46];
+  var orange    = [232, 86, 10];
+  var lightGrey = [245, 246, 248];
+  var midGrey   = [210, 210, 210];
+  var white     = [255, 255, 255];
+
+  // ═══════════════════════════════════════════════════════
+  // PAGE 1 — COVER / SUMMARY
+  // ═══════════════════════════════════════════════════════
+
+  // Header bar
+  doc.setFillColor.apply(doc, navy);
+  doc.rect(0, 0, pageW, 22, 'F');
+  doc.setFillColor.apply(doc, orange);
+  doc.rect(0, 22, pageW, 2.5, 'F');
+  // "Roll Groove Register" text — top left of header
+  doc.setTextColor.apply(doc, white);
+  doc.setFontSize(13); doc.setFont('helvetica', 'bold');
+  doc.text('Roll Groove Register', margin, 10);
+  doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+  doc.text('Victaulic Roll Groove Register', margin, 16);
+  // Victaulic logo — top right of header
+  if (logoNavyDataUrl) {
+    var logoImgH = 14;
+    var logoImgW = logoImgH * logoAspect;
+    doc.addImage(logoNavyDataUrl, 'PNG', pageW - margin - logoImgW, (22 - logoImgH) / 2, logoImgW, logoImgH, undefined, 'FAST');
+  }
+
+  var y = 32;
+
+  // Session info box
+  var boxH = 38;
+  doc.setFillColor.apply(doc, lightGrey);
+  doc.roundedRect(margin, y, contentW, boxH, 2, 2, 'F');
+  doc.setDrawColor.apply(doc, midGrey);
+  doc.roundedRect(margin, y, contentW, boxH, 2, 2, 'S');
+  doc.setDrawColor.apply(doc, midGrey);
+  doc.line(margin + contentW/2, y+3, margin + contentW/2, y+boxH-3);
+
+  function infoCell(label, value, x, cy) {
+    doc.setFontSize(10); doc.setFont('helvetica', 'bold');
+    doc.setTextColor.apply(doc, orange);
+    doc.text(label.toUpperCase(), x, cy);
+    doc.setFontSize(10); doc.setFont('helvetica', 'bold');
+    doc.setTextColor.apply(doc, navy);
+    var safe = String(value || '—');
+    if (safe.length > 40) safe = safe.substring(0, 38) + '…';
+    doc.text(safe, x, cy + 5);
+  }
+
+  var c1 = margin + 5, c2 = margin + contentW/2 + 5;
+  var r1=y+8, r2=y+19, r3=y+30;
+  infoCell('Date', formatDateDDMMYYYY(s.date), c1, r1);
+  infoCell('Training Type', s.trainingType, c2, r1);
+  infoCell('Instructor', s.instructor + '  ·  ' + s.company, c1, r2);
+  infoCell('Training Location', s.trainingLocation, c2, r2);
+  infoCell('Customer', s.customerName, c1, r3);
+  infoCell('Training Requested By', s.trainingRequestedBy, c2, r3);
+
+  y += boxH + 4;
+
+  if (s.sessionNotes) {
+    doc.setFillColor.apply(doc, lightGrey);
+    doc.roundedRect(margin, y, contentW, 16, 2, 2, 'F');
+    doc.setDrawColor.apply(doc, midGrey);
+    doc.roundedRect(margin, y, contentW, 16, 2, 2, 'S');
+    infoCell('Comments', s.sessionNotes, margin+5, y+8.5);
+    y += 22;
+  }
+
+  // Attendees section title
+  y += 3;
+  doc.setFontSize(10); doc.setFont('helvetica', 'bold');
+  doc.setTextColor.apply(doc, orange);
+  doc.text('TRAINING ATTENDEES', margin, y);
+  y += 5;
+
+  // Attendees table
+  doc.autoTable({
+    startY: y,
+    margin: { left: margin, right: margin },
+    head: [['#', 'First Name', 'Last Name', 'Company', 'Roll Groove Tool', 'Result', 'Photo Record']],
+    body: sortedAttendees.map(function(a, i) {
+      return [
+        String(i+1),
+        a.firstName || '',
+        a.lastName  || '',
+        a.company   || '',
+        s.rollGrooveTool || '—',
+        (a.result === 'pass' ? 'PASS' : a.result === 'fail' ? 'FAIL' : '—'),
+        '' // photos drawn via didDrawCell
+      ];
+    }),
+    theme: 'grid',
+    headStyles: {
+      fillColor: navy, textColor: white,
+      fontStyle: 'bold', fontSize: 10,
+      cellPadding: { top: 3, bottom: 3, left: 5, right: 5 },
+      valign: 'middle', halign: 'center'
+    },
+    bodyStyles: {
+      fontSize: 10, textColor: navy,
+      cellPadding: { top: 5, bottom: 5, left: 5, right: 5 },
+      valign: 'middle', minCellHeight: 35
+    },
+    alternateRowStyles: { fillColor: [250, 250, 252] },
+    tableWidth: contentW,
+    columnStyles: (function() {
+      var hashW = 12;
+      var photoW = 35;
+      var remaining = contentW - hashW - photoW;
+      var colW = remaining / 5;
+      var companyExtra = colW * 0.3;
+      var otherW = colW - companyExtra / 4;
+      var compW = colW + companyExtra;
+      return {
+        0: { cellWidth: hashW, halign: 'center', cellPadding: { top: 3, bottom: 3, left: 2, right: 2 } },
+        1: { cellWidth: otherW, halign: 'center' },
+        2: { cellWidth: otherW, halign: 'center' },
+        3: { cellWidth: compW, halign: 'center' },
+        4: { cellWidth: otherW, halign: 'center' },
+        5: { cellWidth: otherW, halign: 'center', fontStyle: 'bold' },
+        6: { cellWidth: photoW, halign: 'center' }
+      };
+    })(),
+    didParseCell: function(data) {
+      if (data.section === 'body' && data.column.index === 5) {
+        var v = data.cell.raw;
+        if (v === 'PASS') { data.cell.styles.textColor = [0, 140, 60]; }
+        else if (v === 'FAIL') { data.cell.styles.textColor = [200, 30, 30]; }
+      }
+    },
+    didDrawCell: function(data) {
+      if (data.section === 'body' && data.column.index === 6) {
+        var rowIdx = data.row.index;
+        var photos = (sortedAttendees[rowIdx] && sortedAttendees[rowIdx].photos) ? sortedAttendees[rowIdx].photos : [];
+        var cellX = data.cell.x;
+        var cellY = data.cell.y;
+        var cellW = data.cell.width;
+        var cellH = data.cell.height;
+        var boxSize = Math.min(cellH - 6, cellW - 6);
+        var bx = cellX + (cellW - boxSize) / 2;
+        var by = cellY + (cellH - boxSize) / 2;
+        if (photos[0]) {
+          try {
+            var fmt = photos[0].indexOf('data:image/png') === 0 ? 'PNG' : 'JPEG';
+            doc.addImage(photos[0], fmt, bx, by, boxSize, boxSize, undefined, 'FAST');
+          } catch(e) {
+            doc.setFillColor(230, 230, 235);
+            doc.rect(bx, by, boxSize, boxSize, 'F');
+          }
+          doc.setDrawColor(200, 200, 205);
+          doc.setLineWidth(0.3);
+          doc.rect(bx, by, boxSize, boxSize, 'S');
+        }
+      }
+    }
+  });
+
+  // Footer p1 — logo centred at bottom
+  var passingCount = attendees.filter(function(a){ return a.result !== 'fail'; }).length;
+  var totalPages = 1 + passingCount;
+
+  // ═══════════════════════════════════════════════════════
+  // PAGES 2+ — CERTIFICATES OF ATTENDANCE (landscape)
+  // ═══════════════════════════════════════════════════════
+  var certPageNum = 1;
+  sortedAttendees.forEach(function(attendee, idx) {
+    if (attendee.result === 'fail') return;
+    certPageNum++;
+    doc.addPage();
+
+    var fullName = (attendee.firstName + ' ' + attendee.lastName).trim();
+
+    // Decorative border (fits within landscape height)
+    doc.setDrawColor.apply(doc, midGrey);
+    doc.setLineWidth(0.4);
+    doc.roundedRect(margin - 2, 6, contentW + 4, pageH - 6 - 6, 3, 3, 'S');
+    doc.setLineWidth(0.2);
+    doc.roundedRect(margin, 8, contentW, pageH - 8 - 9, 2, 2, 'S');
+
+    // ── Content ──
+    // "Certificate of Attendance" elegant title
+    var cy = 25;
+    doc.setFontSize(22); doc.setFont('helvetica', 'bold');
+    doc.setTextColor.apply(doc, navy);
+    doc.text('Certificate of Attendance', pageW/2, cy, { align: 'center' });
+
+    // Decorative lines either side of title
+    var titleW = doc.getTextWidth('Certificate of Attendance');
+    var lineY = cy - 2;
+    doc.setDrawColor.apply(doc, orange);
+    doc.setLineWidth(0.6);
+    doc.line(margin + 10, lineY, pageW/2 - titleW/2 - 4, lineY);
+    doc.line(pageW/2 + titleW/2 + 4, lineY, pageW - margin - 10, lineY);
+
+    cy += 11;
+    doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+    doc.setTextColor(110, 110, 120);
+    doc.text('This is to certify that', pageW/2, cy, { align: 'center' });
+
+    cy += 13;
+
+    // Attendee name (large)
+    doc.setFontSize(28); doc.setFont('helvetica', 'bold');
+    doc.setTextColor.apply(doc, navy);
+    doc.text(fullName, pageW/2, cy, { align: 'center' });
+
+    cy += 14;
+    doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+    doc.setTextColor(110, 110, 120);
+    doc.text('has successfully attended the', pageW/2, cy, { align: 'center' });
+
+    cy += 9;
+    doc.setFontSize(18); doc.setFont('helvetica', 'bold');
+    doc.setTextColor.apply(doc, orange);
+    doc.text(s.trainingType, pageW/2, cy, { align: 'center' });
+
+    cy += 7;
+    doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+    doc.setTextColor(130, 130, 130);
+    doc.text('training session conducted by ' + s.company, pageW/2, cy, { align: 'center' });
+
+    // Divider
+    cy += 12;
+    doc.setDrawColor.apply(doc, midGrey);
+    doc.setLineWidth(0.4);
+    doc.line(margin + 18, cy, pageW - margin - 18, cy);
+
+    cy += 9;
+
+    // Session details (2-column grid — equal whitespace left, centre, right)
+    var colZoneW = contentW * 0.30;
+    var detailPad = (contentW - 2 * colZoneW) / 3;
+    var col1x = margin + detailPad;
+    var col2x = margin + detailPad + colZoneW + detailPad;
+
+    function certDetail(label, value, x, yy) {
+      doc.setFontSize(10); doc.setFont('helvetica', 'bold');
+      doc.setTextColor.apply(doc, orange);
+      doc.text(label.toUpperCase(), x, yy);
+      doc.setFontSize(10); doc.setFont('helvetica', 'bold');
+      doc.setTextColor.apply(doc, navy);
+      var v = String(value || '—');
+      if (v.length > 38) v = v.substring(0, 36) + '…';
+      doc.text(v, x, yy + 5);
+    }
+
+    certDetail('Date', formatDateDDMMYYYY(s.date), col1x, cy);
+    certDetail('Training Location', s.trainingLocation, col2x, cy);
+    cy += 14;
+    certDetail('Instructor', s.instructor, col1x, cy);
+    certDetail('Company Name', s.customerName, col2x, cy);
+    cy += 14;
+    certDetail('Roll Groove Tool', s.rollGrooveTool || '—', col1x, cy);
+    certDetail('Training Type', s.trainingType, col2x, cy);
+
+    // Single centred instructor signature — vertically centred in white space
+    var detailsBottom = cy + 7;
+    var borderBottom = pageH - 17;
+    var sigMid = detailsBottom + (borderBottom - detailsBottom) / 2;
+    cy = sigMid - 4;
+    var sigW = 90;
+    var sigCx = pageW / 2;
+    var sigX = sigCx - sigW / 2;
+
+    // Script-style name image above the line
+    var sigImgW = 80; var sigImgH = 16;
+    try {
+      doc.addImage(makeSignatureImg(s.instructor), 'PNG', sigCx - sigImgW/2, cy - sigImgH - 1, sigImgW, sigImgH, undefined, 'FAST');
+    } catch(e) {
+      doc.setFontSize(15); doc.setFont('helvetica', 'bolditalic');
+      doc.setTextColor.apply(doc, navy);
+      doc.text(s.instructor, sigCx, cy - 3, { align: 'center' });
+    }
+
+    // Signature line
+    doc.setDrawColor(170, 170, 170);
+    doc.setLineWidth(0.5);
+    doc.line(sigX, cy, sigX + sigW, cy);
+
+    cy += 4;
+    doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+    doc.setTextColor(150, 150, 150);
+    doc.text('Instructor Signature', sigCx, cy, { align: 'center' });
+
+    // Calculate disclaimer position first
+    var certLogoH = 19.8;
+    var certLogoW = orangeLogoDataUrl ? certLogoH * orangeLogoAspect : 0;
+    var borderBottom = pageH - 9;  // inner border bottom edge
+    var disclaimerMargin = margin + 6;
+    var disclaimerW = contentW - 12;
+    doc.setFontSize(7); doc.setFont('helvetica', 'normal');
+    var disclaimer = 'Persons installing Victaulic products must read, be familiar with and follow Victaulic\u2019s detailed installation instructions and safety warnings applicable to the specific product. Persons operating Victaulic tools must read, be familiar with and follow the latest applicable Victaulic tool operating and safety instructions. This certificate is not intended to be a substitute for those instructions.';
+    var disclaimerLines = doc.splitTextToSize(disclaimer, disclaimerW);
+    var lineH = 3;
+    var disclaimerTotalH = disclaimerLines.length * lineH;
+    var disclaimerY = borderBottom - disclaimerTotalH - 2;
+
+    // Centre Victaulic logo between signature and disclaimer
+    var logoBottom = disclaimerY - 3;
+    if (orangeLogoDataUrl) {
+      var logoAreaTop = cy + 4;
+      var availableSpace = logoBottom - logoAreaTop;
+      var logoY = logoAreaTop + (availableSpace - certLogoH) / 2;
+      doc.addImage(orangeLogoDataUrl, 'PNG', sigCx - certLogoW/2, logoY, certLogoW, certLogoH, undefined, 'FAST');
+    }
+
+    // Draw disclaimer text above bottom border
+    doc.setFontSize(7); doc.setFont('helvetica', 'normal');
+    doc.setTextColor(150, 150, 150);
+    doc.text(disclaimerLines, pageW / 2, disclaimerY, { align: 'center' });
+
+  });
+
+  var filename = 'Roll_Groove_Training_' + s.date + '_' + (s.customerName || 'Record').replace(/[^a-z0-9]/gi, '_') + '.pdf';
+  return { doc: doc, filename: filename };
+}
+
+function downloadPDF() {
+  if (!validateSession()) return;
+  if (attendees.length === 0) { alert('Please add at least one attendee before exporting.'); return; }
+  if (!window.jspdf) { alert('PDF library not loaded. Please check your internet connection.'); return; }
+  try {
+    var r = buildPDF();
+    if (!r) return;
+    r.doc.save(r.filename);
+    var msg = document.getElementById('statusMsg');
+    msg.innerHTML = '&#8681; <strong>' + r.filename + '</strong> downloaded.';
+    msg.className = 'success';
+    msg.style.display = 'block';
+    setTimeout(function(){ msg.style.display = 'none'; }, 4000);
+  } catch(ex) { alert('Could not generate PDF: ' + ex.message); }
+}
+
+// ── CSV EXPORT ───────────────────────────────────────────
+function csvEscape(v) {
+  if (v === null || v === undefined) return '';
+  var s = String(v);
+  if (s.indexOf(',') !== -1 || s.indexOf('"') !== -1 || s.indexOf('\n') !== -1) {
+    return '"' + s.replace(/"/g, '""') + '"';
+  }
+  return s;
+}
+
+function downloadCSV() {
+  if (!validateSession()) return;
+  if (attendees.length === 0) { alert('Please add at least one attendee before exporting.'); return; }
+  var s = getSessionInfo();
+  var headers = ['#', 'First Name', 'Last Name', 'Company', 'Result', 'Date', 'Training Type', 'Roll Groove Tool', 'Instructor', 'Instructor Company', 'Customer Company', 'Training Requested By', 'Training Location'];
+  var rows = attendees.map(function(a, i) {
+    return [
+      i+1,
+      a.firstName||'',
+      a.lastName||'',
+      a.company||'',
+      (a.result||'').toUpperCase(),
+      s.date,
+      s.trainingType,
+      s.rollGrooveTool || '',
+      s.instructor,
+      s.company,
+      s.customerName,
+      s.trainingRequestedBy,
+      s.trainingLocation
+    ].map(csvEscape).join(',');
+  });
+  var csv = [headers.map(function(h){ return '"'+h+'"'; }).join(',')].concat(rows).join('\r\n');
+  var blob = new Blob([csv], { type: 'text/csv' });
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  var fn   = 'Roll_Groove_Training_' + s.date + '_' + (s.customerName||'Record').replace(/[^a-z0-9]/gi,'_') + '.csv';
+  a.href = url; a.download = fn;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  var msg = document.getElementById('statusMsg');
+  msg.innerHTML = '&#8681; <strong>' + fn + '</strong> downloaded.';
+  msg.className = 'success';
+  msg.style.display = 'block';
+  setTimeout(function(){ msg.style.display='none'; }, 4000);
+}
+
+// ── EMAIL ────────────────────────────────────────────────
+function buildEmailBody(s) {
+  var div1 = '================================================';
+  var lines = [
+    'ROLL GROOVE REGISTER',
+    div1,
+    'Date:                 ' + s.date,
+    'Training Type:        ' + s.trainingType,
+    'Roll Groove Tool:     ' + (s.rollGrooveTool || '(not set)'),
+    'Instructor:           ' + s.instructor,
+    'Instructor Company:   ' + s.company,
+    'Customer Company:     ' + s.customerName,
+    'Training Requested By: ' + s.trainingRequestedBy,
+    'Training Location:    ' + s.trainingLocation,
+    s.sessionNotes ? 'Comments:             ' + s.sessionNotes : '',
+    '',
+    'Total Attendees: ' + attendees.length,
+    '',
+    'ATTENDEES',
+    div1
+  ];
+  attendees.forEach(function(a, i) {
+    lines.push((i+1) + '. ' + (a.firstName+' '+a.lastName).trim());
+  });
+  lines.push(div1);
+  lines.push('Sent via Roll Groove Training');
+  return lines.filter(function(l){ return l !== null; }).join('\n');
+}
+
+function sendEmail() {
+  if (!validateSession()) return;
+  if (attendees.length === 0) { alert('Please add at least one attendee.'); return; }
+  var s = getSessionInfo();
+  var subj = 'Roll Groove Training - ' + s.date + ' - ' + s.projectName;
+  var body = buildEmailBody(s);
+  var em = '';
+  try { var sv = localStorage.getItem('rgt_emails'); em = sv ? JSON.parse(sv).join(',') : ''; } catch(x) {}
+
+  if (window.jspdf) {
+    try {
+      var r = buildPDF();
+      if (r) {
+        var pdfBlob = r.doc.output('blob');
+        var pdfFile = new File([pdfBlob], r.filename, { type: 'application/pdf' });
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+          navigator.share({ title: subj, text: body, files: [pdfFile] })
+            .catch(function(err){ if (err.name !== 'AbortError') { openMailto(em, subj, body); } });
+          return;
+        }
+        var url = URL.createObjectURL(pdfBlob);
+        var a = document.createElement('a');
+        a.href = url; a.download = r.filename;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(function(){ URL.revokeObjectURL(url); }, 1500);
+        setTimeout(function(){ openMailto(em, subj, body + '\n\n[PDF report attached — see downloaded file]'); }, 400);
+        return;
+      }
+    } catch(ex) {}
+  }
+  openMailto(em, subj, body);
+}
+
+function openMailto(em, subj, body) {
+  try {
+    window.location.href = 'mailto:' + encodeURIComponent(em) +
+      '?subject=' + encodeURIComponent(subj) +
+      '&body='    + encodeURIComponent(body);
+  } catch(e) { alert('Could not open email client.'); }
+}
+
+// ── EMAIL CONFIG ─────────────────────────────────────────
+function toggleEmailConfig() {
+  var panel = document.getElementById('emailConfigPanel');
+  var isOpen = panel.classList.contains('open');
+  if (!isOpen) {
+    var list = document.getElementById('emailList');
+    list.innerHTML = '';
+    try {
+      var saved = localStorage.getItem('rgt_emails');
+      var emails = saved ? JSON.parse(saved) : [];
+      emails.forEach(function(e){ addEmailField(e); });
+    } catch(x) {}
+    if (document.getElementById('emailList').children.length === 0) addEmailField('');
+  }
+  panel.classList.toggle('open');
+}
+
+function addEmailField(val) {
+  var list = document.getElementById('emailList');
+  var wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;gap:6px;align-items:center;';
+  var input = document.createElement('input');
+  input.type = 'email'; input.placeholder = 'email@example.com'; input.value = val || '';
+  input.style.cssText = 'flex:1;border:1.5px solid var(--border);border-radius:7px;padding:9px 11px;font-size:0.9rem;min-height:40px;';
+  var removeBtn = document.createElement('button');
+  removeBtn.innerHTML = '&#10005;';
+  removeBtn.title = 'Remove';
+  removeBtn.className = 'del-btn';
+  removeBtn.onclick = function() {
+    if (document.getElementById('emailList').children.length > 1) wrap.remove();
+  };
+  wrap.appendChild(input);
+  wrap.appendChild(removeBtn);
+  list.appendChild(wrap);
+}
+
+function saveEmailConfig() {
+  try {
+    var inputs = document.getElementById('emailList').querySelectorAll('input');
+    var emails = Array.from(inputs).map(function(i){ return i.value.trim(); }).filter(Boolean);
+    if (emails.length) localStorage.setItem('rgt_emails', JSON.stringify(emails));
+    document.getElementById('emailConfigPanel').classList.remove('open');
+    var msg = document.getElementById('statusMsg');
+    msg.textContent = emails.length + ' email address' + (emails.length !== 1 ? 'es' : '') + ' saved.';
+    msg.className = 'success';
+    setTimeout(function(){ msg.style.display = 'none'; }, 2500);
+  } catch(e) { alert('Could not save settings.'); }
+}
+
+// ── RESET ────────────────────────────────────────────────
+function resetAll() {
+  if (!confirm('Reset everything? This will clear all session information and the attendee list.')) return;
+  document.getElementById('companyName').value = '';
+  document.getElementById('instructorFirstName').value = '';
+  document.getElementById('instructorLastName').value  = '';
+  document.getElementById('customerName').value             = '';
+  document.getElementById('trainingRequestedByFirst').value = '';
+  document.getElementById('trainingRequestedByLast').value  = '';
+  document.getElementById('trainingLocation').value         = '';
+  document.getElementById('sessionNotes').value        = '';
+  document.getElementById('trainingTypeSelect').value  = '';
+  document.getElementById('trainingTypeOther').value    = '';
+  document.getElementById('trainingTypeOther').style.display = 'none';
+  document.getElementById('rollGrooveToolSelect').value = '';
+  document.getElementById('rollGrooveToolOther').value  = '';
+  document.getElementById('rollGrooveToolOther').style.display = 'none';
+  document.getElementById('addFirstName').value = '';
+  document.getElementById('addLastName').value  = '';
+  var d = new Date();
+  var today = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  var dateEl = document.getElementById('sessionDate');
+  dateEl.value = today;
+  dateEl.max = today;
+  attendees = [];
+  customerCompanies = [''];
+  renderCompanyOptions('');
+  editingIndex = -1;
+  pendingPhotos = [];
+  pendingResult = null;
+  renderPendingThumbs();
+  document.getElementById('addPassBtn').className = 'pf-btn';
+  document.getElementById('addFailBtn').className = 'pf-btn';
+  var btn = document.getElementById('addAttendeeBtn');
+  if (btn) { btn.textContent = '+ Log Attendee'; btn.style.background = ''; }
+  renderAttendees();
+}
+</script>
+</body>
+</html>
