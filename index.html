@@ -1256,14 +1256,17 @@ function buildPDF() {
   var jsPDF = window.jspdf.jsPDF;
   var doc   = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
 
-  // Alphabetical-by-last-name copy used for PDF output only (does not affect on-screen log)
+  // Sort by company, then first name — for PDF output only (does not affect on-screen log)
   var sortedAttendees = attendees.slice().sort(function(a, b) {
-    var la = (a.lastName  || '').toLowerCase();
-    var lb = (b.lastName  || '').toLowerCase();
-    if (la !== lb) return la < lb ? -1 : 1;
+    var ca = (a.company   || '').toLowerCase();
+    var cb = (b.company   || '').toLowerCase();
+    if (ca !== cb) return ca < cb ? -1 : 1;
     var fa = (a.firstName || '').toLowerCase();
     var fb = (b.firstName || '').toLowerCase();
     if (fa !== fb) return fa < fb ? -1 : 1;
+    var la = (a.lastName  || '').toLowerCase();
+    var lb = (b.lastName  || '').toLowerCase();
+    if (la !== lb) return la < lb ? -1 : 1;
     return 0;
   });
 
@@ -1534,7 +1537,7 @@ function buildPDF() {
     certDetail('Training Location', s.trainingLocation, col2x, cy);
     cy += 14;
     certDetail('Instructor', s.instructor, col1x, cy);
-    certDetail('Company Name', s.customerName, col2x, cy);
+    certDetail('Company Name', attendee.company || s.customerName, col2x, cy);
     cy += 14;
     certDetail('Roll Groove Tool', s.rollGrooveTool || '—', col1x, cy);
     certDetail('Training Type', s.trainingType, col2x, cy);
@@ -1549,7 +1552,7 @@ function buildPDF() {
     var sigX = sigCx - sigW / 2;
 
     // Script-style name image above the line
-    var sigImgW = 100; var sigImgH = 20;
+    var sigImgW = 110; var sigImgH = 22;
     try {
       doc.addImage(makeSignatureImg(s.instructor), 'PNG', sigCx - sigImgW/2, cy - sigImgH - 1, sigImgW, sigImgH, undefined, 'FAST');
     } catch(e) {
