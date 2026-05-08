@@ -424,7 +424,7 @@ header {
 
       <div class="form-group form-full">
         <label>Company Name</label>
-        <input type="text" id="customerName" placeholder="Company Name" oninput="document.getElementById('addCompany').value=this.value;" required>
+        <input type="text" id="customerName" placeholder="Company Name" oninput="onCustomerNameChange(this.value);" required>
       </div>
 
       <div class="form-group">
@@ -492,8 +492,11 @@ header {
     <div class="add-form">
       <div class="add-form-grid">
         <div class="form-group" style="margin:0; grid-column: 1 / -1;">
-          <label>Company Name <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(REPEATS)</span></label>
-          <input type="text" id="addCompany" placeholder="Attendee's Company" onkeydown="onAttendeeKeydown(event)">
+          <label>Company Name <span style="font-weight:400;font-size:0.7rem;color:#aaa;">(SELECT OR ADD)</span></label>
+          <div style="display:flex; gap:8px; align-items:stretch;">
+            <select id="addCompany" style="flex:1; min-width:0;" onkeydown="onAttendeeKeydown(event)"></select>
+            <button type="button" class="btn btn-outline" style="padding:0 14px; min-height:46px; white-space:nowrap; flex-shrink:0;" onclick="addNewCustomerCompany()">+ Company</button>
+          </div>
         </div>
         <div class="form-group" style="margin:0;">
           <label>First Name</label>
@@ -595,6 +598,10 @@ header {
 <script>
 // ── STATE ────────────────────────────────────────────────
 var attendees = [];
+// List of customer companies that attendees can be assigned to.
+// First entry always mirrors the organising customer (Step 2 — customerName).
+// Additional entries can be added via the "+ Company" button.
+var customerCompanies = [''];
 var lastRemoved = null;
 var undoTimer  = null;
 var MAX_PHOTOS = 1;
@@ -674,6 +681,9 @@ var editingIndex  = -1;  // -1 = adding new, ≥0 = editing existing
     orangeLogoDataUrl = cv.toDataURL('image/png');
   };
   orangeImg.src = 'Primary Logo Victaulic Orange.png?_=' + Date.now();
+
+  // Initialise the attendee company dropdown
+  renderCompanyOptions('');
 })();
 
 // ── UTILITIES ────────────────────────────────────────────
@@ -791,6 +801,80 @@ function getSessionInfo() {
   };
 }
 
+// ── CUSTOMER COMPANIES ───────────────────────────────────
+// The first entry in customerCompanies always tracks Step 2's customerName
+// (the company that organised the training). Additional entries can be added
+// by the user when training covers attendees from multiple companies.
+function onCustomerNameChange(val) {
+  customerCompanies[0] = (val || '').trim();
+  // Drop any duplicate entries that match the new organiser name
+  for (var i = customerCompanies.length - 1; i > 0; i--) {
+    if (customerCompanies[i].toLowerCase() === customerCompanies[0].toLowerCase()) {
+      customerCompanies.splice(i, 1);
+    }
+  }
+  renderCompanyOptions(customerCompanies[0]);
+}
+
+function addNewCustomerCompany() {
+  var name = prompt('Enter the additional customer company name:');
+  if (name === null) return;
+  name = name.trim();
+  if (!name) return;
+  // Avoid duplicates (case-insensitive)
+  for (var i = 0; i < customerCompanies.length; i++) {
+    if (customerCompanies[i].toLowerCase() === name.toLowerCase()) {
+      renderCompanyOptions(customerCompanies[i]);
+      return;
+    }
+  }
+  customerCompanies.push(name);
+  renderCompanyOptions(name);
+}
+
+function ensureCompanyInList(name) {
+  if (!name) return;
+  for (var i = 0; i < customerCompanies.length; i++) {
+    if (customerCompanies[i].toLowerCase() === name.toLowerCase()) return;
+  }
+  customerCompanies.push(name);
+}
+
+function renderCompanyOptions(selectedValue) {
+  var sel = document.getElementById('addCompany');
+  if (!sel) return;
+  var prev = (typeof selectedValue !== 'undefined') ? selectedValue : sel.value;
+  sel.innerHTML = '';
+  var seen = {};
+  for (var i = 0; i < customerCompanies.length; i++) {
+    var c = customerCompanies[i];
+    var key = c.toLowerCase();
+    if (seen[key]) continue;
+    seen[key] = true;
+    var opt = document.createElement('option');
+    opt.value = c;
+    if (i === 0 && !c) {
+      opt.textContent = '— enter customer company in Step 2 —';
+      opt.disabled = true;
+    } else {
+      opt.textContent = (i === 0 ? c + '  (organiser)' : c);
+    }
+    sel.appendChild(opt);
+  }
+  // Restore selection
+  var matched = false;
+  if (prev) {
+    for (var j = 0; j < sel.options.length; j++) {
+      if (sel.options[j].value === prev) { sel.value = prev; matched = true; break; }
+    }
+  }
+  if (!matched) {
+    for (var k = 0; k < sel.options.length; k++) {
+      if (!sel.options[k].disabled) { sel.value = sel.options[k].value; break; }
+    }
+  }
+}
+
 // ── ATTENDEES ────────────────────────────────────────────
 function onAttendeeKeydown(e) {
   if (e.key === 'Enter') { e.preventDefault(); addAttendee(); }
@@ -851,7 +935,9 @@ function startEditAttendee(i) {
   editingIndex = i;
   document.getElementById('addFirstName').value = a.firstName || '';
   document.getElementById('addLastName').value  = a.lastName  || '';
-  document.getElementById('addCompany').value   = a.company   || '';
+  // Make sure this attendee's company appears in the dropdown
+  ensureCompanyInList(a.company || '');
+  renderCompanyOptions(a.company || '');
   pendingPhotos = (a.photos || []).slice();
   pendingResult = a.result || null;
   renderPendingThumbs();
@@ -885,6 +971,9 @@ function clearAddForm(skipConfirm) {
     document.getElementById('trainingTypeOther').value = '';
     document.getElementById('trainingTypeOther').style.display = 'none';
     document.getElementById('sessionNotes').value = '';
+    // Reset customer company list and dropdown
+    customerCompanies = [''];
+    renderCompanyOptions('');
     // Clear all attendees
     attendees = [];
     renderAttendees();
@@ -1711,6 +1800,8 @@ function resetAll() {
   dateEl.value = today;
   dateEl.max = today;
   attendees = [];
+  customerCompanies = [''];
+  renderCompanyOptions('');
   editingIndex = -1;
   pendingPhotos = [];
   pendingResult = null;
